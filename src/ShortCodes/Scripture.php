@@ -4,11 +4,9 @@ namespace CodeZone\Bible\ShortCodes;
 
 use CodeZone\Bible\Exceptions\BibleBrainsException;
 use CodeZone\Bible\Services\Assets;
-use CodeZone\Bible\Services\BibleBrains\Api\Bibles;
-use CodeZone\Bible\Services\BibleBrains\FileSets;
+use CodeZone\Bible\Services\BibleBrains\Language;
 use CodeZone\Bible\Services\BibleBrains\MediaTypes;
 use CodeZone\Bible\Services\BibleBrains\Scripture as ScriptureService;
-use function CodeZone\Bible\container;
 use function CodeZone\Bible\view;
 use function CodeZone\Bible\cast_bool_values;
 
@@ -43,6 +41,13 @@ class Scripture {
 	 */
 	protected $media_types;
 
+    /**
+     * The languages service.
+     *
+     * @var Language
+     */
+    protected $languages;
+
 	/**
 	 * The __construct method is the constructor of a class. It is used to initialize an object when it is created.
 	 * In this case, the constructor registers a shortcode in WordPress using the `add_shortcode` function.
@@ -50,10 +55,11 @@ class Scripture {
 	 *
 	 * @return void
 	 */
-	public function __construct( ScriptureService $scripture, Assets $assets, MediaTypes $media_types ) {
+	public function __construct( ScriptureService $scripture, Assets $assets, MediaTypes $media_types, Language $language ) {
 		$this->scripture   = $scripture;
 		$this->assets      = $assets;
 		$this->media_types = $media_types;
+        $this->languages    = $language;
 
 		add_shortcode( 'tbp-scripture', [ $this, 'render' ] );
 		add_action( 'wp_enqueue_scripts', [ $this, 'enqueue_scripts' ] );
@@ -135,6 +141,7 @@ class Scripture {
 			'fileset_type' => $fileset['type'] ?? "",
 			'attributes'   => $attributes,
 			'content'      => $content,
+            'direction'    => $result['bible']['alphabet']['direction'] ?? "rtl",
 			"reference"    => [
 				"verse_start" => $result["verse_start"] ?? "",
 				"verse_end"   => $result["verse_end"] ?? "",

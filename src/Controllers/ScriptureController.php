@@ -4,6 +4,7 @@ namespace CodeZone\Bible\Controllers;
 
 use CodeZone\Bible\Illuminate\Http\Request;
 use CodeZone\Bible\Illuminate\Http\Response;
+use CodeZone\Bible\Services\BibleBrains\Language;
 use CodeZone\Bible\Services\BibleBrains\Scripture;
 use function CodeZone\Bible\validate;
 
@@ -30,10 +31,8 @@ class ScriptureController
      *
      * @return Response The HTTP response.
      */
-    public function index( Request $request, Response $response, Scripture $scripture )
+    public function index( Request $request, Response $response, Scripture $scripture, Language $language )
     {
-
-
         try {
             $errors = validate($request->all(), [
                 'reference' => 'required|string'

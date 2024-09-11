@@ -25,6 +25,17 @@ export class Content extends withStores(TBPElement, [$selection, $selectionOpen]
               .verse {
                 line-height: var(--tbp-verse-line-height, 2);
                 padding: .5em 0;
+                display: block;
+              }
+
+              dir[dir="rtl"] .verse {
+                direction: rtl;
+                text-align: right;
+              }
+
+              dir[dir="ltr"] .verse {
+                direction: ltr;
+                text-align: left;
               }
 
               tbp-verse[selectable] .verse:hover:not(.verse--selected) {
@@ -85,6 +96,8 @@ export class Content extends withStores(TBPElement, [$selection, $selectionOpen]
     selectable = false
 
     @property({type: Boolean}) autoplay = false;
+
+    @property({type: String}) dir = 'ltr';
 
 
     //Without the query
@@ -207,6 +220,7 @@ export class Content extends withStores(TBPElement, [$selection, $selectionOpen]
                     verse="${verse_start}"
                     text="${verse_text}"
                     selectable="${this.selectable}"
+                    dir="${this.dir}"
             />
         `
     }

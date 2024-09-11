@@ -5,10 +5,11 @@ import {css, html} from "@spectrum-web-components/base";
 import {$referenceData} from "../stores/reference.js";
 import {$media, findContent} from "../stores/media.js";
 import {$hasText, $text} from "../stores/text.js";
+import {$direction} from "../stores/bible.js";
 import {nothing} from "lit";
 
 @customElement('tbp-reader')
-export class Reader extends withStores(TBPElement, [$referenceData, $media]) {
+export class Reader extends withStores(TBPElement, [$referenceData, $media, $direction]) {
     get content() {
         return findContent('text') ?? [];
     }
@@ -39,6 +40,7 @@ export class Reader extends withStores(TBPElement, [$referenceData, $media]) {
                 <tbp-content
                         .reference="${$referenceData.get()}"
                         .content="${$text.get()}"
+                        dir="${$direction.get()}"
                         type="text"
                         selectable
                 />
