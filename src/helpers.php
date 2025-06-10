@@ -2,15 +2,22 @@
 
 namespace CodeZone\Bible;
 
-use CodeZone\Bible\Illuminate\Http\Client\Factory as HTTPFactory;
-use CodeZone\Bible\Illuminate\Http\RedirectResponse;
-use CodeZone\Bible\Illuminate\Http\Request;
-use CodeZone\Bible\Illuminate\Support\Str;
-use CodeZone\Bible\Illuminate\Validation\Factory;
-use CodeZone\Bible\League\Plates\Engine;
-use CodeZone\Bible\Services\Options;
-use CodeZone\Bible\Services\Template;
 use CodeZone\Bible\Services\Translations;
+use CodeZone\Bible\CodeZone\WPSupport\Config\ConfigInterface;
+use CodeZone\Bible\CodeZone\WPSupport\Container\ContainerFactory;
+use CodeZone\Bible\CodeZone\WPSupport\Options\OptionsInterface;
+use CodeZone\Bible\CodeZone\WPSupport\Rewrites\RewritesInterface;
+use CodeZone\Bible\CodeZone\WPSupport\Router\ResponseFactory;
+use CodeZone\Bible\League\Container\Container;
+use CodeZone\Bible\League\Plates\Engine;
+use CodeZone\Bible\Psr\Http\Message\RequestInterface;
+use CodeZone\Bible\Psr\Http\Message\ResponseInterface;
+use CodeZone\Bible\Services\Template;
+use Exception;
+
+/**
+ * @var $container Container
+ */
 
 /**
  * Returns the singleton instance of the Plugin class.
@@ -18,27 +25,43 @@ use CodeZone\Bible\Services\Translations;
  * @return Plugin The singleton instance of the Plugin class.
  */
 function plugin(): Plugin {
-	return Plugin::$instance;
+	return container()->get( Plugin::class );
 }
 
 /**
- * Returns the container object.
+ * Return the container instance.
  *
- * @return Illuminate\Container\Container The container object.
+ * @return Container The container instance.
+ * @see https://container.thephpleague.com/4.x/
  */
-function container(): Illuminate\Container\Container {
-	return plugin()->container;
+function container(): Container {
+	return ContainerFactory::singleton();
 }
 
 /**
- * Returns the URL of a plugin file or directory, relative to the plugin base URL.
+ * Returns the ConfigInterface object or the value of a specific configuration key.
+ * If a key is provided, the method will return the value of the specified key from the ConfigInterface object.
+ * If no key is provided, the method will return the ConfigInterface object itself.
  *
- * @param string $path The path of the file or directory relative to the plugin base URL. Defaults to an empty string.
+ * @param string|null $key (optional) The configuration key to retrieve the value for.
  *
- * @return string The full URL of the file or directory, relative to the plugin base URL.
+ * @return mixed The ConfigInterface object if no key is provided, or the value of the specified configuration key.
+ * @see https://config.thephpleague.com/
  */
-function plugin_url( string $path = '' ): string {
-	return plugins_url( 'bible-plugin' ) . '/' . ltrim( $path, '/' );
+ function config( $key = null, $default = null ) {
+	$service = container()->get( ConfigInterface::class );
+
+	if ( $key ) {
+		return $service->get( $key, $default );
+	}
+
+	return $service;
+}
+
+function set_config( $key, $value ) {
+	$service = container()->get( ConfigInterface::class );
+
+	return $service->set( $key, $value );
 }
 
 /**
@@ -49,32 +72,64 @@ function plugin_url( string $path = '' ): string {
  *
  */
 function has_route_rewrite(): bool {
-	global $wp_rewrite;
+	$rewrites = container()->get( RewritesInterface::class );
 
-	if ( ! is_array( $wp_rewrite->rules ) ) {
-		return false;
-	}
-
-	return array_key_exists( 'index.php?' . plugin()::QUERY_VAR . '=$matches[1]', $wp_rewrite->rules );
+	return $rewrites->exists(
+		array_key_first( config()->get( 'routes.rewrites' ) )
+	);
 }
 
 /**
- * Returns the URL of a route.
+ * Retrieves the URL of a file or directory within the plugin directory.
  *
- * If the route rewriting is enabled, it will return the URL of the route relative to the home
- * route of the plugin. If the route rewriting is not enabled, it will return the URL of the
- * route appended with query parameters indicating that it is a route of the plugin.
+ * @param string $path Optional. The path of the file or directory within the Bible Plugin directory. Defaults to empty string.
  *
- * @param string $path The path of the route.
- *
- * @return string The URL of the route.
+ * @return string The URL of the specified file or directory within the Bible Plugin directory.
  */
-function route_url( string $path ): string {
+function plugin_url( string $path = '' ): string {
+	return plugins_url( 'dt-plugin' ) . '/' . ltrim( $path, '/' );
+}
+
+/**
+ * Returns the URL for a given route.
+ *
+ * @param string $path The path of the route. Defaults to an empty string.
+ * @param string $key The key of the route file in the configuration. Defaults to 'web'.
+ *
+ * @return string The URL for the given route.
+ */
+function route_url( string $path = '', $key = 'web' ): string {
+	$file = config()->get( 'routes.files' )[ $key ];
+
 	if ( ! has_route_rewrite() ) {
-		return rtrim(site_url(), '/') . '/?' . http_build_query( [ 'bible-plugin' => $path ] );
+		return site_url() . '?' . http_build_query( [ $file['query'] => $path ] );
 	} else {
-		return '/' . plugin()::$home_route . '/' . ltrim( $path, '/' );
+		return site_url( $file['path'] . '/' . ltrim( $path, '/' ) );
 	}
+}
+
+/**
+ * Returns the URL of an API endpoint based on the given path.
+ *
+ * @param string $path The path of the API endpoint.
+ *
+ * @return string The URL of the API endpoint.
+ *
+ * @see route_url()
+ */
+function api_url( string $path ) {
+	return route_url( $path, 'api' );
+}
+
+/**
+ * Returns the URL for a given web path.
+ *
+ * @param string $path The web path to generate the URL for.
+ *
+ * @return string The generated URL.
+ */
+function web_url( string $path ) {
+	return route_url( $path, 'web' );
 }
 
 /**
@@ -83,12 +138,10 @@ function route_url( string $path ): string {
  * @param string $path The path of the file or directory relative to the plugin directory. Defaults to an empty string.
  *
  * @return string The full path of the file or directory, relative to the plugin directory.
+ * @see https://developer.wordpress.org/reference/functions/plugin_dir_path/
  */
 function plugin_path( string $path = '' ): string {
-	return '/' . implode( '/', [
-			trim( Str::remove( '/src', plugin_dir_path( __FILE__ ) ), '/' ),
-			trim( $path, '/' ),
-    ] );
+	return Plugin::dir_path() . '/' . trim( $path, '/' );
 }
 
 /**
@@ -99,7 +152,7 @@ function plugin_path( string $path = '' ): string {
  * @return string The complete source path.
  */
 function src_path( string $path = '' ): string {
-	return plugin_path( 'src/' . $path );
+	return plugin_path( config( 'plugin.paths.src' ) . '/' . $path );
 }
 
 /**
@@ -110,8 +163,9 @@ function src_path( string $path = '' ): string {
  * @return string The path to the resources directory, with optional subdirectory appended.
  */
 function resources_path( string $path = '' ): string {
-	return plugin_path( 'resources/' . $path );
+	return plugin_path( config( 'plugin.paths.resources' ) . '/' . $path );
 }
+
 
 /**
  * Returns the path relative to the wordpress admin directory.
@@ -140,7 +194,7 @@ function languages_path( string $path = '' ): string {
  * @return string The path to the routes directory, with optional subdirectory appended.
  */
 function routes_path( string $path = '' ): string {
-	return plugin_path( 'routes/' . $path );
+	return plugin_path( config( 'plugin.paths.routes' ) . '/' . $path );
 }
 
 /**
@@ -151,28 +205,31 @@ function routes_path( string $path = '' ): string {
  * @return string The path to the views directory, with optional subdirectory appended.
  */
 function views_path( string $path = '' ): string {
-	return plugin_path( 'resources/views/' . $path );
+	return plugin_path( config( 'plugin.paths.views' ) . '/' . $path );
 }
 
 /**
- * Renders a view using the provided view engine.
+ * Renders a view and returns a response.
  *
  * @param string $view Optional. The name of the view to render. Defaults to an empty string.
  * @param array $args Optional. An array of data to pass to the view. Defaults to an empty array.
  *
- * @return string|Engine The rendered view if a view name is provided, otherwise the view engine object.
+ * @return ResponseInterface The rendered view if a view name is provided, otherwise the view engine object.
+ * @see https://platesphp.com/v3/
  */
 function view( string $view = "", array $args = [] ) {
-	$engine = container()->make( Engine::class );
+	$engine = container()->get( Engine::class );
 	if ( ! $view ) {
 		return $engine;
 	}
 
-	return $engine->render( $view, $args );
+	return response(
+		$engine->render( $view, $args )
+	);
 }
 
 /**
- * Renders a template using the Template service.
+ * Renders a template using the Template service and returns a response
  *
  * @param string $template Optional. The template to render. If not specified, the Template service instance is returned.
  * @param array $args Optional. An array of arguments to be passed to the template.
@@ -181,73 +238,75 @@ function view( string $view = "", array $args = [] ) {
  *               If $template is specified, the rendered template is returned.
  */
 function template( string $template = "", array $args = [] ) {
-	$service = container()->make( Template::class );
+	$service = container()->get( Template::class );
 	if ( ! $template ) {
 		return $service;
 	}
 
-	return $service->render( $template, $args );
+	$service->register();
+
+	return view( $template, $args );
 }
 
 /**
- * Returns the Request object.
- *
- * @return Request The Request object.
- */
-function request(): Request {
-	return container()->make( Request::class );
-}
-
-/**
- * Creates a new RedirectResponse instance for the given URL.
+ * Creates a new ResponseInterface instance for the given URL.
  *
  * @param string $url The URL to redirect to.
  * @param int $status Optional. The status code for the redirect response. Default is 302.
  *
- * @return RedirectResponse A new RedirectResponse instance.
+ * @return ResponseInterface A new RedirectResponse instance.
+ * @see https://github.com/guzzle/psr7
  */
-function redirect( string $url, int $status = 302 ): RedirectResponse {
-	return container()->makeWith( RedirectResponse::class, [
-		'url'    => $url,
-		'status' => $status,
-	] );
-}
-
-/**
- * Validate the given data using the provided rules and messages.
- *
- * @param array $data The data to be validated.
- * @param array $rules The validation rules to be applied.
- * @param array $messages The custom error messages to be displayed.
- *
- * @return array The array of validation error messages, if any.
- */
-function validate( array $data, array $rules, array $messages = [] ): array {
-	$validator = container()->make( Factory::class )->make( $data, $rules, $messages );
-	if ( $validator->fails() ) {
-		return $validator->errors()->toArray();
-	}
-
-	return [];
+function redirect( string $url, int $status = 302, $headers = [] ): ResponseInterface {
+	return ResponseFactory::redirect( $url, $status, $headers );
 }
 
 /**
  * Set the value of an option.
  *
- * This function first checks if the option already exists. If it doesn't, it adds a new option with the given name and value.
- * If the option already exists, it updates the existing option with the given value.
+ * This is a convenience function that checks if the option exists before setting it.
  *
  * @param string $option_name The name of the option.
  * @param mixed $value The value to set for the option.
  *
  * @return bool Returns true if the option was successfully set, false otherwise.
+ * @see https://developer.wordpress.org/reference/functions/add_option/
+ * @see https://developer.wordpress.org/reference/functions/update_option/
  */
 function set_option( string $option_name, $value ): bool {
-	if ( get_plugin_option( $option_name ) === false ) {
+	if ( get_option( $option_name ) === false ) {
 		return add_option( $option_name, $value );
 	} else {
 		return update_option( $option_name, $value );
 	}
+}
+
+/**
+ * Retrieves the value of an option taking the default value set in the options service provider.
+ *
+ * @param string $option The name of the option to retrieve.
+ * @param mixed $default Optional. The default value to return if the option does not exist. Defaults to false.
+ *
+ * @return mixed The value of the option if it exists, or the default value if it doesn't.
+ */
+function get_plugin_option( $option, $default = null, $required = false ) {
+	$options = container()->get( OptionsInterface::class );
+
+	return $options->get( $option, $default, $required );
+}
+
+/**
+ * Sets the value of a plugin option.
+ *
+ * @param mixed $option The option to set.
+ * @param mixed $value The value to set for the option.
+ *
+ * @return bool True if the option value was successfully set, false otherwise.
+ */
+function set_plugin_option( $option, $value ): bool {
+	$options = container()->get( OptionsInterface::class );
+
+	return $options->set( $option, $value );
 }
 
 /**
@@ -257,7 +316,7 @@ function set_option( string $option_name, $value ): bool {
  *
  * @return bool|string Returns true if the transaction is successful, otherwise returns the last database error.
  *
- * @throws \Exception If there is a database error before starting the transaction.
+ * @throws Exception If there is a database error before starting the transaction.
  */
 function transaction( $callback ) {
 	global $wpdb;
@@ -276,10 +335,6 @@ function transaction( $callback ) {
 	return true;
 }
 
-function http(): HTTPFactory {
-	return container()->make( HTTPFactory::class );
-}
-
 function translate( $text, $context = [] ): string {
 	return container()->make( Translations::class )->translate( $text, $context );
 }
@@ -292,7 +347,7 @@ function translate( $text, $context = [] ): string {
  * @return string The result of concatenating the given string to the namespace of the Router class.
  */
 function namespace_string( string $string ): string {
-	return Plugin::class . '\\' . $string;
+	return config( 'plugin.text_domain' ) . '.' . $string;
 }
 
 /**
@@ -321,38 +376,31 @@ function rgb( $color ): string {
 }
 
 /**
- * Retrieves the value of an option from the options container.
+ * Extracts data from a request and returns it as an array.
  *
- * @param string $option The name of the option to retrieve.
- * @param mixed $default Optional. The default value to return if the option does not exist. Defaults to false.
+ * Works with JSON requests, GET requests
  *
- * @return mixed The value of the option if it exists, or the default value if it doesn't.
+ * @param RequestInterface $request The request object from which to
  */
-function get_plugin_option( $option, $default = null, $required = false ) {
-	$options = container()->make( Options::class );
+function extract_request_input( RequestInterface $request ): array {
+    $content_type = $request->getHeaderLine( 'Content-Type' );
 
-	return $options->get( $option, $default, $required );
+    if ( strpos( $content_type, 'application/json' ) !== false ) {
+        // Handle JSON content type.
+        $body = $request->getBody()->getContents();
+
+        return json_decode( $body, true );
+    }
+
+    switch ( strtoupper( $request->getMethod() ) ) {
+        case 'GET':
+            return $request->getQueryParams();
+        default:
+            return $request->getParsedBody();
+    }
 }
 
-/**
- * Sets the value of a plugin option.
- *
- * @param string $option The name of the option to set.
- * @param mixed $value The value to set for the option.
- *
- * @return bool true if the option was successfully set; otherwise, false.
- */
-function set_plugin_option( $option, $value ): bool {
-	$options = container()->make( Options::class );
 
-	return $options->set( $option, $value );
-}
-
-function delete_plugin_option( $option ): bool {
-    $options = container()->make( Options::class );
-
-    return $options->delete( $option );
-}
 /**
  * Cast an array of strings to boolean values
  *

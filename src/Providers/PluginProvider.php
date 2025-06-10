@@ -33,8 +33,8 @@ class PluginProvider extends AbstractServiceProvider {
     public function register(): void {
         $this->getContainer()->addShared( Plugin::class, function () {
             return new Plugin(
-                $this->getContainer(),
-                $this->getContainer()->get( ConfigInterface::class )
+                $this->container,
+                $this->container->get( ConfigInterface::class )
             );
         } );
     }
