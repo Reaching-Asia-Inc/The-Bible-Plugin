@@ -8,20 +8,13 @@
  *
  * Routes are used to bind a URL to a controller.
  *
- * @var Routes $r
  * @see https://github.com/thecodezone/wp-router
  */
 
-$r->group( admin_path('admin.php'), function ( Routes $r ) {
-    $r->get('?page=bible-plugin', [
-        BibleBrainsFormController::class,
-        'show',
-    ]);
-    $r->get( '?page=bible-plugin&tab=bible_brains_key', [ BibleBrainsFormController::class, 'add_key' ] );
-    $r->get( '?page=bible-plugin&tab=support', [ SupportController::class, 'show' ] );
-    $r->get('?page=bible-plugin&tab=bible', [
-        BibleBrainsFormController::class,
-        'show',
-    ]);
-    $r->get( '?page=bible-plugin&tab=customization', [ CustomizationFomController::class, 'show' ] );
-});
+return [
+    'general'        => [BibleBrainsFormController::class, 'show'],
+    'support'        => [SupportController::class, 'show'],
+    'bible_brains_key' => [BibleBrainsFormController::class, 'add_key'],
+    'bible'          => [BibleBrainsFormController::class, 'show'],
+    'customization'  => [CustomizationFomController::class, 'show'],
+];

@@ -2,21 +2,21 @@
 
 namespace CodeZone\Bible\Services\BibleBrains\Api;
 
-use CodeZone\Bible\Exceptions\BibleBrainsException;
-use CodeZone\Bible\Illuminate\Http\Client\Factory as Http;
-use CodeZone\Bible\Illuminate\Support\Arr;
-use CodeZone\Bible\Illuminate\Support\Str;
-use CodeZone\Bible\PhpOption\Option;
-use CodeZone\Bible\Services\BibleBrains\Reference;
-use CodeZone\Bible\Services\Options;
-use function CodeZone\Bible\CodeZone\Router\container;
-use function CodeZone\Bible\collect;
+use CodeZone\Bible\GuzzleHttp\Client;
+use function CodeZone\Bible\container;
 
-class ApiKeys extends ApiService {
-    protected $endpoint = 'keys';
+class ApiKeys extends ApiService
+{
+    protected string $endpoint = 'keys';
 
-    public function init( Http $http = null ) {
-        $http       = $http ?? \CodeZone\Bible\container()->make( Http::class );
-        $this->http = $http->biblePluginSite();
+    /**
+     * Initializes the HTTP client using the scoped container service.
+     *
+     * @param Client|null $http Optional Guzzle client override.
+     * @return void
+     */
+    public function init(Client $http = null): void
+    {
+        $this->http = $http ?? container()->get('http.biblePluginSite');
     }
 }

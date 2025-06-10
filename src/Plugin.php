@@ -4,7 +4,8 @@ namespace CodeZone\Bible;
 
 use CodeZone\Bible\CodeZone\Router\Middleware\Stack;
 use CodeZone\Bible\Illuminate\Container\Container;
-use CodeZone\Bible\Providers\PluginServiceProvider;
+use CodeZone\Bible\Providers\PluginProvider;
+use CodeZone\Bible\CodeZone\WPSupport\Config;
 
 /**
  * This is the entry-object for the plugin.
@@ -35,19 +36,19 @@ class Plugin {
 	/**
 	 * The service provider
 	 * @see https://laravel.com/docs/10.x/providers
-	 * @var PluginServiceProvider
+	 * @var PluginProvider
 	 */
-	public PluginServiceProvider $provider;
+	public PluginProvider $provider;
 
 	/**
 	 * Plugin constructor.
 	 *
 	 * @param Container $container
 	 */
-	public function __construct( Container $container ) {
+	public function __construct( Container $container, Config $config ) {
 		$this->container  = $container;
 		self::$home_route = apply_filters( namespace_string( 'route' ), self::$home_route );
-		$this->provider   = $container->make( PluginServiceProvider::class );
+		$this->provider   = $container->make( PluginProvider::class );
 	}
 
 	/**

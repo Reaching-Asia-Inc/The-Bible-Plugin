@@ -3,216 +3,172 @@
 namespace CodeZone\Bible\Services\BibleBrains\Api;
 
 use CodeZone\Bible\Exceptions\BibleBrainsException;
-use CodeZone\Bible\Illuminate\Support\Arr;
-use CodeZone\Bible\Illuminate\Support\Str;
-use CodeZone\Bible\PhpOption\Option;
 use CodeZone\Bible\Services\BibleBrains\Reference;
-use CodeZone\Bible\Services\Options;
-use function CodeZone\Bible\CodeZone\Router\container;
-use function CodeZone\Bible\collect;
 
 class Bibles extends ApiService {
-	protected $endpoint = 'bibles';
-	protected $default_options = [
-		'limit' => 500,
-	];
+    protected $endpoint = 'bibles';
+    protected array $default_options = [
+        'limit' => 500,
+    ];
 
     /**
-     * Finds or returns the default audio or video types based on the provided code or language ID.
+     * Finds a Bible by code or falls back to the default for the language.
      *
-     * @param string|null $code The code to search for.
-     * @param int|null $language_id The language ID to search for.
-     * @param array $query Additional query parameters.
-     *
-     * @return array An associative array containing the audio or video types for the provided code or language ID.
-     *               The array is structured as ['data' => [...]] where each element is the audio type if available,
-     *               otherwise it is the video type.
-     *
-     * @throws BibleBrainsException If neither a bible ID nor a language ID is provided.
+     * @param string|null $code
+     * @param int|null $language_id
+     * @param array $query
+     * @return array
+     * @throws BibleBrainsException
      */
-	public function find_or_default( $code = null, $language_id = null, array $query = [] ): array {
-		if ( empty( $code ) && empty( $language_id ) ) {
-			throw new BibleBrainsException( esc_html( 'Either a bible ID or a language ID must be provided.' ) );
-		}
+    public function find_or_default($code = null, $language_id = null, array $query = []): array {
+        if (empty($code) && empty($language_id)) {
+            throw new BibleBrainsException(__('Either a bible ID or a language ID must be provided.', 'dt-plugin'));
+        }
 
+        if (empty($code)) {
+            return $this->default_for_language($language_id);
+        }
 
-		if ( empty( $code ) && ! empty( $language_id ) ) {
-			return $this->default_for_language( $language_id );
-		}
+        $result = $this->find($code, $query);
 
-		$result = $this->find( $code, $query );
+        if (empty($result['data'])) {
+            $result = $this->default_for_language($language_id);
+        }
 
-		if ( empty( $result['data'] ) ) {
-			$result = $this->default_for_language( $language_id );
-		}
+        return $result;
+    }
 
-		return $result;
-	}
+    /**
+     * Maps iterable data into an array of UI options.
+     *
+     * @param iterable $records
+     * @return array
+     */
+    public function as_options(iterable $records): array {
+        $options = [];
+        foreach ($records as $record) {
+            $option = $this->map_option($record);
+            if (!empty($option['value']) && !empty($option['itemText'])) {
+                $options[] = $option;
+            }
+        }
+        return $options;
+    }
 
-	/**
-	 * Transforms a collection of records into an array of options.
-	 *
-	 * @param iterable $records The records to transform into options.
-	 *
-	 * @return array Returns an array of options.
-	 * @throws BibleBrainsException If the request is unsuccessful and returns an error.
-	 */
-	public function as_options( iterable $records ): array {
-		$records = collect( $records );
+    /**
+     * Gets books from a Bible code.
+     *
+     * @param string $code
+     * @param array $query
+     * @return array
+     * @throws BibleBrainsException
+     */
+    public function books($code, $query = []): array {
+        return $this->find($code, $query)['data']['books'] ?? [];
+    }
 
-        // phpcs:disable
-		return array_values( $records->map( function ( $record ) {
-			return $this->map_option( $record );
-        } )->filter( function ( $option ) {
-            return ! empty( $option['value'] )
-            && ! empty( $option['itemText'] );
-        } )->toArray() );
-        // phpcs:enable
-	}
+    /**
+     * Maps a Bible record to an option format.
+     *
+     * @param array $record
+     * @return array
+     */
+    public function map_option(array $record): array {
+        return [
+            'value'    => $record['abbr'] ?? $record['id'],
+            'itemText' => $record['name']
+        ];
+    }
 
-	/**
-	 * Retrieves the books of a given code.
-	 *
-	 * @param string $code The code of the book.
-	 * @param array $query An optional array of query parameters to filter the books.
-	 *
-	 * @return array Returns an array of books for the given code.
-	 * @throws BibleBrainsException If the request is unsuccessful and returns an error.
-	 */
-	public function books( $code, $query = [] ) {
-		return $this->find( $code, $query )['data']['books'] ?? [];
-	}
+    /**
+     * Returns Bibles filtered by language code.
+     *
+     * @param string $language_code
+     * @param array $query
+     * @return array
+     * @throws BibleBrainsException
+     */
+    public function for_language(string $language_code, array $query = []): array {
+        $query = array_merge($query, ['language_code' => $language_code]);
+        return $this->all($query);
+    }
 
-	/**
-	 * Maps an option record to an associative array.
-	 *
-	 * @param array $record The option record to map.
-	 *
-	 * @return array The mapped option as an associative array, where the 'value' key corresponds to the ID in the record,
-	 *               and the 'label' key corresponds to the name in the record.
-	 */
-	public function map_option( array $record ): array {
-		return [
-			'value'    => $record['abbr'] ?? $record['id'],
-			'itemText' => $record['name']
-		];
-	}
+    /**
+     * Returns Bibles for multiple language codes.
+     *
+     * @param array $language_codes
+     * @param array $query
+     * @return array
+     * @throws BibleBrainsException
+     */
+    public function for_languages(array $language_codes, array $query = []): array {
+        $result = ['data' => []];
+        foreach ($language_codes as $language_code) {
+            $data = $this->for_language($language_code, $query)['data'] ?? [];
+            $result['data'] = array_merge($result['data'], $data);
+        }
+        return $result;
+    }
 
-	/**
-	 * Retrieves all records for a specific language.
-	 *
-	 * @param string $language_code The language code to filter the records by.
-	 *
-	 * @return array An array of records for the specified language.
-	 * @throws BibleBrainsException If the request is unsuccessful and returns an error.
-	 */
-	public function for_language( string $language_code, $query = [] ) {
+    /**
+     * Gets default Bible for a single language.
+     *
+     * @param string $language_id
+     * @return array
+     * @throws BibleBrainsException
+     */
+    public function default_for_language(string $language_id): array {
+        $bible = $this->for_language($language_id);
+        return $this->find($bible['data'][0]['abbr']);
+    }
 
-		$query = array_merge( $query, [
-			'language_code' => $language_code
-		] );
+    /**
+     * Gets default Bibles for multiple languages.
+     *
+     * @param array $language_codes
+     * @return array
+     * @throws BibleBrainsException
+     */
+    public function default_for_languages(array $language_codes): array {
+        $result = ['data' => []];
+        foreach ($language_codes as $language_code) {
+            $language = $this->default_for_language($language_code);
+            $result['data'][] = $language['data'];
+        }
+        return $result;
+    }
 
-		return $this->all( $query );
-	}
+    /**
+     * Gets passage content from a fileset.
+     *
+     * @param string $fileset
+     * @param string $book
+     * @param int $chapter
+     * @param int $verse_start
+     * @param int $verse_end
+     * @return array
+     * @throws BibleBrainsException
+     */
+    public function content($fileset, $book, $chapter, $verse_start, $verse_end): array {
+        return $this->get($this->endpoint . "/filesets/{$fileset}/{$book}/{$chapter}", [
+            'verse_start' => $verse_start,
+            'verse_end'   => $verse_end
+        ]);
+    }
 
-	/**
-	 * Retrieves data for multiple languages.
-	 *
-	 * @param array $language_codes An array of language codes for which to retrieve data.
-	 *
-	 * @return array The data for the specified languages in the following format:
-	 *               [
-	 *                   'data' => [
-	 *                       // Data for first language
-	 *                       // Data for second language
-	 *                       // ...
-	 *                   ]
-	 *               ]
-	 * @throws BibleBrainsException If the request is unsuccessful and returns an error.
-	 */
-	public function for_languages( array $language_codes, array $query = [] ) {
-		$result = [ 'data' => [] ];
-		foreach ( $language_codes as $language_code ) {
-			array_push( $result['data'], ...$this->for_language( $language_code, $query )['data'] );
-		}
-
-		return $result;
-	}
-
-	/**
-	 * Returns the default audio or video type for a given language code.
-	 *
-	 * @param string $language_id The language code.
-	 *
-	 * @return array The default audio or video type for the language code.
-	 *
-	 * @throws BibleBrainsException If an error occurs during the retrieval of the default type for the language code.
-	 */
-	public function default_for_language( string $language_id ): array {
-		$bible = $this->for_language( $language_id );
-
-		return $this->find( $bible['data'][0]['abbr'] );
-	}
-
-	/**
-	 * Returns the default audio or video types for an array of language codes.
-	 *
-	 * @param array $language_codes An array of language codes.
-	 *
-	 * @return array An associative array containing the default audio or video types for each language code.
-	 *               The array is structured as ['data' => [...]] where each element is the default audio type if available,
-	 *               otherwise it is the default video type.
-	 *
-	 * @throws BibleBrainsException If an error occurs during the retrieval of default types for a language code.
-	 */
-	public function default_for_languages( array $language_codes ) {
-		$result = [ 'data' => [] ];
-		foreach ( $language_codes as $language_code ) {
-			$language = $this->default_for_language( $language_code );
-			array_push( $result['data'], $language['data'] );
-		}
-
-		return $result;
-	}
-
-	/**
-	 * Retrieves the content for a given fileset, book, chapter, verse range.
-	 *
-	 * @param string $fileset The fileset identifier.
-	 * @param string $book The book identifier.
-	 * @param int $chapter The chapter number.
-	 * @param int $verse_start The starting verse number.
-	 * @param int $verse_end The ending verse number.
-	 *
-	 * @return array An array containing the content for the given fileset, book, chapter, verse range.
-	 *               The array structure is determined by the response of the API call.
-	 *
-	 * @throws BibleBrainsException If an error occurs during the retrieval of the content.
-	 */
-	public function content( $fileset, $book, $chapter, $verse_start, $verse_end ): array {
-		return $this->get( $this->endpoint . '/filesets/' . $fileset . '/' . $book . '/' . $chapter, [
-			'verse_start' => $verse_start,
-			'verse_end'   => $verse_end
-		] );
-	}
-
-	/**
-	 * Retrieves the verses of a given reference within a specified fileset.
-	 *
-	 * @param string $reference The reference string in the format "Book Chapter:VerseStart-VerseEnd".
-	 * @param string $fileset The fileset identifier.
-	 *
-	 * @return array An associative array containing the verses for the given reference within the specified fileset.
-	 *               The array is structured as ['data' => [...]] where each element represents a verse.
-	 *
-	 * @throws BibleBrainsException If an error occurs during the retrieval of verses for the given reference.
-	 */
-	public function reference( $reference, $fileset ): array {
-		[ $book, $chapter, $verse_start, $verse_end ] = Reference::spread( $reference );
-
-		return $this->get( $this->endpoint . "/filesets/" . $fileset . "/" . $book . "/" . $chapter, [
-			'verse_start' => $verse_start,
-			'verse_end'   => $verse_end
-		] );
-	}
+    /**
+     * Gets a passage from a reference string and fileset.
+     *
+     * @param string $reference
+     * @param string $fileset
+     * @return array
+     * @throws BibleBrainsException
+     */
+    public function reference($reference, $fileset): array {
+        [$book, $chapter, $verse_start, $verse_end] = Reference::spread($reference);
+        return $this->get("{$this->endpoint}/filesets/{$fileset}/{$book}/{$chapter}", [
+            'verse_start' => $verse_start,
+            'verse_end'   => $verse_end
+        ]);
+    }
 }

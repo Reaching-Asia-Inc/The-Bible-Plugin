@@ -23,7 +23,7 @@
   ],
   "scripts": {
     "pre-install-cmd": [
-      "./setup-scoper.sh"
+      "./bin/setup-scoper.sh"
     ]
   },
   "require": {
