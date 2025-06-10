@@ -11,6 +11,7 @@
 
 $this->layout( 'layouts/shortcode', [ 'error' => $error ?? false ] );
 ?>
+
 <tbp-content content='<?php echo esc_attr( wp_json_encode( $content ) ); ?>'
              reference='<?php echo esc_attr( wp_json_encode( $reference ) ); ?>'
              language="<?php echo esc_attr( $attributes["language"] ); ?>"

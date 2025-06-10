@@ -3,10 +3,7 @@
 namespace Tests;
 
 use CodeZone\Bible\Illuminate\Support\Str;
-use CodeZone\Bible\Services\BibleBrains\Scripture;
 use CodeZone\Bible\Services\BibleBrains\Api\Bibles;
-use CodeZone\Bible\Services\BibleBrains\Api\Languages;
-use CodeZone\Bible\Services\Cache;
 use function CodeZone\Bible\container;
 
 /**

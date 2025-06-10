@@ -3,7 +3,6 @@
 namespace Tests;
 
 use CodeZone\Bible\Services\BibleBrains\Reference;
-use CodeZone\Bible\Services\BibleBrains\Api\Bibles;
 use function CodeZone\Bible\container;
 
 /**

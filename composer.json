@@ -24,9 +24,6 @@
   "scripts": {
     "pre-install-cmd": [
       "./setup-scoper.sh"
-    ],
-    "post-install-cmd": [
-      "node patch-scoper-autoload.js"
     ]
   },
   "require": {
@@ -60,6 +57,7 @@
     }
   },
   "config": {
+   "autoloader-suffix": "bible_plugin",
     "allow-plugins": {
       "dealerdirect/phpcodesniffer-composer-installer": true,
       "bamarni/composer-bin-plugin": true,

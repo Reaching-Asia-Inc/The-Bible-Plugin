@@ -41,21 +41,3 @@ $r->group('api', function ( Routes $r ) {
         $r->post( '/customization', [ CustomizationFomController::class, 'submit' ] );
     });
 });
-
-$r->condition('backend', function ( Routes $r ) {
-    $r->middleware('can:manage_options', function ( Routes $r ) {
-        $r->group( admin_path('admin.php'), function ( Routes $r ) {
-            $r->get('?page=bible-plugin', [
-                BibleBrainsFormController::class,
-                'show',
-            ]);
-            $r->get( '?page=bible-plugin&tab=bible_brains_key', [ BibleBrainsFormController::class, 'add_key' ] );
-            $r->get( '?page=bible-plugin&tab=support', [ SupportController::class, 'show' ] );
-            $r->get('?page=bible-plugin&tab=bible', [
-                BibleBrainsFormController::class,
-                'show',
-            ]);
-            $r->get( '?page=bible-plugin&tab=customization', [ CustomizationFomController::class, 'show' ] );
-        });
-    });
-});

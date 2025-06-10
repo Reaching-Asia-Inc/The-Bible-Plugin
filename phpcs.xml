@@ -65,7 +65,7 @@
         <exclude name="Generic.Functions.OpeningFunctionBraceKernighanRitchie.ContentAfterBrace"/>
         <exclude name="Generic.Functions.OpeningFunctionBraceKernighanRitchie.SpaceBeforeBrace"/>
         <exclude name="Generic.PHP.ForbiddenFunctions.FoundWithAlternative"/>
-        <exclude name="Generic.WhiteSpace.DisallowSpaceIndent.SpacesUsed"/>
+        <exclude name="Generic.WhiteSpace.DisallowSpaceIndent.SpacesUsed" />
         <exclude name="PSR2.ControlStructures.SwitchDeclaration.BodyOnNextLineCASE"/>
         <exclude name="PSR2.ControlStructures.SwitchDeclaration.BreakIndent"/>
         <exclude name="PSR2.ControlStructures.SwitchDeclaration.SpaceBeforeColonCASE"/>
@@ -148,7 +148,7 @@
         <exclude name="WordPress.PHP.DisallowShortTernary.Found"/>
         <exclude name="WordPress.PHP.YodaConditions.NotYoda"/>
         <exclude name="NormalizedArrays.Arrays.CommaAfterLast.MissingMultiLine"/>
-        <exclude name="Generic.WhiteSpace.DisallowTabIndent.TabsUsed"/>
+        <exclude name="Generic.WhiteSpace.DisallowTabIndent"/>
         <exclude name="Generic.WhiteSpace.ScopeIndent.Incorrect"/>
         <!-- <exclude name="WordPress.WhiteSpace.CastStructureSpacing.NoSpaceBeforeOpenParenthesis" /> -->
         <!-- <exclude name="WordPress.WhiteSpace.ControlStructureSpacing.BlankLineAfterEnd" /> -->
@@ -237,5 +237,13 @@
     <!-- <rule ref="PEAR.NamingConventions.ValidVariableName"/> -->
     <!-- <rule ref="PSR2.Files.ClosingTag"/> -->
     <!-- <rule ref="Squiz.PHP.ForbiddenFunctions"/> -->
+
+    <rule ref="WordPress.Security.ValidatedSanitizedInput">
+        <properties>
+            <property name="customUnslashingSanitizingFunctions" type="array">
+                <element value="dt_recursive_sanitize_array"/>
+            </property>
+        </properties>
+    </rule>
 
 </ruleset>

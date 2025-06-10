@@ -1,9 +1,13 @@
 <?php
-
-// phpcs:disable
-$_tests_dir   = $_ENV['WP_TESTS_DIR'] ?? false ?: rtrim( sys_get_temp_dir(), '/\\' ) . '/wordpress-tests-lib';
-$_core_dir    = $_ENV['WP_CORE_DIR'] ?? false ?: rtrim( sys_get_temp_dir(), '/\\' ) . '/wordpress';
-$_plugin_file = $_ENV['WP_PLUGIN_FILE'] ?? false ?: dirname(__DIR__) . '/bible-plugin.php';
+/**
+ * PHPUnit bootstrap file
+ *
+ * @package Disciple.Tools
+ */
+$_tests_dir   = getenv( 'WP_TESTS_DIR' ) ? getenv( 'WP_TESTS_DIR' ) : rtrim( sys_get_temp_dir(), '/\\' ) . '/wordpress-tests-lib';
+$_core_dir    = getenv( 'WP_CORE_DIR' ) ? getenv( 'WP_CORE_DIR' ) : rtrim( sys_get_temp_dir(), '/\\' ) . '/wordpress';
+// @phpcs:ignore
+$_plugin_file = $_ENV['WP_PLUGIN_FILE'] ?? false ?: dirname( __DIR__ ) . '/' . basename( dirname( __DIR__ ) ) . '.php';
 
 if ( ! file_exists( $_tests_dir . '/includes/functions.php' ) ) {
 	echo "Could not find " . $_tests_dir . "/includes/functions.php, have you run tests/install-wp-tests.sh ?" . PHP_EOL; //@phpcs:ignore
