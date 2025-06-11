@@ -2,8 +2,6 @@
 
 namespace CodeZone\Bible\Services;
 
-use CodeZone\Bible\CodeZone\WPSupport\Router\RouteInterface;
-use CodeZone\Bible\Psr\Http\Message\ServerRequestInterface;
 use function CodeZone\Bible\container;
 use function CodeZone\Bible\namespace_string;
 use function CodeZone\Bible\routes_path;
@@ -91,10 +89,37 @@ class Settings {
      * @return void
      */
     public function dispatch_routes(): void {
-        $routes = routes_path( 'settings.php' );
+        $tab = sanitize_text_field($_GET['tab'] ?? 'general');
+        $routes = include routes_path('settings.php');
 
-        $route = container()->get( RouteInterface::class );
-        $route->file( routes_path( 'settings.php' ) )
-            ->resolve();
+        $handler = $routes[$tab] ?? $routes['general'];
+        $response = container()->get($handler[0])->{$handler[1]}(
+            $response = container()->get(Request::class)
+        );
+        $this->handle_response($response);
+    }
+
+    /**
+     * Handles the given response by processing and outputting it.
+     *
+     * If the provided response is a string, it will be directly echoed.
+     *
+     * @param mixed $response The response data to be handled. Typically expected to be a string.
+     *
+     * @return void
+     */
+    protected function handle_response($response) {
+        if (is_string($response)) {
+            echo $response;
+        }
+
+        if (wp_doing_ajax()) {
+            if (isset($response['error'])) {
+                wp_send_json_error($response);
+            } else {
+                wp_send_json_success($response);
+            }
+        }
+
     }
 }

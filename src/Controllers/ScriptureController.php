@@ -2,11 +2,10 @@
 
 namespace CodeZone\Bible\Controllers;
 
-use CodeZone\Bible\Illuminate\Http\Request;
-use CodeZone\Bible\Illuminate\Http\Response;
-use CodeZone\Bible\Services\BibleBrains\Language;
 use CodeZone\Bible\Services\BibleBrains\Scripture;
-use function CodeZone\Bible\validate;
+use CodeZone\Bible\Services\RequestInterface as Request;
+use function CodeZone\Bible\container;
+use Exception;
 
 /**
  * Index method for ScriptureController
@@ -23,32 +22,32 @@ class ScriptureController
 {
 
     /**
-     * Handles the index request.
+     * Get scripture by reference.
      *
-     * @param Request $request The HTTP request object.
-     * @param Response $response The HTTP response object.
-     * @param Scripture $scripture The Scripture service object.
-     *
-     * @return Response The HTTP response.
+     * @param Request $request The request object
+     * @return array Scripture data or error response
      */
-    public function index( Request $request, Response $response, Scripture $scripture, Language $language )
+    public function index(Request $request): array
     {
         try {
-            $errors = validate($request->all(), [
-                'reference' => 'required|string'
-            ]);
-
-            if ( $errors ) {
-                return $response->setStatusCode( 400 )->setContent( $errors );
+            if (!$request->has('reference') || !$request->is_string('reference')) {
+                return [
+                    'status' => 400,
+                    'errors' => [
+                        'reference' => __('Reference must be a valid string', 'bible-plugin')
+                    ]
+                ];
             }
 
-            $result = $scripture->by_reference( $request->get( 'reference' ) );
+            $scripture = container()->get(Scripture::class);
+            return $scripture->by_reference($request->get('reference'));
 
-            return $response->setContent( $result );
-        } catch ( \Exception $e ) {
-            return $response->setStatusCode( 500 )->setContent([
+        } catch (Exception $e) {
+            return [
+                'status' => 500,
                 'error' => $e->getMessage()
-            ]);
+            ];
         }
     }
+
 }

@@ -14,10 +14,9 @@ use CodeZone\Bible\GuzzleHttp\HandlerStack;
 class BibleBrainsProvider extends AbstractServiceProvider implements BootableServiceProviderInterface
 {
     /**
-     * Registers the middleware for the plugin.
-     *
-     * This method adds a filter to register middleware for the plugin.
-     * The middleware is added to the stack in the order it is defined above.
+     * Registers HTTP clients and their corresponding Guzzle middleware into the container.
+     * This method configures and adds clients for 'http.bibleBrains' and 'http.biblePluginSite'
+     * with appropriate handler stacks and verification settings.
      *
      * @return void
      */
@@ -43,6 +42,12 @@ class BibleBrainsProvider extends AbstractServiceProvider implements BootableSer
         });
     }
 
+    /**
+     * Check if the service provider provides a specific service.
+
+     * @param string $id The identifier of the service to check for.
+     * @return bool Returns true if the service ID is provided, otherwise false.
+     */
     public function provides(string $id): bool
     {
         return in_array($id, [
@@ -51,6 +56,10 @@ class BibleBrainsProvider extends AbstractServiceProvider implements BootableSer
         ]);
     }
 
+    /**
+     * Boots or initializes the necessary components or services for the application.
+     * @return void This method does not return a value.
+     */
     public function boot(): void
     {
         // TODO: Implement boot() method.

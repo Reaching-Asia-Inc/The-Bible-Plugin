@@ -11,6 +11,10 @@
  * @see https://github.com/thecodezone/wp-router
  */
 
+use CodeZone\Bible\Controllers\Admin\BibleBrainsFormController;
+use CodeZone\Bible\Controllers\Admin\CustomizationFomController;
+use CodeZone\Bible\Controllers\Admin\SupportController;
+
 return [
     'general'        => [BibleBrainsFormController::class, 'show'],
     'support'        => [SupportController::class, 'show'],

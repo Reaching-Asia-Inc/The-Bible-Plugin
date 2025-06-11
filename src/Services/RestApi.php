@@ -4,6 +4,7 @@ namespace CodeZone\Bible\Services;
 
 use function CodeZone\Bible\routes_path;
 use function CodeZone\Bible\container;
+use WP_REST_Request;
 
 class RestApi {
     public function __construct() {
@@ -24,7 +25,14 @@ class RestApi {
                 $route['route'],
                 [
                     'methods'             => $route['method'],
-                    'callback'            => [ container()->get($route['callback'][0]), $route['callback'][1] ],
+                    'callback'            => function(\WP_REST_Request $request) use ($route) {
+                        $controller = container()->get($route['callback'][0]);
+                        $method = $route['callback'][1];
+
+                        return rest_ensure_response(
+                            $controller->$method(new RestRequest($request))
+                        );
+                    },
                     'permission_callback' => $route['permission_callback'],
                 ]
             );

@@ -15,10 +15,7 @@ use CodeZone\Bible\League\Container\ServiceProvider\BootableServiceProviderInter
 class RestApiProvider extends AbstractServiceProvider implements BootableServiceProviderInterface
 {
     /**
-     * Boot the provider and register the REST API service.
-     *
-     * This is called during the container boot process to eagerly load
-     * and initialize the REST API.
+     * Boots the application services by registering and retrieving a shared instance of the RestApi class.
      *
      * @return void
      */

@@ -14,16 +14,11 @@ use function CodeZone\Bible\views_path;
  * @see https://platesphp.com/
  */
 class ViewProvider extends AbstractServiceProvider {
-
-    public function views_path() {
-        return views_path();
-    }
-
     /**
-     * Provide the services that this provider is responsible for.
+     * Checks if the given ID is provided by the provider.
      *
-     * @param string $id The ID to zcheck.
-     * @return bool Returns true if the given ID is provided, false otherwise.
+     * @param string $id The identifier to check.
+     * @return bool Returns true if the ID is provided, false otherwise.
      */
     public function provides( string $id ): bool
     {
@@ -33,13 +28,13 @@ class ViewProvider extends AbstractServiceProvider {
     }
 
     /**
-     * Register the view engine singleton and any extensions
+     * Registers the Engine class with the container as a shared instance.
      *
      * @return void
      */
     public function register(): void {
         $this->getContainer()->addShared( Engine::class, function () {
-            return new Engine( $this->views_path() );
+            return new Engine( views_path() );
         } );
         $this->getContainer()->get( Engine::class );
     }

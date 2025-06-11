@@ -10,7 +10,6 @@ use CodeZone\Bible\CodeZone\WPSupport\Rewrites\RewritesInterface;
 use CodeZone\Bible\CodeZone\WPSupport\Router\ResponseFactory;
 use CodeZone\Bible\League\Container\Container;
 use CodeZone\Bible\League\Plates\Engine;
-use CodeZone\Bible\Psr\Http\Message\RequestInterface;
 use CodeZone\Bible\Psr\Http\Message\ResponseInterface;
 use CodeZone\Bible\Services\Template;
 use Exception;
@@ -58,7 +57,15 @@ function container(): Container {
 	return $service;
 }
 
-function set_config( $key, $value ) {
+/**
+ * Sets a configuration value for a specified key.
+ *
+ * @param string $key The configuration key to be set.
+ * @param mixed $value The value to be associated with the specified configuration key.
+ *
+ * @return mixed The result of the configuration set operation.
+ */
+function set_config($key, $value ) {
 	$service = container()->get( ConfigInterface::class );
 
 	return $service->set( $key, $value );
@@ -217,35 +224,30 @@ function views_path( string $path = '' ): string {
  * @return ResponseInterface The rendered view if a view name is provided, otherwise the view engine object.
  * @see https://platesphp.com/v3/
  */
-function view( string $view = "", array $args = [] ) {
-	$engine = container()->get( Engine::class );
-	if ( ! $view ) {
-		return $engine;
-	}
+function view(string $view = "", array $args = []): mixed {
+    $engine = container()->get(Engine::class);
 
-	return response(
-		$engine->render( $view, $args )
-	);
-}
+    // Return engine if no view specified
+    if (!$view) {
+        return $engine;
+    }
 
-/**
- * Renders a template using the Template service and returns a response
- *
- * @param string $template Optional. The template to render. If not specified, the Template service instance is returned.
- * @param array $args Optional. An array of arguments to be passed to the template.
- *
- * @return mixed If $template is not specified, an instance of the Template service is returned.
- *               If $template is specified, the rendered template is returned.
- */
-function template( string $template = "", array $args = [] ) {
-	$service = container()->get( Template::class );
-	if ( ! $template ) {
-		return $service;
-	}
+    $data = [
+        'view' => $view,
+        'args' => $args,
+        'html' => ''
+    ];
 
-	$service->register();
+    // Allow pre-render modifications
+    $data = apply_filters(namespace_string('before_render_view'), $data);
 
-	return view( $template, $args );
+    // Only render if html hasn't been set by a filter
+    if (empty($data['html'])) {
+        $data['html'] = $engine->render($data['view'], $data['args']);
+    }
+
+    // Allow post-render modifications
+    return apply_filters(namespace_string('after_render_view'), $data['html'], $data['view'], $data['args']);
 }
 
 /**
@@ -374,32 +376,6 @@ function rgb( $color ): string {
 
 	return "rgb($r, $g, $b)";
 }
-
-/**
- * Extracts data from a request and returns it as an array.
- *
- * Works with JSON requests, GET requests
- *
- * @param RequestInterface $request The request object from which to
- */
-function extract_request_input( RequestInterface $request ): array {
-    $content_type = $request->getHeaderLine( 'Content-Type' );
-
-    if ( strpos( $content_type, 'application/json' ) !== false ) {
-        // Handle JSON content type.
-        $body = $request->getBody()->getContents();
-
-        return json_decode( $body, true );
-    }
-
-    switch ( strtoupper( $request->getMethod() ) ) {
-        case 'GET':
-            return $request->getQueryParams();
-        default:
-            return $request->getParsedBody();
-    }
-}
-
 
 /**
  * Cast an array of strings to boolean values

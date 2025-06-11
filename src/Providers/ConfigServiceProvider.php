@@ -11,10 +11,10 @@ use function CodeZone\Bible\plugin_path;
 
 class ConfigServiceProvider extends AbstractServiceProvider {
     /**
-     * Provide the services that this provider is responsible for.
+     * Determines whether the given identifier is provided by this service.
      *
-     * @param string $id The ID to check.
-     * @return bool Returns true if the given ID is provided, false otherwise.
+     * @param string $id The identifier to check.
+     * @return bool Returns true if the identifier is provided, otherwise false.
      */
     public function provides( string $id ): bool
     {
@@ -24,9 +24,9 @@ class ConfigServiceProvider extends AbstractServiceProvider {
     }
 
     /**
-     * Register the configuration service.
-     * @see https://config.thephpleague.com/
-     * @throws NotFoundException|ContainerExceptionInterface
+     * Registers the necessary dependencies and loads configuration files.
+     *
+     * @return void
      */
     public function register(): void
     {

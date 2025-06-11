@@ -14,6 +14,9 @@ use CodeZone\Bible\ShortCodes\Scripture;
  */
 class ShortcodeProvider extends AbstractServiceProvider implements BootableServiceProviderInterface
 {
+    /**
+     * Array containing a list of shortcode classes.
+     */
     protected $shortcodes = [
         Bible::class,
         Scripture::class
@@ -39,6 +42,12 @@ class ShortcodeProvider extends AbstractServiceProvider implements BootableServi
     }
 
 
+    /**
+     * Checks if the given identifier is provided by the current list of shortcodes.
+     *
+     * @param string $id The identifier to check.
+     * @return bool Returns true if the identifier is provided, otherwise false.
+     */
     public function provides(string $id): bool
     {
         return in_array($id, $this->shortcodes);

@@ -11,10 +11,10 @@ use CodeZone\Bible\Psr\Container\ContainerExceptionInterface;
 class PluginProvider extends AbstractServiceProvider {
 
     /**
-     * Provide the services that this provider is responsible for.
+     * Determines if the given identifier is provided.
      *
-     * @param string $id The ID to check.
-     * @return bool Returns true if the given ID is provided, false otherwise.
+     * @param string $id The identifier to check against the list of supported items.
+     * @return bool Returns true if the identifier is supported, otherwise false.
      */
     public function provides( string $id ): bool
     {
@@ -25,10 +25,9 @@ class PluginProvider extends AbstractServiceProvider {
 
 
     /**
-     * Register the plugin and its service providers.
+     * Registers the plugin class as a singleton.
      *
      * @return void
-     * @throws NotFoundException|ContainerExceptionInterface
      */
     public function register(): void {
         $this->getContainer()->addShared( Plugin::class, function () {

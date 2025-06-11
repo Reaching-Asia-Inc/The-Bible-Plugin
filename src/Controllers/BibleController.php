@@ -2,9 +2,9 @@
 
 namespace CodeZone\Bible\Controllers;
 
-use CodeZone\Bible\Illuminate\Http\Request;
-use CodeZone\Bible\Illuminate\Http\Response;
+use CodeZone\Bible\Services\RequestInterface as Request;
 use CodeZone\Bible\Services\BibleBrains\Api\Bibles;
+use function CodeZone\Bible\container;
 
 /**
  * Class BibleController
@@ -14,79 +14,79 @@ use CodeZone\Bible\Services\BibleBrains\Api\Bibles;
  * @package YourNamespace\YourPackageName
  */
 class BibleController {
-	/**
-	 * Retrieve a bible.
-	 *
-	 * @param Request $request The request object.
-	 * @param Response $response The response object.
-     * @param string $id The ID of the bible to retrieve.
-	 * @param Bibles $bibles The Bibles instance.
-	 */
-	public function show( Request $request, Response $response, $id, Bibles $bibles ) {
-		return $response->setContent( $bibles->find( $id ) );
-	}
+    /**
+     * Retrieve a bible.
+     *
+     * @param Request $request The request object.
+     * @return array Bible data
+     */
+    public function show(Request $request): array {
+        $bibles = container()->get(Bibles::class);
+        return $bibles->find($request->get('id'));
+    }
 
-	/**
-	 * Retrieve select options for the search results.
-	 *
-	 * @param Request $request The request object.
-	 * @param Response $response The response object.
-	 * @param Bibles $bibles The Bibles instance.
-	 */
-	public function options( Request $request, Response $response, Bibles $bibles ) {
-		$index_response = $this->index( $request, $response, $bibles );
-		if ( ! $index_response->isOk() ) {
-			return $index_response;
-		}
-		$result = $index_response->getOriginalContent();
 
-		$result['data'] = $bibles->as_options( $result['data'] ?? [] );
+    /**
+     * Get bibles data as options.
+     *
+     * @param Request $request The request object.
+     * @return array Data transformed into options format
+     */
+    public function options(Request $request): array {
+        $bibles = container()->get(Bibles::class);
+        $result = $bibles->all(['query' => $request->get('query')]);
 
-		return $response->setContent( $result );
-	}
+        return [
+            'data' => $bibles->as_options($result['data'] ?? [])
+        ];
+    }
 
-    protected function filter( $bibles, $search ) {
-        if ( empty( $search ) ) {
+
+    /**
+     * Filters the given array of bibles based on a search term.
+     *
+     * @param array $bibles An array containing bible data, including a 'data' key holding the list to filter.
+     * @param string|null $search A string representing the search term to filter the bible names.
+     * @return array The filtered array of bibles containing only items where the name matches the search term.
+     */
+    protected function filter(array $bibles, ?string $search): array
+    {
+        if (empty($search)) {
             return $bibles;
         }
 
-        $bibles['data'] = array_filter( $bibles['data'], function ( $bible ) use ( $search ) {
-            return stripos( $bible['name'], $search ) !== false;
-        } );
+        $bibles['data'] = array_filter(
+            $bibles['data'] ?? [],
+            fn($bible) => stripos($bible['name'] ?? '', $search) !== false
+        );
 
         return $bibles;
     }
 
-	/**
-	 * Index method
-	 *
-	 * This method is responsible for handling the index route. It retrieves the search, page, and limit parameters from the request object.
-	 * If the search parameter is provided, it calls the search method on the Bibles object with the specified page and limit parameters.
-	 * Otherwise, it calls the all method on the Bibles object with the specified page and limit parameters.
-	 * The results are returned as an array.
-	 *
-	 * @param Request $request The request object containing the search, page, and limit parameters
-	 * @param Response $response The response object for returning the results
-	 * @param Bibles $bibles The Bibles object for performing bible-related operations
-	 *
-	 * @return array The array containing the search results or all bibles
-	 */
-	public function index( Request $request, Response $response, Bibles $bibles ): Response {
-		$language_code = $request->get( 'language_code', '' );
-		$page          = $request->get( 'paged', 1 );
-		$limit         = $request->get( 'limit', 50 );
 
-		if ( $language_code ) {
-			$language_codes = explode( ',', $language_code );
+    /**
+     * Handle the index route for bibles.
+     *
+     * @param array $request The request data
+     * @return array Response data containing filtered bible data
+     */
+    public function index(array $request): array
+    {
+        $bibles = container()->get(Bibles::class);
+        $params = [
+            'page' => $request['paged'] ?? 1,
+            'limit' => $request['limit'] ?? 50
+        ];
 
-			return $response->setContent( $this->filter( $bibles->for_languages( $language_codes, [
-				'limit' => 150
-			] ), $request->get( 'search', '' ) ) );
-		}
+        $language_code = $request['language_code'] ?? '';
+        if ($language_code) {
+            $language_codes = explode(',', $language_code);
+            $result = $bibles->for_languages($language_codes, ['limit' => 150]);
+        } else {
+            $result = $bibles->all($params);
+        }
 
-		return $response->setContent( $this->filter( $bibles->all( [
-			'page'  => $page,
-			'limit' => $limit
-		] ), $request->get( 'search', '' ) ) );
-	}
+        return $this->filter($result, $request['search'] ?? '');
+    }
+
 }

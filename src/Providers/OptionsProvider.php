@@ -3,7 +3,6 @@
 namespace CodeZone\Bible\Providers;
 
 use CodeZone\Bible\League\Container\ServiceProvider\AbstractServiceProvider;
-use CodeZone\Bible\League\Container\ServiceProvider\BootableServiceProviderInterface;
 use CodeZone\Bible\CodeZone\WPSupport\Options\Options;
 use CodeZone\Bible\CodeZone\WPSupport\Options\OptionsInterface;
 use function CodeZone\Bible\config;
@@ -16,12 +15,12 @@ use function CodeZone\Bible\config;
  *
  * @package YourPackage
  */
-class OptionsProvider extends AbstractServiceProvider implements BootableServiceProviderInterface {
+class OptionsProvider extends AbstractServiceProvider {
     /**
-     * Provide the services that this provider is responsible for.
+     * Determines if the given identifier is provided.
      *
-     * @param string $id The ID to check.
-     * @return bool Returns true if the given ID is provided, false otherwise.
+     * @param string $id The identifier to check.
+     * @return bool Returns true if the identifier is provided, false otherwise.
      */
     public function provides( string $id ): bool
     {
@@ -32,7 +31,7 @@ class OptionsProvider extends AbstractServiceProvider implements BootableService
 
 
     /**
-     * Registers the Options class into the container.
+     * Registers the options service..
      *
      * @return void
      */
@@ -44,9 +43,5 @@ class OptionsProvider extends AbstractServiceProvider implements BootableService
                 config()->get( 'options.prefix' )
             );
         } );
-    }
-
-    public function boot(): void
-    {
     }
 }

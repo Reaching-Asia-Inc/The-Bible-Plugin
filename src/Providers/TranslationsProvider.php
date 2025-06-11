@@ -10,11 +10,17 @@ use CodeZone\Bible\Services\Translations;
 use function CodeZone\Bible\languages_path;
 
 class TranslationsProvider extends AbstractServiceProvider implements BootableServiceProviderInterface {
+    /**
+     * Checks if the given service identifier is provided.
+     *
+     * @param string $id The service identifier to check.
+     * @return bool Returns true if the service identifier is provided, false otherwise.
+     */
     public function provides(string $id): bool
     {
         return in_array($id, [
             GetText::class,
-            Translations::class
+            Translations::class,
         ]);
     }
 
@@ -25,11 +31,13 @@ class TranslationsProvider extends AbstractServiceProvider implements BootableSe
 
 	}
 
-	/**
-	 * Do any setup after services have been registered and the theme is ready
-	 */
+    /**
+     * Bootstrap the plugin translations and GetText service.
+     *
+     * @return void
+     */
 	public function boot(): void {
-		load_plugin_textdomain( 'bible-plugin', false, 'bible-plugin/languages' );
+        load_plugin_textdomain( 'bible-plugin', false, 'bible-plugin/languages' );
 
         $this->container->addShared( GetText::class, function ( $app ) {
             return $app->make( PoLoader::class )->loadFile( languages_path( 'bible-plugin-es_MX.po' ) );
