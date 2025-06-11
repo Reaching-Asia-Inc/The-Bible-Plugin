@@ -11,7 +11,6 @@ use CodeZone\Bible\CodeZone\WPSupport\Router\ResponseFactory;
 use CodeZone\Bible\League\Container\Container;
 use CodeZone\Bible\League\Plates\Engine;
 use CodeZone\Bible\Psr\Http\Message\ResponseInterface;
-use CodeZone\Bible\Services\Template;
 use Exception;
 
 /**

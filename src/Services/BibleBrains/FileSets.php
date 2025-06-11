@@ -3,8 +3,6 @@
 namespace CodeZone\Bible\Services\BibleBrains;
 
 use CodeZone\Bible\Exceptions\BibleBrainsException;
-use CodeZone\Bible\Illuminate\Support\Arr;
-use CodeZone\Bible\Illuminate\Support\Str;
 
 class FileSets {
 	/**
@@ -16,8 +14,8 @@ class FileSets {
 	 * @return string The group name. Returns "dpb-vid" if the type contains the word "video", otherwise returns "dpb-prod".
 	 */
 	public function group_from_type( array $bible, string $type ): string {
-		return Str::contains( $type, 'video' ) ? "dbp-vid" : "dbp-prod";
-	}
+        return str_contains($type, 'video') ? "dbp-vid" : "dbp-prod";
+    }
 
 	/**
 	 * Plucks the first matching fileset based on the given conditions.
@@ -50,9 +48,12 @@ class FileSets {
 		$fileset_group = $this->group_from_type( $bible, $fileset_type );
 		$filesets      = $bible['filesets'][ $fileset_group ] ?? [];
 
-		return Arr::first( $filesets, function ( $fileset ) use ( $fileset_type, $book ) {
-			return $fileset['type'] === $fileset_type
-			       && ( $fileset["size"] === "C" || Str::contains( $fileset["size"], $book["testament"] ) );
-		}, null );
+        foreach ($filesets as $fileset) {
+            if ($fileset['type'] === $fileset_type
+                && ($fileset["size"] === "C" || str_contains($fileset["size"], $book["testament"]))) {
+                return $fileset;
+            }
+        }
+        return null;
 	}
 }

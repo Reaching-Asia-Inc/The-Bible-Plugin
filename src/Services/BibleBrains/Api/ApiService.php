@@ -7,7 +7,6 @@ use CodeZone\Bible\Services\Cache;
 use CodeZone\Bible\GuzzleHttp\Client;
 use CodeZone\Bible\GuzzleHttp\Exception\GuzzleException;
 use function CodeZone\Bible\container;
-use function CodeZone\Bible\collect;
 
 /**
  * Abstract base class for making HTTP requests to the BibleBrains API.

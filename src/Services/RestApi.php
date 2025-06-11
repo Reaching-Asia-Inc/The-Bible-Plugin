@@ -5,7 +5,6 @@ namespace CodeZone\Bible\Services;
 use CodeZone\Bible\Exceptions\BibleBrainsException;
 use function CodeZone\Bible\routes_path;
 use function CodeZone\Bible\container;
-use WP_REST_Request;
 
 /**
  * Class RestApi

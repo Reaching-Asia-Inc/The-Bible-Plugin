@@ -2,8 +2,6 @@
 
 namespace CodeZone\Bible\Services\BibleBrains;
 
-use CodeZone\Bible\Illuminate\Support\Arr;
-use CodeZone\Bible\Illuminate\Support\Str;
 use function CodeZone\Bible\container;
 
 /**
@@ -104,12 +102,12 @@ class Reference {
 		$reference = self::normalize( $reference );
 
 		//Extract the verse from the string reference
-		if ( Str::contains( $reference, ":" ) ) {
-			[ $reference_without_verses, $verses ] = array_pad( explode( ':', $reference ?? "", 2 ), 2, null );
-		} else {
-			$reference_without_verses = $reference;
-			$verses                   = null;
-		}
+        if (str_contains($reference, ":")) {
+            [$reference_without_verses, $verses] = array_pad(explode(':', $reference ?? "", 2), 2, null);
+        } else {
+            $reference_without_verses = $reference;
+            $verses = null;
+        }
 
 		$reference_without_verses = explode( ' ', $reference_without_verses ?? "" );
 
@@ -144,19 +142,20 @@ class Reference {
 		return self::normalize_array( $parsed );
 	}
 
-	/**
-	 * Normalize the given string reference by replacing double spaces with single space,
-	 * replacing '–' with '-', removing leading and trailing white spaces, and replacing '—' with '-'.
-	 *
-	 * @param string $reference The string reference to be normalized.
-	 *
-	 * @return string The normalized string reference.
-	 */
-	private static function normalize( string $reference ) {
-		$reference = Str::replace( '  ', ' ', $reference );
-		$reference = Str::replace( '–', '-', $reference );
-		$reference = trim( $reference );
+    /**
+     * Normalize the given string reference by replacing double spaces with single space,
+     * replacing '–' with '-', removing leading and trailing white spaces, and replacing '—' with '-'.
+     *
+     * @param string $reference The string reference to be normalized.
+     *
+     * @return string The normalized string reference.
+     */
+    private static function normalize(string $reference)
+    {
+        $reference = str_replace('  ', ' ', $reference);
+        $reference = str_replace('–', '-', $reference);
+        $reference = trim($reference);
 
-		return Str::replace( '—', '-', $reference );
-	}
+        return str_replace('—', '-', $reference);
+    }
 }

@@ -6,29 +6,26 @@
 
 use CodeZone\Bible\Providers\AdminProvider;
 use CodeZone\Bible\Providers\BibleBrainsProvider;
-use CodeZone\Bible\Providers\ConfigServiceProvider;
-use CodeZone\Bible\Providers\MagicLinkServiceProvider;
-use CodeZone\Bible\Providers\OptionsServiceProvider;
-use CodeZone\Bible\Providers\RouteServiceProvider;
+use CodeZone\Bible\Providers\ConfigProvider;
+use CodeZone\Bible\Providers\OptionsProvider;
+use CodeZone\Bible\Providers\RestApiProvider;
 use CodeZone\Bible\Providers\ShortcodeProvider;
-use CodeZone\Bible\Providers\TemplateServiceProvider;
 use CodeZone\Bible\Providers\TranslationsProvider;
 use CodeZone\Bible\Providers\ViewProvider;
-use CodeZone\Bible\Providers\AssetServiceProvider;
+use CodeZone\Bible\Providers\AssetProvider;
 
 
 $config->merge( [
     'services' => [
         'providers' => [
             TranslationsProvider::class,
+            OptionsProvider::class,
+            ConfigProvider::class,
             BibleBrainsProvider::class,
+            AssetProvider::class,
             ShortcodeProvider::class,
-            ConfigServiceProvider::class,
-            OptionsServiceProvider::class,
-            AssetServiceProvider::class,
             ViewProvider::class,
-            RouteServiceProvider::class,
-            MagicLinkServiceProvider::class,
+            RestApiProvider::class,
             AdminProvider::class
         ],
         'tgmpa' => [

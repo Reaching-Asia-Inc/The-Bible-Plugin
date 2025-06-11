@@ -2,7 +2,6 @@
 
 namespace CodeZone\Bible\Services\BibleBrains;
 
-use CodeZone\Bible\Illuminate\Support\Arr;
 use CodeZone\Bible\Services\BibleBrains\Api\Languages;
 use CodeZone\Bible\Services\Options;
 use CodeZone\Bible\Services\Translations;
@@ -160,9 +159,12 @@ class Language {
 			return false;
 		}
 
-		return (bool) Arr::first( $languages, function ( $config ) use ( $code ) {
-			return $config['value'] === $code;
-		} );
+        foreach ($languages as $config) {
+            if ($config['value'] === $code) {
+                return true;
+            }
+        }
+        return false;
 	}
 
 	/**
@@ -175,12 +177,16 @@ class Language {
 		if ( ! is_array( $language ) ) {
 			return $this->options->get_default( 'languages' );
 		}
-		$default_language = Arr::first( $language, function ( $config ) {
-			return $config['is_default'] ?? false;
-		} );
-		if ( ! $default_language ) {
-			$default_language = Arr::first( $language );
-		}
+        $default_language = null;
+        foreach ($language as $config) {
+            if (!empty($config['is_default'])) {
+                $default_language = $config;
+                break;
+            }
+        }
+        if (!$default_language) {
+            $default_language = reset($language);
+        }
 
 		return $default_language;
 	}
@@ -202,9 +208,12 @@ class Language {
 				return false;
 			}
 
-			return Arr::first( $languages, function ( $config ) use ( $code ) {
-				return $config['value'] === $code;
-			} );
+            foreach ($languages as $config) {
+                if ($config['value'] === $code) {
+                    return $config;
+                }
+            }
+			return null;
 		} catch ( \Exception $e ) {
 			return false;
 		}

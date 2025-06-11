@@ -15,11 +15,23 @@
  */
 
 use CodeZone\Bible\Dotenv\Dotenv;
-use CodeZone\Bible\Illuminate\Container\Container;
 use CodeZone\Bible\Plugin;
+use CodeZone\Bible\Providers\ConfigProvider;
+use CodeZone\Bible\CodeZone\WPSupport\Container\ContainerFactory;
+use CodeZone\Bible\Providers\PluginProvider;
 
 if ( ! defined( 'ABSPATH' ) ) {
     exit; // Exit if accessed directly
+}
+
+$boot_providers = [
+    ConfigProvider::class,
+    PluginProvider::class
+];
+
+if ( file_exists( plugin_dir_path( __FILE__ ) . '/.env' ) ) {
+    $dotenv = Dotenv::createImmutable( __DIR__ );
+    $dotenv->load();
 }
 
 require_once plugin_dir_path( __FILE__ ) . 'includes/class-tgm-plugin-activation.php';
@@ -27,17 +39,16 @@ require_once plugin_dir_path( __FILE__ ) . 'vendor-scoped/scoper-autoload.php';
 require_once plugin_dir_path( __FILE__ ) . 'vendor-scoped/autoload.php';
 require_once plugin_dir_path( __FILE__ ) . 'vendor/autoload.php';
 
-if ( file_exists( plugin_dir_path( __FILE__ ) . '/.env' ) ) {
-    $dotenv = Dotenv::createImmutable( __DIR__ );
-    $dotenv->load();
+$container = ContainerFactory::singleton();
+
+require_once plugin_dir_path( __FILE__ ) . 'src/helpers.php';
+
+// Add any services providers required to init the plugin
+
+foreach ( $boot_providers as $provider ) {
+    $container->addServiceProvider( $container->get( $provider ) );
 }
 
-$container = new Container();
-$container->singleton(Container::class, function ( $container ) {
-    return $container;
-});
-$container->singleton(Plugin::class, function ( $container ) {
-    return new Plugin( $container );
-});
-$plugin_instance = $container->make( Plugin::class );
-$plugin_instance->init();
+// Init the plugin
+$dt_plugin = $container->get( Plugin::class );
+$dt_plugin->init();

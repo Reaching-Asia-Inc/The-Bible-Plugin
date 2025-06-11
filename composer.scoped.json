@@ -5,7 +5,8 @@
     "guzzlehttp/guzzle": "^7.2",
     "kucrut/vite-for-wp": "^0.8.0",
     "gettext/gettext": "^5.7",
-    "psr/log": "^1.1"
+    "psr/log": "^1.1",
+    "vlucas/phpdotenv": "^5.4.1"
   },
   "config": {
     "autoloader-suffix": "bible_plugin_scoped",

@@ -3,7 +3,6 @@
 namespace CodeZone\Bible\Services\BibleBrains;
 
 use CodeZone\Bible\Exceptions\BibleBrainsException;
-use function CodeZone\Bible\collect;
 
 /**
  * MediaTypes class represents a collection of media types and their properties.
@@ -62,48 +61,59 @@ class MediaTypes {
 	 * @throws BibleBrainsException If the request to retrieve the media types from the filesets endpoint is unsuccessful
 	 *                             or returns an error.
 	 */
-	public function options(): array {
-		return collect( $this->all() )
-			->map( function ( $data, $value ) {
-				return [
-					'value'    => $value,
-					'itemText' => $data['label']
-				];
-			} )->all();
+    public function options(): array
+    {
+        $options = [];
+        foreach ($this->all() as $value => $data) {
+            $options[] = [
+                'value' => $value,
+                'itemText' => $data['label']
+            ];
+        }
+        return $options;
 	}
 
-	/**
-	 * Find the first occurrence of a given media type in the collection.
-	 *
-	 * @param string $media_type The media type to search for.
-	 *
-	 * @throws BibleBrainsException If the media type is not found in the collection.
-	 */
-	public function find( $media_type ): array {
-		$result = collect( $this->all() )
-			->filter( function ( $data, $value ) use ( $media_type ) {
-				return $value === $media_type;
-			} )
-			->first();
+    /**
+     * Find the first occurrence of a given media type in the collection.
+     *
+     * @param string $media_type The media type to search for.
+     *
+     * @throws BibleBrainsException If the media type is not found in the collection.
+     */
+    public function find($media_type): array {
+        $all = $this->all();
+        $result = array_filter(
+            $all,
+            function ($data, $value) use ($media_type) {
+                return $value === $media_type;
+            },
+            ARRAY_FILTER_USE_BOTH
+        );
 
-		if ( ! $result ) {
-			throw new BibleBrainsException( esc_html( "Invalid media type: {$media_type}." ) );
-		}
+        if (empty($result)) {
+            throw new BibleBrainsException(esc_html("Invalid media type: {$media_type}."));
+        }
 
-		return $result;
-	}
+        return reset($result);
+    }
 
-	/**
-	 * Check if a given media type exists in the collection.
-	 *
-	 * @param string $media_type The media type to check for existence.
-	 *
-	 * @return bool True if the media type exists, false otherwise.
-	 */
-	public function exists( string $media_type ): bool {
-		return collect( $this->all() )
-			->contains( function ( $data, $value ) use ( $media_type ) {
-				return $value === $media_type;
-			} );
-	}
+    /**
+     * Check if a given media type exists in the collection.
+     *
+     * @param string $media_type The media type to check for existence.
+     *
+     * @return bool True if the media type exists, false otherwise.
+     */
+    public function exists(string $media_type): bool {
+        $filtered = array_filter(
+            $this->all(),
+            function ($data, $value) use ($media_type) {
+                return $value === $media_type;
+            },
+            ARRAY_FILTER_USE_BOTH
+        );
+
+        return !empty($filtered);
+    }
+
 }

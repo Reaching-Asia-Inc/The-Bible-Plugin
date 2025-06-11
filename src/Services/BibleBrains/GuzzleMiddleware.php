@@ -5,8 +5,6 @@ namespace CodeZone\Bible\Services\BibleBrains;
 use CodeZone\Bible\GuzzleHttp\Psr7\Uri;
 use CodeZone\Bible\GuzzleHttp\Psr7\UriResolver;
 use CodeZone\Bible\Psr\Http\Message\RequestInterface;
-use CodeZone\Bible\Services\BibleBrains\Api\ApiKeys;
-use function CodeZone\Bible\get_plugin_option;
 
 /**
  * Class GuzzleMiddleware

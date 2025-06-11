@@ -5,7 +5,7 @@ namespace CodeZone\Bible\ShortCodes;
 use CodeZone\Bible\Services\Assets;
 use function CodeZone\Bible\view;
 use function CodeZone\Bible\cast_bool_values;
-use function CodeZone\Bible\request;
+use CodeZone\Bible\Services\Request;
 
 /**
  * Class Bible
@@ -27,8 +27,9 @@ class Bible {
 	 *
 	 * @return void
 	 */
-	public function __construct( Assets $assets ) {
+	public function __construct( Assets $assets, Request $request ) {
 		$this->assets = $assets;
+        $this->request = $request;
 
 		add_shortcode( 'tbp-bible', [ $this, 'render' ] );
 		add_action( 'wp_enqueue_scripts', [ $this, 'enqueue_scripts' ] );
@@ -65,9 +66,9 @@ class Bible {
 		$attributes = shortcode_atts( [
 			'reference' => 'John 1',
 		], cast_bool_values( $attributes ) );
-
-		if ( request()->has( 'reference' ) ) {
-			$attributes['reference'] = request()->get( 'reference' );
+        ;
+		if ( $this->request->has( 'reference' ) ) {
+			$attributes['reference'] = $this->request->get( 'reference' );
 		}
 
 

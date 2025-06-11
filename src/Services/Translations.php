@@ -5,13 +5,10 @@ namespace CodeZone\Bible\Services;
 use CodeZone\Bible\Gettext\Loader\PoLoader;
 use CodeZone\Bible\Gettext\Translation;
 use CodeZone\Bible\Gettext\Translations as GettextTranslations;
-use CodeZone\Bible\Illuminate\Support\Collection;
-use CodeZone\Bible\Illuminate\Support\Str;
 use WhiteCube\Lingua\Service;
 use function CodeZone\Bible\container;
 use function CodeZone\Bible\get_plugin_option;
 use function CodeZone\Bible\languages_path;
-use function CodeZone\Bible\collect;
 
 /**
  * Class Translations
@@ -73,26 +70,29 @@ class Translations
      *
      * @return Collection A collection of languages.
      */
-    public function languages(): Collection
+    public function languages(): array
     {
-        return $this->files()->map(function ( $file ) {
-            return Str::lower( $file->getLanguage() );
-        })->push( 'en-us' )
-                    ->push( 'en' );
+        $languages = array_map(function ($file) {
+            return strtolower($file->getLanguage());
+        }, $this->files());
+
+        array_push($languages, 'en-us', 'en');
+
+        return $languages;
     }
 
     /**
-     * Retrieves the browser languages from the `Accept-Language` header in the HTTP request.
+     * Retrieves the list of browser languages sorted by priority as specified in the HTTP_ACCEPT_LANGUAGE header.
      *
-     * @return Collection List of browser languages in descending order of priority.
+     * @return array An array of language codes sorted by priority, with the highest priority first.
      */
-    public function browser_languages(): Collection
+    public function browser_languages(): array
     {
         // phpcs:ignore
 		$language_string = wp_unslash( $_SERVER['HTTP_ACCEPT_LANGUAGE'] ?? '' );
 
         if ( empty( $language_string ) ) {
-            return collect();
+            return [];
         }
 
         // phpcs:ignore
@@ -108,7 +108,7 @@ class Translations
         // Sort the languages by priority
         arsort( $languages );
 
-        return collect( array_keys( $languages ) );
+        return array_keys( $languages );
     }
 
     /**
@@ -122,19 +122,18 @@ class Translations
     {
         $browser_languages = $this->browser_languages();
 
-        if ( ! $browser_languages || ! count( $browser_languages ) ) {
+        if (!$browser_languages || !count($browser_languages)) {
             return get_locale();
         }
 
         $supported_languages = $this->languages();
 
         // Convert the browser language using Lingua Service
-
-        foreach ( $browser_languages as $browser_lang ) {
-            $converted_lang = Service::createFromW3C( $browser_lang )->toISO_639_1();
+        foreach ($browser_languages as $browser_lang) {
+            $converted_lang = Service::createFromW3C($browser_lang)->toISO_639_1();
 
             // If browser language is supported in plugin, use that locale
-            if ( $supported_languages->contains( Str::lower( $converted_lang ) ) || $supported_languages->contains( Str::lower( $browser_lang ) ) ) {
+            if (in_array(strtolower($converted_lang), $supported_languages) || in_array(strtolower($browser_lang), $supported_languages)) {
                 return $converted_lang;
             }
         }
@@ -196,37 +195,46 @@ class Translations
      */
     private function apply_custom_translation( $text ): string
     {
-        return $this->custom_translations()->get( $text, '' );
+        return $this->custom_translations()[$text] ?? '';
     }
 
     /**
-     * Retrieves the custom translations stored in the 'bible_plugin_translations' option.
+     * Retrieves custom translations from the plugin options.
      *
-     * This method returns a Collection object that contains all the custom translations
-     * stored in the 'bible_plugin_translations' option. If the option is not set, an empty
-     * array is returned.
-     *
-     * @return Collection A Collection object containing the custom translations.
+     * @return array The array of custom translations or a default empty array if none are set.
      */
-    public function custom_translations(): Collection
+    public function custom_translations(): array
     {
-        return collect( get_plugin_option( 'translations', [] ) );
+        return get_plugin_option( 'translations', [] );
     }
 
     /**
      * Retrieves the strings that are available for translation
      * except the ones that are blacklisted.
      *
-     * @return Collection A collection of filtered strings.
+     * @return array A filtered array of strings.
      */
-    public function strings(): Collection
+    public function strings(): array
     {
-        return collect( $this->get_text()->getTranslations() )->filter(function ( Translation $translation ) {
-            return in_array( $translation->getContext(), $this->custom_translation_contexts );
-        })->map(function ( Translation $translation ) {
+        $translations = $this->get_text()->getTranslations();
+
+        // Filter by context
+        $filtered = array_filter($translations, function(Translation $translation) {
+            return in_array($translation->getContext(), $this->custom_translation_contexts);
+        });
+
+        // Map to original strings
+        $originals = array_map(function(Translation $translation) {
             return $translation->getOriginal();
-        })->unique()->values()->sort();
+        }, $filtered);
+
+        // Remove duplicates and sort
+        $unique = array_unique($originals);
+        sort($unique);
+
+        return array_values($unique);
     }
+
 
     /**
      * Retrieves an array of options.
@@ -235,12 +243,12 @@ class Translations
      */
     public function options(): array
     {
-        return $this->strings()->map(function ( $string ) {
+        return array_map(function ($string) {
             return [
-                'value'    => $string,
+                'value' => $string,
                 'itemText' => $string
             ];
-        })->toArray();
+        }, $this->strings());
     }
 
     /**

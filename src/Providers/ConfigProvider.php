@@ -9,7 +9,7 @@ use CodeZone\Bible\League\Container\ServiceProvider\AbstractServiceProvider;
 use CodeZone\Bible\Psr\Container\ContainerExceptionInterface;
 use function CodeZone\Bible\plugin_path;
 
-class ConfigServiceProvider extends AbstractServiceProvider {
+class ConfigProvider extends AbstractServiceProvider {
     /**
      * Determines whether the given identifier is provided by this service.
      *

@@ -3,8 +3,6 @@
 namespace CodeZone\Bible\Services\BibleBrains;
 
 use CodeZone\Bible\Exceptions\BibleBrainsException;
-use CodeZone\Bible\Illuminate\Support\Arr;
-use CodeZone\Bible\Illuminate\Support\Str;
 use CodeZone\Bible\Services\BibleBrains\Api\Bibles;
 
 /**
@@ -140,13 +138,17 @@ class Books {
      *
      * @return array Returns an array representing the plucked book.
      */
-	public function pluck( string $book, array $books ): array {
-		return Arr::first( $books, function ( $b ) use ( $book ) {
-			return $b['book_id'] === Str::upper( $book )
-			       || $b['name'] === Str::ucfirst( $book )
-			       || $b['name_short'] === Str::ucfirst( $book );
-		}, [] );
-	}
+    public function pluck(string $book, array $books): array
+    {
+        foreach ($books as $b) {
+            if ($b['book_id'] === strtoupper($book)
+                || $b['name'] === ucfirst($book)
+                || $b['name_short'] === ucfirst($book)) {
+                return $b;
+            }
+        }
+        return [];
+    }
 
 	/**
 	 * Normalize a book within the given Bible.
@@ -164,6 +166,6 @@ class Books {
 			return $book;
 		}
 
-		return Arr::get( $data, 'book_id', $book );
-	}
+        return $data['book_id'] ?? $book;
+    }
 }
