@@ -80,8 +80,6 @@ class Scripture {
 		Language $language,
 		Options $options
 	) {
-        //TODO: Remove this. We should probably move away from using Laravel request classes if we are going to support PHP 7.4 and PHP 8.3.
-        error_reporting( error_reporting() ^ E_DEPRECATED );
 		$this->bibles      = $bibles;
 		$this->books       = $books;
 		$this->file_sets   = $file_sets;
@@ -113,14 +111,20 @@ class Scripture {
 		return $this->query( $parameters );
 	}
 
-	/**
-	 * Normalize the search query parameters by merging them with default values.
-	 *
-	 * @param array $parameters An associative array of search parameters.
-	 *                          - language: The language to search in. Defaults to null.
-	 *                          - fileset: The fileset to search in. Defaults to null.
-	 *                          - bible: The specific Bible to search in. Defaults to null.
-	 *                          - book: The specific book of the Bible to search in. Defaults to*/
+    /**
+     * Normalizes the query parameters by merging defaults with provided input.
+     *
+     * @param array $parameters An associative array of query parameters to normalize.
+     *                          - language: The language to apply. Defaults to null.
+     *                          - bible: The specific Bible to use. Defaults to null.
+     *                          - book: The specific book of the Bible. Defaults to null.
+     *                          - chapter: The chapter within the book. Defaults to null.
+     *                          - verse_start: The starting verse number. Defaults to null.
+     *                          - verse_end: The ending verse number. Defaults to null.
+     *
+     * @return array The normalized array of parameters after merging with defaults
+     *               and parsing reference details.
+     */
 	private function normalize_query( $parameters ): array {
 		$parameters = array_merge( [
 			'language'    => null,
@@ -135,79 +139,178 @@ class Scripture {
 		return array_merge( $parameters, $this->reference->parse( $parameters ) );
 	}
 
-	/**
-	 * Determine the appropriate fileset to search in based on the given parameters.
-	 *
-	 * @param array $parameters An associative array of search parameters.
-	 *                          - language (string): The language to search in. Defaults to null.
-	 *                          - fileset (string): The fileset to search in. Defaults to null.
-	 *                          - bible (string): The specific Bible to search in. Defaults to null.
-	 *                          - book (string): The specific book of the Bible to search in. Defaults to null.
-	 *                          - chapter (string): The specific chapter of the Bible to search in. Defaults to null.
-	 *                          - media_type (string): The media type to search for. Defaults to 'text'.
-	 *                          - verse_start (string): The starting verse to search from. Defaults to null.
-	 *                          - verse_end (string): The ending verse to search to. Defaults to null.
-	 *
-	 * @return array The fileset as an array.
-	 *
-	 * @throws BibleBrainsException If an invalid media type is specified or if there are any other errors.
-	 */
-	private function query( array $parameters ): array {
-		$parameters = $this->normalize_query( $parameters );
-		$language   = $this->language->find_or_resolve( $parameters['language'] ?? null );
-		$bible      = ( $parameters['bible'] ?? null ) ? $this->bibles->find( $parameters['bible'] )["data"] : null;
-		if ( ! $bible ) {
-			$bible = $this->bibles->find_or_default( $language['bibles'], $language['value'] )["data"];
-		}
-		$book = $this->books->pluck( $parameters['book'], $bible['books'] );
-		if ( ! $book ) {
-			throw new BibleBrainsException( esc_attr( "Bible, {$bible['name']}, does not contain {$parameters['book']}." ) );
-		}
+    /**
+     * Determine the appropriate fileset to search in based on the given parameters.
+     *
+     * @param array $parameters Search parameters
+     * @return array The fileset as an array.
+     * @throws BibleBrainsException If an invalid media type is specified or if there are any other errors.
+     */
+    private function query(array $parameters): array
+    {
+        $parameters = $this->normalize_query($parameters);
 
-		$parameters['book'] = $book['book_id'];
+        // Get language and bible data
+        $language = $this->resolve_language($parameters);
+        $bible = $this->resolve_bible($parameters, $language);
+        $book = $this->resolve_book($parameters, $bible);
 
-		$media_types = $language['media_types'] ?? $this->options->get( 'media_types' );
-		if ( is_string( $media_types ) ) {
-			$media_types = explode( ',', $media_types );
-		}
-		$media = [];
-		foreach ( $media_types as $media_type_key ) {
-			try {
-				$media_type = $this->media_types->find( $media_type_key );
-				$fileset    = $this->file_sets->pluck( $bible, $book, $media_type['fileset_types'] );
-				if ( $fileset ) {
-					$media[ $media_type_key ] = array_merge(
-						$media_type,
-						[
-							'content' => $this->fetch_content(
-								array_merge(
-									$parameters,
-									[ 'fileset' => $fileset['id'] ]
-								)
-							),
-							'fileset' => $fileset,
-						]
-					);
-				}
-                // phpcs:disable
-			} catch ( \Exception $e ) {
-				//Skip invalid media types
-			}
-            // phpcs:enable
-		}
+        if ($book) {
+            // Update parameters with resolved book ID
+            $parameters['book'] = $book['book_id'];
+        }
 
-		return array_merge(
-			$parameters,
-			[
-				'media'    => $media,
-				'language' => $language,
-				'bible'    => $bible,
-				'book'     => $book
-			]
-		);
-	}
 
-	/**
+        // Process media types
+        $media = $this->process_media_types($parameters, $language, $bible, $book);
+
+        return array_merge(
+            $parameters,
+            [
+                'media'    => $media,
+                'language' => $language,
+                'bible'    => $bible,
+                'book'     => $book
+            ]
+        );
+    }
+
+    /**
+     * Resolve language from parameters
+     *
+     * @param array $parameters
+     * @return array
+     */
+    private function resolve_language(array $parameters): array
+    {
+        return $this->language->find_or_resolve($parameters['language'] ?? null);
+    }
+
+    /**
+     * Resolve Bible from parameters and language
+     *
+     * @param array $parameters
+     * @param array $language
+     * @return array
+     */
+    private function resolve_bible(array $parameters, array $language): array
+    {
+        $bible = ($parameters['bible'] ?? null)
+            ? $this->bibles->find($parameters['bible'])["data"]
+            : null;
+
+        if (!$bible) {
+            $bible = $this->bibles->find_or_default($language['bibles'], $language['value'])["data"];
+        }
+
+        return $bible;
+    }
+
+    /**
+     * Resolve book from parameters and bible
+     *
+     * @param array $parameters
+     * @param array $bible
+     * @return array
+     * @throws BibleBrainsException
+     */
+    private function resolve_book(array $parameters, array $bible): array
+    {
+        $book = $this->books->pluck($parameters['book'], $bible['books']);
+        if (!$book) {
+            throw new BibleBrainsException(
+                esc_attr("Bible, {$bible['name']}, does not contain {$parameters['book']}.")
+            );
+        }
+        return $book;
+    }
+
+    /**
+     * Get media types from language or options
+     *
+     * @param array $language
+     * @return array
+     */
+    private function get_media_types(array $language): array
+    {
+        $media_types = $language['media_types'] ?? $this->options->get('media_types');
+        if (is_string($media_types)) {
+            return explode(',', $media_types);
+        }
+        return $media_types;
+    }
+
+    /**
+     * Process media types and get content
+     *
+     * @param array $parameters
+     * @param array $language
+     * @param array $bible
+     * @param array $book
+     * @return array
+     */
+    private function process_media_types(array $parameters, array $language, array $bible, array $book): array
+    {
+        $media = [];
+        $media_types = $this->get_media_types($language);
+
+        foreach ($media_types as $media_type_key) {
+            $media_content = $this->process_media_type(
+                $media_type_key,
+                $parameters,
+                $bible,
+                $book
+            );
+            if ($media_content) {
+                $media[$media_type_key] = $media_content;
+            }
+        }
+
+        return $media;
+    }
+
+    /**
+     * Process individual media type
+     *
+     * @param string $media_type_key
+     * @param array $parameters
+     * @param array $bible
+     * @param array $book
+     * @return array|null
+     */
+    private function process_media_type(
+        string $media_type_key,
+        array $parameters,
+        array $bible,
+        array $book
+    ): ?array {
+        try {
+            $media_type = $this->media_types->find($media_type_key);
+            $fileset = $this->file_sets->pluck($bible, $book, $media_type['fileset_types']);
+
+            if (!$fileset) {
+                return null;
+            }
+
+            return array_merge(
+                $media_type,
+                [
+                    'content' => $this->fetch_content(
+                        array_merge(
+                            $parameters,
+                            ['fileset' => $fileset['id']]
+                        )
+                    ),
+                    'fileset' => $fileset,
+                ]
+            );
+        } catch (\Exception $e) {
+            return null; // Skip invalid media types
+        }
+    }
+
+
+    /**
 	 * Search for verses in the Bible using the given reference and additional parameters.
 	 *
 	 * @param string $reference The reference to search for in the Bible.
