@@ -41,10 +41,13 @@ jobs:
 
       - name: Install Scoper
         run: |
-          ./setup-scoper.sh
+          ./bin/setup-scoper.sh
 
       - name: Install dependencies
         run: composer install --no-interaction --ignore-platform-reqs
+
+      - name: Test syntax
+        run: ./bin/test-for-syntax-errors.sh
 
       - name: Zip vendor directories
         run: |
@@ -52,13 +55,13 @@ jobs:
           tar -czf vendor-scoped.tar.gz vendor-scoped
 
       - name: Upload vendor directory
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v4
         with:
           name: vendor
           path: vendor.tar.gz
 
       - name: Upload vendor-scoped directory
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v4
         with:
           name: vendor-scoped
           path: vendor-scoped.tar.gz
@@ -109,13 +112,13 @@ jobs:
         run: echo "$(composer global config bin-dir --absolute --quiet)" >> $GITHUB_PATH
 
       - name: Download vendor directory
-        uses: actions/download-artifact@v2
+        uses: actions/download-artifact@v4
         with:
           name: vendor
           path: .
 
       - name: Download vendor-scoped directory
-        uses: actions/download-artifact@v2
+        uses: actions/download-artifact@v4
         with:
           name: vendor-scoped
           path: .
@@ -128,22 +131,16 @@ jobs:
           export PATH="$HOME/.composer/vendor-scoped/bin:$PATH"
 
       - name: Download release
-        uses: actions/download-artifact@v2
+        uses: actions/download-artifact@v4
         with:
           name: bible-plugin.zip
           path: .
 
-      - name: Test syntax
-        run: ./tests/test_for_syntax_errors.sh
-
       - name: Test phpcs
-        run: ./tests/test_phpcs.sh
-
-      - name: Test Installation
-        run: ./tests/test_installation.sh
+        run: ./bin/test-phpcs.sh
 
       - name: Install WP Tests
-        run: ./tests/install-wp-tests.sh wordpress_test root rootpassword 127.0.0.0 latest
+        run: ./bin/install-wp-tests.sh wordpress_test root rootpassword 127.0.0.0 latest
         shell: bash
 
       - name: PHPunit

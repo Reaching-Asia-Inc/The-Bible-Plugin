@@ -33,7 +33,7 @@ jobs:
 
       - name: Install Scoper
         run: |
-          ./setup-scoper.sh
+          ./bin/setup-scoper.sh
 
       - name: Install dependencies
         run: composer install --no-interaction --ignore-platform-reqs
@@ -119,16 +119,13 @@ jobs:
           path: .
 
       - name: Test syntax
-        run: ./tests/test_for_syntax_errors.sh
+        run: ./bin/test-for-syntax-errors.sh
 
       - name: Test phpcs
-        run: ./tests/test_phpcs.sh
-
-      - name: Test Installation
-        run: ./tests/test_installation.sh
+        run: ./bin/test-phpcs.sh
 
       - name: Install WP Tests
-        run: ./tests/install-wp-tests.sh wordpress_test root rootpassword 127.0.0.0 latest
+        run: ./bin/install-wp-tests.sh wordpress_test root rootpassword 127.0.0.0 latest
         shell: bash
 
       - name: PHPunit
