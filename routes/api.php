@@ -2,7 +2,6 @@
 
 use CodeZone\Bible\Controllers\Admin\BibleBrainsFormController;
 use CodeZone\Bible\Controllers\Admin\CustomizationFomController;
-use CodeZone\Bible\Controllers\Admin\SupportController;
 use CodeZone\Bible\Controllers\ScriptureController;
 use CodeZone\Bible\Controllers\LanguageController;
 use CodeZone\Bible\Controllers\BibleMediaTypesController;
@@ -64,7 +63,6 @@ return [
         'callback'=> [ScriptureController::class, 'index'],
         'permission_callback' => '__return_true',
     ],
-
     [
         'method'  => 'POST',
         'route'   => '/bible-brains/key',

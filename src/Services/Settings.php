@@ -2,6 +2,7 @@
 
 namespace CodeZone\Bible\Services;
 
+use CodeZone\Bible\Exceptions\BibleBrainsException;
 use function CodeZone\Bible\container;
 use function CodeZone\Bible\namespace_string;
 use function CodeZone\Bible\routes_path;
@@ -93,9 +94,15 @@ class Settings {
         $routes = include routes_path('settings.php');
 
         $handler = $routes[$tab] ?? $routes['general'];
-        $response = container()->get($handler[0])->{$handler[1]}(
-            $response = container()->get(Request::class)
-        );
+        $request = container()->get(Request::class);
+        $controller = container()->get($handler[0]);
+        $request = new RestRequest($request);
+        try {
+            $response = $controller->{$handler[1]}($request);
+        } catch (BibleBrainsException $e) {  // catch all exceptions
+            $response = $this->handle_exception($e);
+        }
+
         $this->handle_response($response);
     }
 
@@ -111,15 +118,30 @@ class Settings {
     protected function handle_response($response) {
         if (is_string($response)) {
             echo $response;
+            return;
         }
 
-        if (wp_doing_ajax()) {
+        if (wp_is_json_request()) {
             if (isset($response['error'])) {
                 wp_send_json_error($response);
             } else {
                 wp_send_json_success($response);
             }
         }
+    }
 
+    protected function handle_exception(\Exception $e) {
+        if (wp_is_json_request()) {
+            return [
+                'status' => $e->getCode(),
+                'error' => $e->getMessage(),
+                'code' => $e->getCode()
+            ];
+        }
+
+        wp_die(
+            esc_html($e->getMessage()),
+            esc_attr($e->getCode())
+        );
     }
 }
