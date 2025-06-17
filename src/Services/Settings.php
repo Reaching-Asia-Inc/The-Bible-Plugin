@@ -33,14 +33,15 @@ class Settings {
      * @see https://developer.wordpress.org/reference/functions/add_submenu_page/
      */
     public function register_menu(): void {
-        $menu = add_menu_page( 'dt_extensions',
+        $menu = add_menu_page(
             __( 'The Bible Plugin', 'bible-plugin' ),
             __( 'The Bible Plugin', 'bible-plugin' ),
             'manage_options',
             'bible-plugin',
             '',
-            'dashicons-book-alt',
+            'dashicons-book-alt'    // Icon
         );
+
 
         add_submenu_page(
             'bible-plugin',
@@ -96,7 +97,6 @@ class Settings {
         $handler = $routes[$tab] ?? $routes['general'];
         $request = container()->get(Request::class);
         $controller = container()->get($handler[0]);
-        $request = new RestRequest($request);
         try {
             $response = $controller->{$handler[1]}($request);
         } catch (BibleBrainsException $e) {  // catch all exceptions

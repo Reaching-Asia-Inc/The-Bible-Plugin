@@ -2,8 +2,13 @@
 
 namespace CodeZone\Bible\Providers;
 
+use CodeZone\Bible\CodeZone\WPSupport\Config\ConfigInterface;
 use CodeZone\Bible\League\Container\ServiceProvider\AbstractServiceProvider;
 use CodeZone\Bible\League\Container\ServiceProvider\BootableServiceProviderInterface;
+use CodeZone\Bible\Services\Assets;
+use CodeZone\Bible\Services\BibleBrains\Language;
+use CodeZone\Bible\Services\BibleBrains\MediaTypes;
+use CodeZone\Bible\Services\Request;
 use CodeZone\Bible\ShortCodes\Bible;
 use CodeZone\Bible\ShortCodes\Scripture;
 
@@ -14,14 +19,6 @@ use CodeZone\Bible\ShortCodes\Scripture;
  */
 class ShortcodeProvider extends AbstractServiceProvider implements BootableServiceProviderInterface
 {
-    /**
-     * Array containing a list of shortcode classes.
-     */
-    protected $shortcodes = [
-        Bible::class,
-        Scripture::class
-    ];
-
     /**
      * Do any setup needed before the theme is ready.
      */
@@ -35,10 +32,24 @@ class ShortcodeProvider extends AbstractServiceProvider implements BootableServi
      */
     public function boot(): void
     {
-        foreach ($this->shortcodes as $shortcode) {
-            $this->container->add($shortcode);
-            $this->container->get($shortcode);
-        }
+
+        $this->container->addShared(Bible::class, function () {
+            return new Bible(
+                $this->container->get(Assets::class),
+                $this->container->get(Request::class)
+            );
+        });
+        $this->container->get(Bible::class);
+
+        $this->container->addShared(Scripture::class, function () {
+            return new Scripture(
+                $this->container->get(\CodeZone\Bible\Services\BibleBrains\Scripture::class),
+                $this->container->get(Assets::class),
+                $this->container->get(MediaTypes::class),
+                $this->container->get(Language::class)
+            );
+        });
+        $this->container->get(Scripture::class);
     }
 
 
@@ -50,6 +61,9 @@ class ShortcodeProvider extends AbstractServiceProvider implements BootableServi
      */
     public function provides(string $id): bool
     {
-        return in_array($id, $this->shortcodes);
+        return in_array($id, [
+            Bible::class,
+            Scripture::class
+        ]);
     }
 }

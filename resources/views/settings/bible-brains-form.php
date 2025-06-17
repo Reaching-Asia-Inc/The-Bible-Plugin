@@ -15,7 +15,7 @@
  * @var $search_label string
  */
 
-use function CodeZone\Bible\route_url;
+use function CodeZone\Bible\api_url;
 
 $this->layout( 'layouts/settings', compact( 'tab' ) );
 ?>
@@ -27,7 +27,7 @@ $this->layout( 'layouts/settings', compact( 'tab' ) );
 	      wp_json_encode(
 		      [
 			      'fields' => $fields,
-			      'action' => esc_url( route_url( "api/bible-brains" ) ),
+			      'action' => esc_url( api_url( "bible-brains" ) ),
 		      ]
         )
     ); ?>)"

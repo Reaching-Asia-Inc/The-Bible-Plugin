@@ -24,6 +24,7 @@ class TranslationsProvider extends AbstractServiceProvider implements BootableSe
         ]);
     }
 
+
 	/**
 	 * Do any setup needed before the theme is ready.
 	 */
@@ -37,10 +38,9 @@ class TranslationsProvider extends AbstractServiceProvider implements BootableSe
      * @return void
      */
 	public function boot(): void {
-        load_plugin_textdomain( 'bible-plugin', false, 'bible-plugin/languages' );
 
-        $this->container->addShared( GetText::class, function ( $app ) {
-            return $app->make( PoLoader::class )->loadFile( languages_path( 'bible-plugin-es_MX.po' ) );
+        $this->container->addShared( GetText::class, function () {
+            return $this->container->get( PoLoader::class )->loadFile( languages_path( 'bible-plugin-es_MX.po' ) );
         } );
 
         $this->container->addShared( Translations::class, function () {

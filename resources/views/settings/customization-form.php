@@ -8,7 +8,7 @@
  * @var string $translation_options
  */
 
-use function CodeZone\Bible\route_url;
+use function CodeZone\Bible\api_url;
 
 $this->layout( 'layouts/settings', compact( 'tab' ) );
 ?>
@@ -19,7 +19,7 @@ $this->layout( 'layouts/settings', compact( 'tab' ) );
 				'refresh'              => true,
 				'fields'               => $fields,
 				'nonce'                => $nonce,
-				'action'               => esc_url( route_url( "api/customization" ) ),
+				'action'               => esc_url( api_url( "customization" ) ),
 				'error'                => $error ?? '',
 				'color_scheme_options' => $color_scheme_options
 			]

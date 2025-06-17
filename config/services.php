@@ -8,6 +8,7 @@ use CodeZone\Bible\Providers\AdminProvider;
 use CodeZone\Bible\Providers\BibleBrainsProvider;
 use CodeZone\Bible\Providers\ConfigProvider;
 use CodeZone\Bible\Providers\OptionsProvider;
+use CodeZone\Bible\Providers\RequestServiceProvider;
 use CodeZone\Bible\Providers\RestApiProvider;
 use CodeZone\Bible\Providers\ShortcodeProvider;
 use CodeZone\Bible\Providers\TranslationsProvider;
@@ -26,6 +27,7 @@ $config->merge( [
             ShortcodeProvider::class,
             ViewProvider::class,
             RestApiProvider::class,
+            RequestServiceProvider::class,
             AdminProvider::class
         ],
         'tgmpa' => [

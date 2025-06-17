@@ -15,6 +15,11 @@ use function CodeZone\Bible\config;
  * This class is responsible for providing admin services and loading necessary plugins using the TGM Plugin Activation library.
  */
 class AdminProvider extends AbstractServiceProvider implements BootableServiceProviderInterface {
+    public function __construct()
+    {
+        add_action( 'wp_loaded', [ $this, 'wp_loaded' ] );
+    }
+
     /**
      * Provide the services that this provider is responsible for.
      *
@@ -36,8 +41,6 @@ class AdminProvider extends AbstractServiceProvider implements BootableServicePr
      */
     public function boot(): void
     {
-        add_action( 'wp_loaded', [ $this, 'wp_loaded' ] );
-
         $this->getContainer()->addShared( Settings::class, function () {
             return new Settings();
         } );

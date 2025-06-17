@@ -3,7 +3,7 @@
 namespace CodeZone\Bible;
 
 use CodeZone\Bible\League\Container\Container;
-use CodeZone\Bible\CodeZone\WPSupport\Config\ConfigInterface;
+use CodeZone\Bible\CodeZone\WPSupport\Config\ConfigInterface as Config;
 
 /**
  * Class Plugin
@@ -12,7 +12,8 @@ use CodeZone\Bible\CodeZone\WPSupport\Config\ConfigInterface;
  */
 class Plugin {
     public Container $container;
-    public ConfigInterface $config;
+    public static $instance;
+    public Config $config;
 
 	/**
 	 * Plugin constructor.
@@ -20,7 +21,7 @@ class Plugin {
 	 * @param Container $container
 	 */
 	public function __construct( Container $container, Config $config ) {
-		 $this->config = $config;
+        $this->config = $config;
         $this->container = $container;
 	}
 
@@ -30,7 +31,6 @@ class Plugin {
 	 */
 	public function init() {
 		static::$instance = $this;
-		$this->provider->register();
 
         foreach ( $this->config->get( 'services.providers' ) as $provider ) {
             $this->container->addServiceProvider( $this->container->get( $provider ) );

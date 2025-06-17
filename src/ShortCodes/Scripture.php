@@ -61,9 +61,13 @@ class Scripture {
 		$this->media_types = $media_types;
         $this->languages    = $language;
 
-		add_shortcode( 'tbp-scripture', [ $this, 'render' ] );
-		add_action( 'wp_enqueue_scripts', [ $this, 'enqueue_scripts' ] );
+        add_action('init', [$this, 'init']);
+        add_action( 'wp_enqueue_scripts', [ $this, 'enqueue_scripts' ] );
 	}
+
+    public function init() {
+        add_shortcode('tbp-scripture', [$this, 'render']);
+    }
 
 	/**
 	 * Enqueues the scripts and styles for the shortcode.

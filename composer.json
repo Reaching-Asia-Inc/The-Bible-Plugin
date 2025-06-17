@@ -30,8 +30,7 @@
     "php": "^7.4",
     "ext-json": "*",
     "ext-gettext": "*",
-    "composer-plugin-api": "^1.0 || ^2.0",
-    "whitecube/lingua": "^1.1"
+    "composer-plugin-api": "^1.0 || ^2.0"
   },
   "require-dev": {
     "dealerdirect/phpcodesniffer-composer-installer": "^1.0",

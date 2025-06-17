@@ -5,8 +5,8 @@
  */
 $config->merge( [
     'plugin' => [
-        'text_domain' => 'dt-plugin',
-        'nonce_name' => 'dt-plugin',
+        'text_domain' => 'bible-plugin',
+        'nonce_name' => 'bible_plugin_nonce',
         'dt_version' => 1.19,
         'paths' => [
             'src' => 'src',

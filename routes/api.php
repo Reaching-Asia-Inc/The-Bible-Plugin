@@ -68,8 +68,7 @@ return [
         'route'   => '/bible-brains/key',
         'callback'=> [BibleBrainsFormController::class, 'validate'],
         'permission_callback' => function () {
-            return current_user_can('manage_options') &&
-                check_ajax_referer('bible_plugin_nonce', '_wpnonce', false);
+            return current_user_can('manage_options');
         },
     ],
     [
@@ -77,8 +76,7 @@ return [
         'route'   => '/bible-brains',
         'callback'=> [BibleBrainsFormController::class, 'submit'],
         'permission_callback' => function () {
-            return current_user_can('manage_options') &&
-                check_ajax_referer('bible_plugin_nonce', '_wpnonce', false);
+            return current_user_can('manage_options');
         },
     ],
     [
@@ -86,8 +84,7 @@ return [
         'route'   => '/customization',
         'callback'=> [CustomizationFomController::class, 'submit'],
         'permission_callback' => function () {
-            return current_user_can('manage_options') &&
-                check_ajax_referer('bible_plugin_nonce', '_wpnonce', false);
+            return current_user_can('manage_options');
         },
     ],
 ];

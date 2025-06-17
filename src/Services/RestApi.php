@@ -13,6 +13,8 @@ use function CodeZone\Bible\container;
  */
 class RestApi
 {
+    const PATH = 'bible-plugin/v1';
+
     /**
      * Constructor to hook into WordPress REST API initialization.
      */
@@ -36,7 +38,7 @@ class RestApi
 
         foreach ($routes as $route) {
             register_rest_route(
-                'codezone/v1',
+                self::PATH,
                 $route['route'],
                 [
                     'methods' => $route['method'],
@@ -69,11 +71,10 @@ class RestApi
     public function handle_exception(\Exception $e)
     {
         if (wp_is_json_request()) {
-            return [
-                'status' => $e->getCode(),
-                'error' => $e->getMessage(),
-                'code' => $e->getCode()
-            ];
+            wp_send_json([
+                'message' => $e->getMessage(),
+            ], $e->getCode());
+            exit;
         }
 
         wp_die(

@@ -5,6 +5,7 @@ namespace CodeZone\Bible\Services\BibleBrains;
 use CodeZone\Bible\GuzzleHttp\Psr7\Uri;
 use CodeZone\Bible\GuzzleHttp\Psr7\UriResolver;
 use CodeZone\Bible\Psr\Http\Message\RequestInterface;
+use function CodeZone\Bible\dd;
 use function CodeZone\Bible\plugin_path;
 
 /**
@@ -12,29 +13,33 @@ use function CodeZone\Bible\plugin_path;
  *
  * Represents a middleware for Guzzle requests.
  */
-class BiblePluginSiteGuzzleMiddleware {
+class BiblePluginSiteGuzzleMiddleware
+{
     protected string $base_url = 'https://thebibleplugin.com/wp-json/bible-plugin/v1/';
+    private ?string $key = null;
 
-    public function generate_key() {
-        return base64_encode( file_get_contents( plugin_path( 'bible-plugin.php' ) ) );
+    protected function generate_key(): string
+    {
+        if ($this->key === null) {
+            $this->key = base64_encode(file_get_contents(plugin_path('bible-plugin.php')));
+        }
+        return $this->key;
     }
 
+    public function __invoke(callable $handler)
+    {
+        return function (RequestInterface $request, array $options) use ($handler) {
+            // Resolve the URI
+            $new_uri = UriResolver::resolve(
+                new Uri($this->base_url),
+                $request->getUri()
+            );
 
-    /**
-     * Invoke the middleware handler.
-     *
-     * @param callable $handler The next middleware handler.
-     *
-     * @return callable Returns the modified handler.
-     */
-    public function __invoke( callable $handler ) {
-        return function ( RequestInterface $request, array $options ) use ( $handler ) {
-            $new_uri = UriResolver::resolve( new Uri( $this->base_url ), $request->getUri() );
-            $request = $request->withHeader( 'Authorization', $this->generate_key() );
-            // Update the request with the modified URI
-            $request = $request->withUri( $new_uri );
+            // Add authorization header
+            $request = $request->withHeader('Authorization', $this->generate_key())
+                ->withUri($new_uri);
 
-            return $handler( $request, $options );
+            return $handler($request, $options);
         };
     }
 }

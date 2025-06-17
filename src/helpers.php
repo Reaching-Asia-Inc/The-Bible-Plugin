@@ -2,6 +2,7 @@
 
 namespace CodeZone\Bible;
 
+use CodeZone\Bible\Services\RestApi;
 use CodeZone\Bible\Services\Translations;
 use CodeZone\Bible\CodeZone\WPSupport\Config\ConfigInterface;
 use CodeZone\Bible\CodeZone\WPSupport\Container\ContainerFactory;
@@ -71,21 +72,6 @@ function set_config($key, $value ) {
 }
 
 /**
- * Checks if the route rewrite rule exists in the WordPress rewrite rules.
- *
- * @return bool Whether the route rewrite rule exists in the rewrite rules.
- * @global WP_Rewrite $wp_rewrite The main WordPress rewrite rules object.
- *
- */
-function has_route_rewrite(): bool {
-	$rewrites = container()->get( RewritesInterface::class );
-
-	return $rewrites->exists(
-		array_key_first( config()->get( 'routes.rewrites' ) )
-	);
-}
-
-/**
  * Retrieves the URL of a file or directory within the plugin directory.
  *
  * @param string $path Optional. The path of the file or directory within the Bible Plugin directory. Defaults to empty string.
@@ -93,49 +79,21 @@ function has_route_rewrite(): bool {
  * @return string The URL of the specified file or directory within the Bible Plugin directory.
  */
 function plugin_url( string $path = '' ): string {
-	return plugins_url( 'dt-plugin' ) . '/' . ltrim( $path, '/' );
+	return plugins_url( 'bible-plugin' ) . '/' . ltrim( $path, '/' );
 }
 
 /**
- * Returns the URL for a given route.
+ * Constructs and returns the full API URL for a given path.
  *
- * @param string $path The path of the route. Defaults to an empty string.
- * @param string $key The key of the route file in the configuration. Defaults to 'web'.
+ * @param string $path The API endpoint path to append to the base API URL. Defaults to an empty string.
  *
- * @return string The URL for the given route.
+ * @return string The full API URL including the provided path or the base API URL if no path is specified.
  */
-function route_url( string $path = '', $key = 'web' ): string {
-	$file = config()->get( 'routes.files' )[ $key ];
-
-	if ( ! has_route_rewrite() ) {
-		return site_url() . '?' . http_build_query( [ $file['query'] => $path ] );
-	} else {
-		return site_url( $file['path'] . '/' . ltrim( $path, '/' ) );
-	}
-}
-
-/**
- * Returns the URL of an API endpoint based on the given path.
- *
- * @param string $path The path of the API endpoint.
- *
- * @return string The URL of the API endpoint.
- *
- * @see route_url()
- */
-function api_url( string $path ) {
-	return route_url( $path, 'api' );
-}
-
-/**
- * Returns the URL for a given web path.
- *
- * @param string $path The web path to generate the URL for.
- *
- * @return string The generated URL.
- */
-function web_url( string $path ) {
-	return route_url( $path, 'web' );
+function api_url( string $path = "" ) {
+    if (!$path) {
+       return rest_url( RestApi::PATH );
+    }
+	return rest_url(RestApi::PATH . '/' . $path);
 }
 
 /**
@@ -292,7 +250,6 @@ function set_option( string $option_name, $value ): bool {
  */
 function get_plugin_option( $option, $default = null, $required = false ) {
 	$options = container()->get( OptionsInterface::class );
-
 	return $options->get( $option, $default, $required );
 }
 
@@ -306,7 +263,6 @@ function get_plugin_option( $option, $default = null, $required = false ) {
  */
 function set_plugin_option( $option, $value ): bool {
 	$options = container()->get( OptionsInterface::class );
-
 	return $options->set( $option, $value );
 }
 
@@ -359,8 +315,8 @@ function namespace_string( string $string ): string {
  * @return string The color in RGB format. If the provided color is already in RGB format, it is returned unchanged.
  */
 function rgb( $color ): string {
-	if ( Str::contains( $color, 'rgb' ) ) {
-		return $color;
+    if (str_contains($color, 'rgb')) {
+        return $color;
 	}
 	$color = str_replace( '#', '', $color );
 	if ( strlen( $color ) == 3 ) {
@@ -393,4 +349,16 @@ function cast_bool_values( $map ): array {
 
 		return $value;
 	}, $map );
+}
+
+/**
+ * Validate a request against a set of rules.
+ *
+ * @param RequestInterface|array $data The request to validate
+ * @param array $rules The validation rules
+ * @return array|bool True if validation passes, array of errors if it fails
+ */
+function validate($dataOrRequest, array $rules) {
+	$validator = container()->get(Services\Validator::class);
+	return $validator->validate($dataOrRequest, $rules);
 }

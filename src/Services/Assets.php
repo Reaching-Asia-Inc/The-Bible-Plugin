@@ -3,10 +3,11 @@
 namespace CodeZone\Bible\Services;
 
 use CodeZone\Bible\Services\BibleBrains\MediaTypes;
+use function CodeZone\Bible\api_url;
 use function CodeZone\Bible\config;
 use function CodeZone\Bible\Kucrut\Vite\enqueue_asset;
+use function CodeZone\Bible\namespace_string;
 use function CodeZone\Bible\plugin_path;
-use function CodeZone\Bible\route_url;
 
 class Assets {
 	private static $enqueued = false;
@@ -63,12 +64,7 @@ class Assets {
 			]
 		);
 
-		wp_localize_script( 'bible-plugin', '$tbp', [
-			'apiUrl'       => route_url( 'api' ),
-			'nonce'        => wp_create_nonce( 'bible_plugin_nonce' ),
-			'translations' => config('assets.translations', []),
-			"mediaTypes"   => $this->media_types->all(),
-		] );
+		wp_localize_script( 'bible-plugin', config('assets.javascript_global_scope'), apply_filters( namespace_string( 'javascript_globals' ), []));
 
 		wp_enqueue_style( 'plyr', 'https://cdn.plyr.io/3.6.8/plyr.css' );
 	}
@@ -94,11 +90,7 @@ class Assets {
 			]
 		);
 
-		wp_localize_script( 'bible-plugin-admin', '$tbp', [
-			'apiUrl'       => route_url( 'api' ),
-			'nonce'        => wp_create_nonce( 'bible_plugin_nonce' ),
-            'translations' => config('assets.translations', []),
-		] );
+		wp_localize_script( 'bible-plugin-admin', config('assets.javascript_global_scope'), apply_filters( namespace_string( 'javascript_globals' ), []) );
 	}
 
 	/**

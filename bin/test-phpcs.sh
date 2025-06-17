@@ -6,7 +6,7 @@ composer config allow-plugins.dealerdirect/phpcodesniffer-composer-installer tru
 composer require --dev wp-coding-standards/wpcs:"^3.0"
 
 if [ "$(php -r 'echo version_compare( phpversion(), "7.0", ">=" ) ? 1 : 0;')" != 1 ] ; then
-    vendor/bin/phpcs dt-plugin.php
+    vendor/bin/phpcs bible-plugin.php
     exit
 fi
 

@@ -3,9 +3,10 @@
 namespace CodeZone\Bible\Services\BibleBrains;
 
 use CodeZone\Bible\Services\BibleBrains\Api\Languages;
-use CodeZone\Bible\Services\Options;
+use CodeZone\Bible\CodeZone\WPSupport\Options\OptionsInterface as Options;
 use CodeZone\Bible\Services\Translations;
-use WhiteCube\Lingua\Service as Lingua;
+use CodeZone\Bible\WhiteCube\Lingua\Service as Lingua;
+use function CodeZone\Bible\config;
 
 /**
  * Class Language
@@ -175,7 +176,7 @@ class Language {
 	public function default() {
 		$language = $this->options->get( 'languages', null, true );
 		if ( ! is_array( $language ) ) {
-			return $this->options->get_default( 'languages' );
+			return config('options.defaults.language',  []);
 		}
         $default_language = null;
         foreach ($language as $config) {

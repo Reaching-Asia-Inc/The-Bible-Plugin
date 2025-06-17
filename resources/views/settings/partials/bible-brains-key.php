@@ -1,7 +1,5 @@
 <?php
 
-use function CodeZone\Bible\route_url;
-
 /**
  * Bible Brains Key Form
  *
@@ -11,6 +9,9 @@ use function CodeZone\Bible\route_url;
  * @var string $redirect_url
  * @var array $fields
  */
+
+use function CodeZone\Bible\api_url;
+
 ?>
 <form method="post"
     x-data="br_bible_brains_key_form(<?php echo esc_attr(
@@ -21,7 +22,7 @@ use function CodeZone\Bible\route_url;
 				      'success_message' => __( 'Bible Brains API Key verified.', 'bible-plugin' ),
 				      'redirect'        => esc_url( "/wp-admin/admin.php?page=bible-plugin" ),
 				      'url'             => esc_url( '/wp-admin/admin.php?page=bible-plugin&tab=bible' ),
-				      'action'          => esc_url( route_url( 'api/bible-brains/key' ) ),
+				      'action'          => esc_url( api_url( 'bible-brains/key' ) ),
 				      'error'           => $error ?? '',
 			      ]
             )

@@ -74,7 +74,7 @@ class Reference {
 			$array['verse_end']   = $array['verse'];
 		}
 
-		$books         = container()->make( Books::class );
+		$books         = container()->get( Books::class );
 		$array['book'] = $books->normalize( $array['book'] );
 
 		return $array;

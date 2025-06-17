@@ -10,7 +10,6 @@ export class OverlayPicker extends LitElement {
     @property({type: String}) optionsValueKey = 'value'
     @property({type: String}) optionsLabelKey = 'itemText'
     @property({type: String, reflect: true, attribute: true}) label = ''
-    @property({type: String}) nonce = '';
     @property({type: Boolean}) prefetch = false
     @property({type: Boolean}) searchFetch = true
     @property({type: String}) value = ''
@@ -280,7 +279,7 @@ export class OverlayPicker extends LitElement {
             method: 'GET',
             headers: {
                 'Content-Type': 'application/json',
-                'X-WP-Nonce': this.nonce
+                'X-WP-Nonce': $tbp.nonce
             }
         })
     }

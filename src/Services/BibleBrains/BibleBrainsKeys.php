@@ -3,7 +3,7 @@
 namespace CodeZone\Bible\Services\BibleBrains;
 
 use CodeZone\Bible\Services\BibleBrains\Api\ApiKeys;
-use CodeZone\Bible\Services\Options;
+use CodeZone\Bible\CodeZone\WPSupport\Options\OptionsInterface as Options;
 
 /**
  * Bible Brains API Keys Service
@@ -58,15 +58,15 @@ class BibleBrainsKeys {
         // Check if the keys are set as an option is set and return the option if it is
         if ( $this->has_option() ) {
             return [ $this->get_option() ];
-        }
+        };
 
 
         // Fetch the remote keys if no other options are set
-        try {
+       // try {
             return $this->fetch_remote();
-        } catch ( \Exception $e ) {
+        //} catch ( \Exception $e ) {
             return [];
-        }
+        //}
     }
 
     /**
@@ -78,6 +78,7 @@ class BibleBrainsKeys {
      */
     public function random($override = true ) {
         $keys = $this->all( $override );
+        if (!$keys) return null;
         return $keys[ array_rand($keys) ];
     }
 

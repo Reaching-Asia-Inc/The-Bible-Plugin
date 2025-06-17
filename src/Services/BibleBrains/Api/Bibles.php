@@ -22,7 +22,7 @@ class Bibles extends ApiService {
      */
     public function find_or_default($code = null, $language_id = null, array $query = []): array {
         if (empty($code) && empty($language_id)) {
-            throw new BibleBrainsException(__('Either a bible ID or a language ID must be provided.', 'dt-plugin'));
+            throw new BibleBrainsException(__('Either a bible ID or a language ID must be provided.', 'bible-plugin'));
         }
 
         if (empty($code)) {
@@ -36,23 +36,6 @@ class Bibles extends ApiService {
         }
 
         return $result;
-    }
-
-    /**
-     * Maps iterable data into an array of UI options.
-     *
-     * @param iterable $records
-     * @return array
-     */
-    public function as_options(iterable $records): array {
-        $options = [];
-        foreach ($records as $record) {
-            $option = $this->map_option($record);
-            if (!empty($option['value']) && !empty($option['itemText'])) {
-                $options[] = $option;
-            }
-        }
-        return $options;
     }
 
     /**
@@ -75,8 +58,8 @@ class Bibles extends ApiService {
      */
     public function map_option(array $record): array {
         return [
-            'value'    => $record['abbr'] ?? $record['id'],
-            'itemText' => $record['name']
+            'value'    => $record['abbr'] ?? $record['id'] ?? null,
+            'itemText' => $record['name'] ?? null
         ];
     }
 

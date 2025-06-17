@@ -4,6 +4,7 @@ namespace CodeZone\Bible\Controllers\Admin;
 
 use CodeZone\Bible\Services\RequestInterface as Request;
 use CodeZone\Bible\Services\Translations;
+use function CodeZone\Bible\config;
 use function CodeZone\Bible\container;
 use function CodeZone\Bible\transaction;
 use function CodeZone\Bible\validate;
@@ -54,10 +55,11 @@ class CustomizationFomController {
             return $option['value'];
         }, $translation_options);
 
+
         $translations = array_intersect_key($translations, array_flip($valid_translations));
         $fields = [
             'color_scheme' => get_plugin_option('color_scheme', null, true),
-            'colors'       => get_plugin_option('colors', null, true),
+            'colors'       => $this->format_colors(get_plugin_option('colors', null, true)),
             'translations' => $translations
         ];
 
@@ -73,37 +75,67 @@ class CustomizationFomController {
      * @return array Response data
      */
     public function submit(Request $request): array {
-        $errors = [];
-
         // Validate required fields
-        $required_fields = ['color_scheme', 'colors', 'translations'];
-        foreach ($required_fields as $field) {
-            if (!$request->has($field)) {
-                $errors[$field] = __('This field is required.', 'bible-plugin');
-            }
-        }
+        $errors = validate($request, [
+            'color_scheme' => 'required|string',
+            'colors'       => 'required|array',
+            'translations' => 'required|array',
+        ]);
 
-        if (!empty($errors)) {
+        if (!$errors === true) {
             wp_send_json_error([
-                'error'  => __('Please complete the required fields.', 'bible-plugin'),
-                'errors' => $errors,
+                'message'  => __('Please complete the required fields.', 'bible-plugin'),
+                'data' => $errors,
             ], 400);
         }
 
         $result = transaction(function () use ($request) {
             set_plugin_option('color_scheme', $request->color_scheme);
-            set_plugin_option('colors', $request->colors);
+            set_plugin_option('colors', $this->format_colors($request->colors));
             set_plugin_option('translations', $request->translations);
         });
 
         if (!$result === true) {
             wp_send_json_error([
-                'error' => __('Form could not be submitted.', 'bible-plugin'),
+                'message' => __('Form could not be submitted.', 'bible-plugin'),
             ], 400);
         }
 
         return [
             'success' => true,
+        ];
+    }
+
+    /**
+     * Formats and ensures the structure of the colors array.
+     *
+     * @param array $colors The input array containing color configurations. It can be null or incomplete.
+     * @return array The formatted colors array with all required keys and defaults applied.
+     */
+    public function format_colors($colors) {
+        if (!is_array($colors)) {
+            $colors = [];
+        }
+
+        if (isset($colors[0]) && empty($colors['accent'])) {
+            $colors['accent'] = $colors[0];
+        }
+
+        if (isset($colors[1]) && empty($colors['accent_steps'])) {
+            $colors['accent_steps'] = $colors[1];
+        }
+
+        if (empty($colors['accent_steps'])) {
+            $colors['accent_steps'] = config('options.defaults.colors.accent_steps');
+        }
+
+        if (empty($colors['accent'])) {
+            $colors['accent'] = config('options.defaults.colors.accent');;
+        }
+
+        return [
+            'accent'         => $colors['accent'],
+            'accent_steps'   => $colors['accent_steps'],
         ];
     }
 }

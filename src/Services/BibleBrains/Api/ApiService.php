@@ -87,22 +87,16 @@ abstract class ApiService {
     }
 
     /**
-     * Transform API records into options format.
+     * Transforms an array of records into a format suitable for use as options.
      *
-     * @param iterable $records Records to transform
-     * @return array           Array of options with value and itemText
+     * @param array $records List of records to transform
+     * @return array          Transformed array of options
      */
-    public function as_options(iterable $records): array {
-        $options = [];
-
-        foreach ($records as $record) {
-            $option = $this->map_option($record);
-            if (!empty($option['value']) && !empty($option['itemText'])) {
-                $options[] = $option;
-            }
-        }
-
-        return $options;
+    public function as_options(array $records): array {
+        return array_values(array_filter(
+            array_map([$this, 'map_option'], $records),
+            fn($option) => !empty($option['value']) && !empty($option['itemText'])
+        ));
     }
 
     /**

@@ -10,7 +10,7 @@ namespace CodeZone\Bible\Services;
  * - POST parameters ($_POST)
  * - URL/route parameters
  */
-class Request implements RequestInterface
+class Request extends BaseRequest implements RequestInterface
 {
     private array $get;
     private array $post;
@@ -27,107 +27,33 @@ class Request implements RequestInterface
     }
 
     /**
-     * Magic method to allow property access to act like method calls
+     * Retrieve all POST data
      *
-     * @param string $name The parameter name to retrieve
-     * @return mixed The parameter value
+     * @return array An associative array containing all POST data
      */
-    public function __get(string $name)
+    public function all_post(): array
     {
-        return $this->get($name);
+        return $this->post;
     }
 
     /**
-     * Get all parameters based on request method
+     * Retrieve all GET parameters
      *
-     * @return array All request parameters
+     * @return array The array of GET parameters
      */
-    public function all(): array
+    public function all_get(): array
     {
-        return $this->method === 'POST' ? $this->post : $this->get;
+        return $this->get;
     }
 
     /**
-     * Get parameter value checking request method
+     * Retrieve URL parameters from the request
      *
-     * @param string|null $key The parameter key to retrieve
-     * @param mixed|null $default Default value if parameter not found
-     * @return mixed The parameter value or default
+     * @return array URL parameters
      */
-    public function get(string $key = null, $default = null)
+    public function all_url_params()
     {
-        if ($key === null) {
-            return $this->all();
-        }
-
-        $urlParam = $this->get_url_param($key);
-        if ($urlParam !== null) {
-            return $urlParam;
-        }
-
-        return $this->method === 'POST'
-            ? $this->get_post($key, $default)
-            : $this->get_query($key, $default);
-    }
-
-    /**
-     * Determine if a given key exists and is not null
-     *
-     * @param string $key The key to check for existence
-     * @return bool True if the key exists and is not null, otherwise false
-     */
-    public function has(string $key): bool
-    {
-        return $this->get($key) !== null;
-    }
-
-    /**
-     * Determine if a given key exists and is not null
-     *
-     * @param string $key The key to check for existence
-     * @return bool True if the key exists and is not null, otherwise false
-     */
-    public function is_string(string $key): bool
-    {
-        if (!$this->has($key)) {
-            return false;
-        }
-
-        return is_string($this->get($key));
-    }
-
-    /**
-     * Get specific GET parameter
-     *
-     * @param string $key The parameter key
-     * @param mixed|null $default Default value if not found
-     * @return mixed Sanitized parameter value or default
-     */
-    public function get_query(string $key, $default = null)
-    {
-        // Try WordPress query var first
-        $query_var = get_query_var($key, null);
-        if ($query_var !== null && $query_var !== '') {
-            return sanitize_text_field($query_var);
-        }
-
-        return sanitize_text_field($this->get[$key] ?? $default);
-    }
-
-    /**
-     * Get specific POST parameter
-     *
-     * @param string $key The parameter key
-     * @param mixed|null $default Default value if not found
-     * @return mixed Sanitized parameter value or default
-     */
-    public function get_post(string $key, $default = null)
-    {
-        if (!$this->is_post()) {
-            return $default;
-        }
-
-        return sanitize_text_field($this->post[$key] ?? $default);
+        return [];
     }
 
     /**
@@ -138,49 +64,5 @@ class Request implements RequestInterface
     public function method(): string
     {
         return $this->method;
-    }
-
-    /**
-     * Check if request is POST
-     *
-     * @return bool True if POST request
-     */
-    public function is_post(): bool
-    {
-        return $this->method === 'POST';
-    }
-
-    /**
-     * Check if request is GET
-     *
-     * @return bool True if GET request
-     */
-    public function is_get(): bool
-    {
-        return $this->method === 'GET';
-    }
-
-    /**
-     * Retrieve URL parameters from the request
-     *
-     * @return array URL parameters
-     */
-    public function get_url_params()
-    {
-        return [];
-    }
-
-    /**
-     * Get URL route parameter value
-     * For routes like '/bibles/(?P<id>[\w-]+)'
-     *
-     * @param string $key Parameter key
-     * @param mixed|null $default Default value if parameter not found
-     * @return mixed Sanitized route parameter value or default
-     */
-    public function get_url_param(string $key, $default = null)
-    {
-        // URL parameters in WP_REST_Request are also accessed via get_param
-        return sanitize_text_field($this->get_url_params()[$key] ?? $default);
     }
 }

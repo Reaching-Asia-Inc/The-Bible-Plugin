@@ -6,7 +6,8 @@
     "kucrut/vite-for-wp": "^0.8.0",
     "gettext/gettext": "^5.7",
     "psr/log": "^1.1",
-    "vlucas/phpdotenv": "^5.4.1"
+    "vlucas/phpdotenv": "^5.4.1",
+    "whitecube/lingua": "^1.1"
   },
   "config": {
     "autoloader-suffix": "bible_plugin_scoped",

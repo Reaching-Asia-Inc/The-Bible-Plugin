@@ -10,10 +10,10 @@ use CodeZone\Bible\Services\BibleBrains\MediaTypes;
 use Exception;
 use function CodeZone\Bible\container;
 use function CodeZone\Bible\transaction;
+use function CodeZone\Bible\validate;
 use function CodeZone\Bible\view;
 use function CodeZone\Bible\get_plugin_option;
 use function CodeZone\Bible\set_plugin_option;
-use WP_Error;
 
 /**
  * Class BibleBrainsController
@@ -37,7 +37,7 @@ class BibleBrainsFormController {
 
         // Key validation
         if (!$keys->random()) {
-            return $this->validation_form($request, $keys);
+            return $this->validation_form($request);
         }
 
         // Bible service validation
@@ -101,19 +101,19 @@ class BibleBrainsFormController {
 	 * @throws Exception
 	 */
     public function submit(Request $request) {
-        $languages = $request->get('languages', []);
+        $validation = validate($request, [
+            'languages' => 'required|array'
+        ]);
 
-        if (empty($languages)) {
+        if ($validation !== true) {
             return new \WP_Error(
                 'validation_error',
                 __('Please complete the required fields.', 'bible-plugin'),
-                [
-                    'status' => 400,
-                    'errors' => ['languages' => __('Languages field is required.', 'bible-plugin')]
-                ]
+                $validation,
             );
         }
 
+        $languages = $request->get('languages', []);
         $result = transaction(function () use ($languages) {
             set_plugin_option('languages', $languages);
         });
@@ -121,8 +121,7 @@ class BibleBrainsFormController {
         if ($result !== true) {
             return new \WP_Error(
                 'submission_error',
-                __('Form could not be submitted.', 'bible-plugin'),
-                ['status' => 400]
+                __('Form could not be submitted.', 'bible-plugin')
             );
         }
 
@@ -140,34 +139,30 @@ class BibleBrainsFormController {
      * @return array|\WP_Error Response data
      */
     public function validate(Request $request) {
-        $bible_brains_key = $request->get('bible_brains_key');
+        $validation = validate($request, [
+            'bible_brains_key' => 'required'
+        ]);
 
-        if (empty($bible_brains_key)) {
+
+        if ($validation !== true) {
             return new \WP_Error(
-                'bible_plugin_validation',
+                'validation_error',
                 __('Please enter a key.', 'bible-plugin'),
-                [
-                    'status' => 400,
-                    'errors' => ['bible_brains_key' => __('This field is required.', 'bible-plugin')]
-                ]
+                $validation
             );
         }
 
+        $bible_brains_key = $request->get('bible_brains_key');
         $bibles = container()->get(Bibles::class);
         $keys = container()->get(BibleBrainsKeys::class);
-
         $key = $keys->has_override() ? $keys->get_override()[0] : $bible_brains_key;
 
         try {
             $bibles->find('ENGESV', ['key' => $key, 'cache' => false]);
         } catch (BibleBrainsException $e) {
             return new \WP_Error(
-                'bible_plugin_invalid_key',
-                __('Failed to validate key.', 'bible-plugin'),
-                [
-                    'status' => 401,
-                    'errors' => ['bible_brains_key' => __('Invalid.', 'bible-plugin')]
-                ]
+                'validation_error',
+                __('Failed to validate key.', 'bible-plugin')
             );
         }
 
@@ -178,9 +173,8 @@ class BibleBrainsFormController {
 
             if ($result !== true) {
                 return new \WP_Error(
-                    'bible_plugin_save_failed',
-                    __('Form could not be submitted.', 'bible-plugin'),
-                    ['status' => 400]
+                    500,
+                    __('Form could not be submitted.', 'bible-plugin')
                 );
             }
         }

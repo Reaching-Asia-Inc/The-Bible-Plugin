@@ -2,10 +2,22 @@
 
 namespace CodeZone\Bible\Providers;
 
+use CodeZone\Bible\CodeZone\WPSupport\Options\OptionsInterface as Options;
 use CodeZone\Bible\Illuminate\Http\Client\Factory;
+use CodeZone\Bible\Services\BibleBrains\Api\ApiKeys as ApiKeysApi;
+use CodeZone\Bible\Services\BibleBrains\Api\Bibles as BiblesApi;
+use CodeZone\Bible\Services\BibleBrains\Api\Languages as LanguagesApi;
+use CodeZone\Bible\Services\BibleBrains\BibleBrainsKeys;
 use CodeZone\Bible\Services\BibleBrains\BiblePluginSiteGuzzleMiddleware;
+use CodeZone\Bible\Services\BibleBrains\Books;
+use CodeZone\Bible\Services\BibleBrains\FileSets;
 use CodeZone\Bible\Services\BibleBrains\GuzzleMiddleware;
 use CodeZone\Bible\GuzzleHttp\Client;
+use CodeZone\Bible\Services\BibleBrains\Language;
+use CodeZone\Bible\Services\BibleBrains\MediaTypes;
+use CodeZone\Bible\Services\BibleBrains\Reference;
+use CodeZone\Bible\Services\BibleBrains\Scripture;
+use CodeZone\Bible\Services\Translations;
 use function CodeZone\Bible\container;
 use CodeZone\Bible\League\Container\ServiceProvider\AbstractServiceProvider;
 use CodeZone\Bible\League\Container\ServiceProvider\BootableServiceProviderInterface;
@@ -40,6 +52,46 @@ class BibleBrainsProvider extends AbstractServiceProvider implements BootableSer
                 'verify' => false,
             ]);
         });
+
+        $this->container->add(ApiKeysApi::class, function () {
+            return new ApiKeysApi(
+                $this->container->get('http.biblePluginSite'),
+            );
+        });
+        $this->container->add(BibleBrainsKeys::class, function () {
+            return new BibleBrainsKeys(
+                $this->container->get(Options::class),
+                $this->container->get(ApiKeysApi::class),
+            );
+        });
+        $this->container->add(BiblesApi::class, function () {
+            return new BiblesApi(
+                $this->container->get('http.bibleBrains'),
+            );
+        });
+        $this->container->add(LanguagesApi::class, function () {
+            return new LanguagesApi(
+                $this->container->get('http.bibleBrains'),
+            );
+        });
+        $this->container->add(Language::class, function () {
+            return new Language(
+                $this->container->get(Options::class),
+                $this->container->get(LanguagesApi::class),
+                $this->container->get(Translations::class)
+            );
+        });
+        $this->container->add(Scripture::class, function () {
+            return new Scripture(
+                $this->container->get(BiblesApi::class),
+                $this->container->get(Books::class),
+                $this->container->get(FileSets::class),
+                $this->container->get(Reference::class),
+                $this->container->get(MediaTypes::class),
+                $this->container->get(Language::class),
+                $this->container->get(Options::class)
+            );
+        });
     }
 
     /**
@@ -52,7 +104,13 @@ class BibleBrainsProvider extends AbstractServiceProvider implements BootableSer
     {
         return in_array($id, [
             'http.bibleBrains',
-            'http.biblePluginSite'
+            'http.biblePluginSite',
+            BibleBrainsKeys::class,
+            ApiKeysApi::class,
+            BiblesApi::class,
+            LanguagesApi::class,
+            Language::class,
+            Scripture::class,
         ]);
     }
 

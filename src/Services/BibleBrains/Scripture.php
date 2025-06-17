@@ -4,7 +4,7 @@ namespace CodeZone\Bible\Services\BibleBrains;
 
 use CodeZone\Bible\Exceptions\BibleBrainsException;
 use CodeZone\Bible\Services\BibleBrains\Api\Bibles;
-use CodeZone\Bible\Services\Options;
+use CodeZone\Bible\CodeZone\WPSupport\Options\OptionsInterface as Options;;
 
 /**
  * The Scripture class is responsible for handling scripture references and retrieving scripture content from a Bible object.

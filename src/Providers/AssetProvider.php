@@ -6,6 +6,7 @@ use CodeZone\Bible\League\Container\ServiceProvider\AbstractServiceProvider;
 use CodeZone\Bible\CodeZone\WPSupport\Assets\AssetQueue;
 use CodeZone\Bible\CodeZone\WPSupport\Assets\AssetQueueInterface;
 use CodeZone\Bible\Services\Assets;
+use CodeZone\Bible\Services\BibleBrains\MediaTypes;
 use function CodeZone\Bible\config;
 use function CodeZone\Bible\namespace_string;
 
@@ -15,7 +16,6 @@ use function CodeZone\Bible\namespace_string;
  * The AssetProvider class provides asset-related services.
  */
 class AssetProvider extends AbstractServiceProvider {
-
     /**
      * Provide the services that this provider is responsible for.
      *
@@ -55,7 +55,7 @@ class AssetProvider extends AbstractServiceProvider {
 
         $this->getContainer()->add( Assets::class, function () {
             return new Assets(
-                $this->getContainer()->get( AssetQueueInterface::class )
+                $this->getContainer()->get( MediaTypes::class )
             );
         } );
     }

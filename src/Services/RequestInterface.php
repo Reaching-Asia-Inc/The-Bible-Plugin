@@ -8,6 +8,27 @@ namespace CodeZone\Bible\Services;
 interface RequestInterface
 {
     /**
+     * Executes the method and returns a string result.
+     *
+     * @return string The result of the method execution
+     */
+    public function method(): string;
+
+    /**
+     * Retrieve all POST request parameters as an array.
+     *
+     * @return array All POST request parameters
+     */
+    public function all_post(): array;
+
+    /**
+     * Retrieve all GET request parameters as an array.
+     *
+     * @return array An array of all GET request parameters
+     */
+    public function all_get(): array;
+
+    /**
      * Get a request parameter value by key. If no key is provided, returns all parameters.
      *
      * @param string|null $key Parameter key to retrieve
@@ -57,13 +78,6 @@ interface RequestInterface
      * @return array All request parameters
      */
     public function all(): array;
-
-    /**
-     * Get the HTTP request method.
-     *
-     * @return string HTTP method (GET, POST etc)
-     */
-    public function method(): string;
 
     /**
      * Check if request method is POST.

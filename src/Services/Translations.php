@@ -5,7 +5,7 @@ namespace CodeZone\Bible\Services;
 use CodeZone\Bible\Gettext\Loader\PoLoader;
 use CodeZone\Bible\Gettext\Translation;
 use CodeZone\Bible\Gettext\Translations as GettextTranslations;
-use WhiteCube\Lingua\Service;
+use CodeZone\Bible\WhiteCube\Lingua\Service;
 use function CodeZone\Bible\container;
 use function CodeZone\Bible\get_plugin_option;
 use function CodeZone\Bible\languages_path;
@@ -38,37 +38,42 @@ class Translations
      */
     public function __construct()
     {
-        load_plugin_textdomain( 'bible-plugin', false, 'bible-plugin/languages' );
-        add_filter( 'gettext_with_context', [ $this, 'gettext_with_context' ], 10, 4 );
-        add_filter( "plugin_locale", [ $this, 'plugin_locale' ], 10, 2 );
+        add_action('init', [$this, 'init']);
+        add_filter('gettext_with_context', [$this, 'gettext_with_context'], 10, 4);
+        add_filter("plugin_locale", [$this, 'plugin_locale'], 10, 2);
+    }
+
+    public function init()
+    {
+        load_plugin_textdomain('bible-plugin', false, 'bible-plugin/languages');
     }
 
     /**
      * Retrieves a collection of paths to language files.
      *
-     * @return Collection The collection of language file paths.
+     * @return array The array of language file paths.
      */
-    public function paths(): Collection
+    public function paths(): array
     {
-        return collect( glob( languages_path( '*.po' ) ) );
+        return glob(languages_path('*.po'));
     }
 
     /**
      * Retrieves a collection of files.
      *
-     * @return Collection The collection of files.
+     * @return array The array of files.
      */
-    public function files(): Collection
+    public function files(): array
     {
-        return $this->paths()->map(function ( $file ) {
-            return ( new PoLoader() )->loadFile( $file );
-        });
+        return array_map(function ($file) {
+            return (new PoLoader())->loadFile($file);
+        }, $this->paths());
     }
 
     /**
      * Retrieves the languages from the files in the collection.
      *
-     * @return Collection A collection of languages.
+     * @return array A collection of languages.
      */
     public function languages(): array
     {
@@ -89,26 +94,26 @@ class Translations
     public function browser_languages(): array
     {
         // phpcs:ignore
-		$language_string = wp_unslash( $_SERVER['HTTP_ACCEPT_LANGUAGE'] ?? '' );
+        $language_string = wp_unslash($_SERVER['HTTP_ACCEPT_LANGUAGE'] ?? '');
 
-        if ( empty( $language_string ) ) {
+        if (empty($language_string)) {
             return [];
         }
 
         // phpcs:ignore
-        $lang_parse = explode( ',', wp_unslash( $_SERVER['HTTP_ACCEPT_LANGUAGE'] ?? '' ) );
+        $lang_parse = explode(',', wp_unslash($_SERVER['HTTP_ACCEPT_LANGUAGE'] ?? ''));
 
         $languages = [];
         // Loop through each item of the array and split it into a separate array where index 0 is the language and index 1 is the priority
-        foreach ( $lang_parse as $lang ) {
-            $lang_parts                  = explode( ';', $lang );
-            $languages[ $lang_parts[0] ] = isset( $lang_parts[1] ) ? str_replace( 'q=', '', $lang_parts[1] ) : 1;
+        foreach ($lang_parse as $lang) {
+            $lang_parts = explode(';', $lang);
+            $languages[$lang_parts[0]] = isset($lang_parts[1]) ? str_replace('q=', '', $lang_parts[1]) : 1;
         }
 
         // Sort the languages by priority
-        arsort( $languages );
+        arsort($languages);
 
-        return array_keys( $languages );
+        return array_keys($languages);
     }
 
     /**
@@ -155,9 +160,9 @@ class Translations
      *
      * @return string The locale of the plugin.
      */
-    public function plugin_locale( $locale, $domain ): string
+    public function plugin_locale($locale, $domain): string
     {
-        if ( $domain === 'bible-plugin' ) {
+        if ($domain === 'bible-plugin') {
             return $this->resolve_locale();
         }
 
@@ -173,11 +178,11 @@ class Translations
      * @param string $domain The translation domain.
      * @return string The translated text with context.
      */
-    public function gettext_with_context( $translation, $text, $context, $domain ): string
+    public function gettext_with_context($translation, $text, $context, $domain): string
     {
-        if ( 'bible-plugin' === $domain && in_array( $context, $this->custom_translation_contexts ) ) {
-            $custom_translation = $this->apply_custom_translation( $text );
-            if ( $custom_translation ) {
+        if ('bible-plugin' === $domain && in_array($context, $this->custom_translation_contexts)) {
+            $custom_translation = $this->apply_custom_translation($text);
+            if ($custom_translation) {
                 return $custom_translation;
             }
         }
@@ -193,7 +198,7 @@ class Translations
      *
      * @return string The translated text.
      */
-    private function apply_custom_translation( $text ): string
+    private function apply_custom_translation($text): string
     {
         return $this->custom_translations()[$text] ?? '';
     }
@@ -205,7 +210,11 @@ class Translations
      */
     public function custom_translations(): array
     {
-        return get_plugin_option( 'translations', [] );
+        $translations = get_plugin_option('translations', []);
+        if (!is_array($translations)) {
+            return [];
+        }
+        return $translations;
     }
 
     /**
@@ -219,12 +228,12 @@ class Translations
         $translations = $this->get_text()->getTranslations();
 
         // Filter by context
-        $filtered = array_filter($translations, function(Translation $translation) {
+        $filtered = array_filter($translations, function (Translation $translation) {
             return in_array($translation->getContext(), $this->custom_translation_contexts);
         });
 
         // Map to original strings
-        $originals = array_map(function(Translation $translation) {
+        $originals = array_map(function (Translation $translation) {
             return $translation->getOriginal();
         }, $filtered);
 
@@ -256,6 +265,6 @@ class Translations
      */
     private function get_text(): GettextTranslations
     {
-        return container()->make( GettextTranslations::class );
+        return container()->get(GettextTranslations::class);
     }
 }

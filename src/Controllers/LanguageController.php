@@ -34,9 +34,9 @@ class LanguageController
     public function options(Request $request): array
     {
         $languages = container()->get(Languages::class);
-        $result = $languages->all();
+        $response = $this->index($request);
         return [
-            'data' => $languages->as_options($result['data'] ?? [])
+            'data' => $languages->as_options($response['data'] ?? [])
         ];
     }
 

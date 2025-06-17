@@ -5,6 +5,7 @@ namespace CodeZone\Bible\Controllers;
 use CodeZone\Bible\Services\RequestInterface as Request;
 use CodeZone\Bible\Services\BibleBrains\Api\Bibles;
 use function CodeZone\Bible\container;
+use function CodeZone\Bible\validate;
 
 /**
  * Class BibleController
@@ -22,6 +23,16 @@ class BibleController {
      */
     public function show(Request $request): array {
         $bibles = container()->get(Bibles::class);
+        $errors = validate($request, [
+            'id' => 'required'
+        ]);
+        if ($errors !== true) {
+            wp_send_json_error([
+                'message'  => __('Please complete the required fields.', 'bible-plugin'),
+                'data' => $errors,
+            ], 400);
+            exit;
+        }
         return $bibles->find($request->get('id'));
     }
 
@@ -33,11 +44,11 @@ class BibleController {
      * @return array Data transformed into options format
      */
     public function options(Request $request): array {
+        $response = $this->index( $request );
         $bibles = container()->get(Bibles::class);
-        $result = $bibles->all(['query' => $request->get('query')]);
 
         return [
-            'data' => $bibles->as_options($result['data'] ?? [])
+            'data' => $bibles->as_options( $response['data'] ?? [] )
         ];
     }
 
@@ -67,18 +78,18 @@ class BibleController {
     /**
      * Handle the index route for bibles.
      *
-     * @param array $request The request data
+     * @param Request $request The request data
      * @return array Response data containing filtered bible data
      */
-    public function index(array $request): array
+    public function index(Request $request): array
     {
         $bibles = container()->get(Bibles::class);
         $params = [
-            'page' => $request['paged'] ?? 1,
-            'limit' => $request['limit'] ?? 50
+            'page' => $request->get('paged', 1),
+            'limit' => $request->get('limit', 50)
         ];
 
-        $language_code = $request['language_code'] ?? '';
+        $language_code = $request->get('language_code', '');
         if ($language_code) {
             $language_codes = explode(',', $language_code);
             $result = $bibles->for_languages($language_codes, ['limit' => 150]);
@@ -86,7 +97,7 @@ class BibleController {
             $result = $bibles->all($params);
         }
 
-        return $this->filter($result, $request['search'] ?? '');
+        return $this->filter($result, $request->get('search', ''));
     }
 
 }

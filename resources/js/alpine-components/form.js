@@ -79,8 +79,8 @@ export const form = (props = {}) => {
                 if (response.status === 200) {
                     this.handleSubmissionSuccess(data.success)
                     return;
-                } else if (data.error) {
-                    this.handleSubmissionFailed(data.error)
+                } else if (data.message) {
+                    this.handleSubmissionFailed(data.message)
                     return;
                 }
 
