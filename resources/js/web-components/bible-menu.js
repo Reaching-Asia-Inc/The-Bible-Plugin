@@ -6,12 +6,13 @@ import {$ntBooks, $otBooks} from "../stores/book.js";
 import {$hasSelection} from "../stores/selection.js";
 import {$canShare} from "../stores/share.js";
 import {$hasAudio, $audioOpen, $playAudio} from "../stores/audio.js";
+import {$hasVideo, $videoOpen, $playVideo} from "../stores/video.js";
 
 import {__} from "../helpers.js"
 import {css} from "@spectrum-web-components/base";
 
 @customElement('tbp-bible-menu')
-export class BibleMenu extends withStores(TBPElement, [$otBooks, $ntBooks, $hasAudio, $audioOpen, $hasSelection, $canShare]) {
+export class BibleMenu extends withStores(TBPElement, [$otBooks, $ntBooks, $hasAudio, $audioOpen, $hasVideo, $videoOpen, $hasSelection, $canShare]) {
 
     static get styles() {
         return [
@@ -74,27 +75,22 @@ export class BibleMenu extends withStores(TBPElement, [$otBooks, $ntBooks, $hasA
                        vertical
                      ></sp-divider>
                 ` }
-                ${$hasAudio.get() ? html`
-                            <sp-button
-                                    variant="accent"
-                                    label="Icon only"
-                                    icon-only
-                                    @click=${$playAudio}
-                            >
-                                ${$audioOpen.get() ? html`
-                                    <sp-icon-replay slot="icon"></sp-icon-replay>` : html`
-                                    <iconify-icon icon="${"hugeicons:audio-book-03"}"
-                                                  slot="icon"
-                                                  width="18px"
-                                                  height="18px"></iconify-icon>`}
-                            </sp-button>
-                            <sp-divider
-                                    size="s"
-                                    style="align-self: stretch; height: auto;"
-                                    vertical
-                            ></sp-divider>
-                        `
-                        : nothing}
+                ${$hasAudio.get() && !$hasVideo.get() ? html`
+                  <sp-button
+                    variant="accent"
+                    label="Icon only"
+                    icon-only
+                    @click=${$playAudio}
+                  >
+                    ${$audioOpen.get() ? html`
+                      <sp-icon-replay slot="icon"></sp-icon-replay>` : html`
+                      <iconify-icon icon="${"material-symbols:play-arrow"}"
+                                    slot="icon"
+                                    width="18px"
+                                    height="18px"></iconify-icon>`}
+                  </sp-button>
+                `
+                : nothing}
                 <tbp-book-menu label="${__("Books")}"
                                .books=${$otBooks.get().concat($ntBooks.get())}
                                class="book-menu--mobile"></tbp-book-menu>

@@ -17,6 +17,7 @@ use CodeZone\Bible\Services\BibleBrains\Language;
 use CodeZone\Bible\Services\BibleBrains\MediaTypes;
 use CodeZone\Bible\Services\BibleBrains\Reference;
 use CodeZone\Bible\Services\BibleBrains\Scripture;
+use CodeZone\Bible\Services\BibleBrains\Video;
 use CodeZone\Bible\Services\Translations;
 use function CodeZone\Bible\container;
 use CodeZone\Bible\League\Container\ServiceProvider\AbstractServiceProvider;
@@ -91,6 +92,12 @@ class BibleBrainsProvider extends AbstractServiceProvider implements BootableSer
                 $this->container->get(Language::class),
                 $this->container->get(Options::class)
             );
+        });
+        $this->container->add(Video::class, function () {
+           return new Video(
+               $this->container->get(BiblesApi::class),
+               $this->container->get('http.bibleBrains'),
+           );
         });
     }
 

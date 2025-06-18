@@ -22,12 +22,12 @@ class MediaTypes {
 			'fileset_types' => [ 'audio', 'audio_drama' ],
 			'group'         => 'dbp-prod'
 		],
-//      'video'       => [
-//          'key'           => 'video',
-//          'label'         => 'Video',
-//          'fileset_types' => [ 'video_stream' ],
-//          'group'         => 'dbp-vid'
-//      ],
+      'video'       => [
+          'key'           => 'video',
+          'label'         => 'Video',
+          'fileset_types' => [ 'video_stream' ],
+          'group'         => 'dbp-vid'
+      ],
 		'text'  => [
 			'key'           => 'text',
 			'label'         => 'Text',

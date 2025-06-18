@@ -16,7 +16,7 @@ if (!endpoint.includes('?')) {
     endpoint += '&'
 }
 
-export const $query = fetchState([endpoint, 'reference=', $reference]);
+export const $query = fetchState([endpoint, 'reference=', $reference, '&video=', true]);
 $query.listen((response) => {
     const {loading, data, error} = response;
 

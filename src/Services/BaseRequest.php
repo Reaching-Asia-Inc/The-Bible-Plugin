@@ -54,9 +54,29 @@ abstract class BaseRequest implements RequestInterface
             return $urlParam;
         }
 
-        return $this->method() === 'POST'
-            ? $this->get_post($key, $default)
-            : $this->get_query($key, $default);
+        return $this->cast(
+            $this->method() === 'POST'
+                ? $this->get_post($key, $default)
+                : $this->get_query($key, $default)
+        );
+    }
+
+    /**
+     * Casts the given value to a sanitized string if it is of type string.
+     *
+     * @param mixed $value The value to be cast and sanitized
+     * @return string|null The sanitized string if the input is a string, otherwise null
+     */
+    protected function cast($value) {
+        if ($value === "true") {
+            return true;
+        }
+
+        if ($value === "false") {
+            return false;
+        }
+
+        return $value;
     }
 
     /**

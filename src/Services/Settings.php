@@ -34,8 +34,8 @@ class Settings {
      */
     public function register_menu(): void {
         $menu = add_menu_page(
-            __( 'The Bible Plugin', 'bible-plugin' ),
-            __( 'The Bible Plugin', 'bible-plugin' ),
+            __( 'Bible', 'bible-plugin' ),
+            __( 'Bible', 'bible-plugin' ),
             'manage_options',
             'bible-plugin',
             '',

@@ -10,9 +10,10 @@ import {$message} from "../stores/message.js"
 import {$error} from "../stores/error.js"
 import {$reference} from "../stores/reference.js";
 import {__} from "../helpers.js";
+import {$hasVideo} from "../stores/video.js";
 
 @customElement('tbp-bible')
-export class Bible extends withStores(TBPElement, [$query, $bookName, $chapter, $fullScreen, $message, $error]) {
+export class Bible extends withStores(TBPElement, [$query, $bookName, $chapter, $fullScreen, $message, $error, $hasVideo]) {
     @property({type: String}) reference = 'JHN 1'
 
     static get styles() {
@@ -68,7 +69,7 @@ export class Bible extends withStores(TBPElement, [$query, $bookName, $chapter, 
 
     renderSuccess() {
         return html`
-            <main>${$fullScreen.get() ? this.renderFullScreen() : this.renderInPage()}</main>`;
+            <main>${$fullScreen.get() ? this.renderFullScreen() : this.renderStructure()}</main>`;
     }
 
     renderError() {
@@ -96,8 +97,6 @@ export class Bible extends withStores(TBPElement, [$query, $bookName, $chapter, 
     }
 
     renderFullScreen() {
-        const {loading} = $query.get();
-
         return html`
             <sp-overlay type="page" open headline="Full Screen">
                 <tbp-dialog-wrapper
@@ -105,31 +104,28 @@ export class Bible extends withStores(TBPElement, [$query, $bookName, $chapter, 
                         no-divider
                         headline-visibility="hidden"
                 >
-                    <tbp-header></tbp-header>
-
-                    ${loading ? this.renderLoader() : html`
-                        <tbp-reader></tbp-reader>
-                        <tbp-audio-bar></tbp-audio-bar>
-                    `}
-
-                    <tbp-footer></tbp-footer>
-
+                    ${this.renderStructure()}
                 </tbp-dialog-wrapper>
             </sp-overlay>
         `
     }
 
-    renderInPage() {
+    renderStructure() {
         const {loading} = $query.get();
 
         return html`
             <tbp-header></tbp-header>
             ${loading ? this.renderLoader() : html`
-                <tbp-reader></tbp-reader>
-                <tbp-audio-bar></tbp-audio-bar>
+              <tbp-video-pane></tbp-video-pane>
+              <tbp-reader></tbp-reader>
+              <tbp-audio-bar></tbp-audio-bar>
             `}
             <tbp-footer></tbp-footer>
         `
+    }
+
+    renderContent() {
+      return
     }
 
     renderLoader() {

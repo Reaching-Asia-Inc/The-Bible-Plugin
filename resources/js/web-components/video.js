@@ -28,7 +28,9 @@ export class Video extends TBPElement {
 
     init() {
         setTimeout(() => {
-            const isHls = this.content.some(({path}) => path.endsWith('.m3u8'));
+            const isHls = this.content.some(({playlist}) => {
+              return Array.isArray(playlist) && playlist.some(stream => stream.url.includes('.m3u8'));
+            });
             let initEvent = new CustomEvent('tpb-player:initialize', {
                 bubbles: true,
                 composed: true
@@ -36,19 +38,17 @@ export class Video extends TBPElement {
 
             if (isHls && Hls.isSupported()) {
                 const hls = new Hls();
-                this.content.forEach(({path}) => {
-                    //hls.loadSource("https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8")
-                    console.log(path)
-                    hls.loadSource(path);
+                this.content.forEach(({playlist}) => {
+                    hls.loadSource(this.selectStream(playlist)?.url);
                 });
                 hls.attachMedia(this.videoRef.value);
                 hls.on(Hls.Events.MANIFEST_PARSED, () => {
                     this.playerRef.value.dispatchEvent(initEvent);
                 });
             } else {
-                this.content.forEach(({path}) => {
+                this.content.forEach(({playlist}) => {
                     const source = document.createElement('source');
-                    source.src = path;
+                    source.src = this.selectStream(playlist)?.url;
                     this.videoRef.value.appendChild(source);
                 });
             }
@@ -67,4 +67,39 @@ export class Video extends TBPElement {
             </tbp-player>`;
 
     }
+
+  selectStream(playlist) {
+    // Get screen dimensions
+    const screenWidth = window.innerWidth;
+    const screenHeight = window.innerHeight;
+
+    // Parse resolutions into width and height
+    const streams = playlist.map(stream => {
+      const [width, height] = stream.resolution.split('x').map(Number);
+      return {
+        ...stream,
+        width,
+        height
+      };
+    });
+
+    // Find the stream that best matches the screen resolution
+    // Prefer slightly higher resolution than lower for better quality
+    let bestStream = streams[0];
+    let minDiff = Infinity;
+
+    streams.forEach(stream => {
+      // Calculate how well this stream matches the screen size
+      // We compare the width since that's typically the limiting factor
+      const diff = Math.abs(stream.width - screenWidth);
+
+      // If this stream is a better match AND not too much larger than the screen
+      if (diff < minDiff && stream.width <= screenWidth * 1.5) {
+        minDiff = diff;
+        bestStream = stream;
+      }
+    });
+
+    return bestStream;
+  }
 }

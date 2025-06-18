@@ -7,8 +7,12 @@ export const [fetchState, mutateResponse] = nanoquery({
             return new Promise(() => {
             });
         }
-        return fetch(keys.join(''))
-            .then((r) => r.json())
-            .catch((r) => r.json())
+      return fetch(keys.join(''), {
+        headers: {
+          'Accept': 'application/json'
+        }
+      })
+        .then((r) => r.json())
+        .catch((r) => r.json())
     },
 });
