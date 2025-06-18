@@ -1,7 +1,8 @@
 <?php
 
-use CodeZone\Bible\Controllers\Admin\BibleBrainsFormController;
-use CodeZone\Bible\Controllers\Admin\CustomizationFomController;
+use CodeZone\Bible\Controllers\Settings\AdvancedController;
+use CodeZone\Bible\Controllers\Settings\BibleBrainsFormController;
+use CodeZone\Bible\Controllers\Settings\CustomizationFomController;
 use CodeZone\Bible\Controllers\ScriptureController;
 use CodeZone\Bible\Controllers\LanguageController;
 use CodeZone\Bible\Controllers\BibleMediaTypesController;
@@ -66,7 +67,7 @@ return [
     [
         'method'  => 'POST',
         'route'   => '/bible-brains/key',
-        'callback'=> [BibleBrainsFormController::class, 'validate'],
+        'callback'=> [AdvancedController::class, 'submit'],
         'permission_callback' => function () {
             return current_user_can('manage_options');
         },

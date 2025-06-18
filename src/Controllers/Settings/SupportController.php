@@ -1,6 +1,6 @@
 <?php
 
-namespace CodeZone\Bible\Controllers\Admin;
+namespace CodeZone\Bible\Controllers\Settings;
 
 use CodeZone\Bible\Services\RequestInterface as Request;
 use function CodeZone\Bible\view;

@@ -62,6 +62,10 @@ class Settings {
                 'tab'   => 'customization'
             ];
             $menu[] = [
+                'label' => __( 'Advanced', 'bible-plugin' ),
+                'tab'   => 'advanced',
+            ];
+            $menu[] = [
                 'label' => __( 'Support', 'bible-plugin' ),
                 'tab'   => 'support',
             ];
@@ -93,7 +97,6 @@ class Settings {
     public function dispatch_routes(): void {
         $tab = sanitize_text_field($_GET['tab'] ?? 'general');
         $routes = include routes_path('settings.php');
-
         $handler = $routes[$tab] ?? $routes['general'];
         $request = container()->get(Request::class);
         $controller = container()->get($handler[0]);
