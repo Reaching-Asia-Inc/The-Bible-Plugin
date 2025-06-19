@@ -43,6 +43,12 @@ export class LanguagesField extends TBPElement {
                     display: block;
                     width: 100%;
                 }
+
+              #shortcodes {
+                font-size: 10px;
+                background-color: var(--spectrum-global-color-gray-200);
+                padding: 10px;
+              }
             `]
     }
 
@@ -157,6 +163,16 @@ export class LanguagesField extends TBPElement {
                             </sp-field-group>
                         `}
                     ` : nothing}
+                  </sp-field-group>
+
+                  <sp-field-group>
+                    <sp-field-label
+                      for="shortcodes"
+                    >
+                      ${__('Example Shortcode')}
+                    </sp-field-label>
+                    <pre id="shortcodes">[tbp-scripture reference="John 3:16" language="${value}" bible="${bibles}"]</pre>
+                  </sp-field-group>
                 </div>
 
 

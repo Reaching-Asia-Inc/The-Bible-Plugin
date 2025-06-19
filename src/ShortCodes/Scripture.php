@@ -109,7 +109,7 @@ class Scripture {
 		$error  = false;
 		$result = [];
 
-		if ( ! $this->media_types->exists( $attributes['media'] ) ) {
+        if ( ! $this->media_types->exists( $attributes['media'] ) ) {
 			$error = _x( "Invalid media type", "shortcode", "bible-plugin" );
 		} else {
 			try {
