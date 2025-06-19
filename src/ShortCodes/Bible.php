@@ -31,9 +31,13 @@ class Bible {
 		$this->assets = $assets;
         $this->request = $request;
 
-		add_shortcode( 'tbp-bible', [ $this, 'render' ] );
+        add_action('init', [$this, 'init']);
 		add_action( 'wp_enqueue_scripts', [ $this, 'enqueue_scripts' ] );
 	}
+
+    public function init() {
+        add_shortcode( 'tbp-bible', [ $this, 'render' ] );
+    }
 
 	/**
 	 * Enqueues the scripts and styles for the shortcode.
@@ -56,9 +60,6 @@ class Bible {
 	 * @return string The rendered Bible shortcode view.
 	 */
 	public function render( $attributes ) {
-        //Just in case we could not detect the shortcode
-        $this->assets->wp_enqueue_scripts();
-
 		if ( ! $attributes ) {
 			$attributes = [];
 		}
@@ -70,7 +71,6 @@ class Bible {
 		if ( $this->request->has( 'reference' ) ) {
 			$attributes['reference'] = $this->request->get( 'reference' );
 		}
-
 
 		return view( 'shortcodes/bible', [
 			'attributes' => $attributes

@@ -219,7 +219,7 @@ export class Content extends withStores(TBPElement, [$selection, $selectionOpen]
             <tbp-verse
                     verse="${verse_start}"
                     text="${verse_text}"
-                    selectable="${this.selectable}"
+                    ?selectable="${this.selectable}"
                     dir="${this.dir}"
             />
         `

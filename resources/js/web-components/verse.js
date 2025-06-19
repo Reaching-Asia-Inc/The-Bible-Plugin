@@ -6,7 +6,7 @@ import interact from 'interactjs';
 import {is_mobile, is_safari} from "../helpers.js";
 
 @customElement('tbp-verse')
-export class Scripture extends TBPElement {
+export class Verse extends TBPElement {
     @property({type: String}) verse = '';
     @property({type: String}) text = '';
     @property({type: Boolean}) selectable = false;
