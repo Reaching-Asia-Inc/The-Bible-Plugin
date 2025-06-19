@@ -73,7 +73,7 @@ jobs:
           zip -r bible-plugin.zip bible-plugin
 
       - name: Upload release
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v4
         with:
           name: bible-plugin.zip
           path: bible-plugin.zip
