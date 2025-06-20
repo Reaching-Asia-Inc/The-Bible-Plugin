@@ -19,10 +19,10 @@ class LanguageController
      * @param Request $request The request object
      * @return array Language data
      */
-    public function show(Request $request): array
+    public function show( Request $request ): array
     {
-        $languages = container()->get(Languages::class);
-        return $languages->find($request->get('id'));
+        $languages = container()->get( Languages::class );
+        return $languages->find( $request->get( 'id' ) );
     }
 
     /**
@@ -31,12 +31,12 @@ class LanguageController
      * @param Request $request The request object
      * @return array Languages as select options
      */
-    public function options(Request $request): array
+    public function options( Request $request ): array
     {
-        $languages = container()->get(Languages::class);
-        $response = $this->index($request);
+        $languages = container()->get( Languages::class );
+        $response = $this->index( $request );
         return [
-            'data' => $languages->as_options($response['data'] ?? [])
+            'data' => $languages->as_options( $response['data'] ?? [] )
         ];
     }
 
@@ -47,19 +47,18 @@ class LanguageController
      * @param Request $request The request object
      * @return array List of languages with pagination
      */
-    public function index(Request $request): array
+    public function index( Request $request ): array
     {
-        $languages = container()->get(Languages::class);
+        $languages = container()->get( Languages::class );
 
-        $search = $request->get('search');
-        if ($search) {
-            return $languages->search($search);
+        $search = $request->get( 'search' );
+        if ( $search ) {
+            return $languages->search( $search );
         }
 
         return $languages->all([
-            'page' => $request->get('paged', 1),
-            'limit' => $request->get('limit', 50)
+            'page' => $request->get( 'paged', 1 ),
+            'limit' => $request->get( 'limit', 50 )
         ]);
     }
-
 }

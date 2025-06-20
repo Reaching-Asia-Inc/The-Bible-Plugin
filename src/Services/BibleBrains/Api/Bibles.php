@@ -20,19 +20,19 @@ class Bibles extends ApiService {
      * @return array
      * @throws BibleBrainsException
      */
-    public function find_or_default($code = null, $language_id = null, array $query = []): array {
-        if (empty($code) && empty($language_id)) {
-            throw new BibleBrainsException(__('Either a bible ID or a language ID must be provided.', 'bible-plugin'));
+    public function find_or_default( $code = null, $language_id = null, array $query = [] ): array {
+        if ( empty( $code ) && empty( $language_id ) ) {
+            throw new BibleBrainsException( esc_html( __( 'Either a bible ID or a language ID must be provided.', 'bible-plugin' ) ) );
         }
 
-        if (empty($code)) {
-            return $this->default_for_language($language_id);
+        if ( empty( $code ) ) {
+            return $this->default_for_language( $language_id );
         }
 
-        $result = $this->find($code, $query);
+        $result = $this->find( $code, $query );
 
-        if (empty($result['data'])) {
-            $result = $this->default_for_language($language_id);
+        if ( empty( $result['data'] ) ) {
+            $result = $this->default_for_language( $language_id );
         }
 
         return $result;
@@ -46,8 +46,8 @@ class Bibles extends ApiService {
      * @return array
      * @throws BibleBrainsException
      */
-    public function books($code, $query = []): array {
-        return $this->find($code, $query)['data']['books'] ?? [];
+    public function books( $code, $query = [] ): array {
+        return $this->find( $code, $query )['data']['books'] ?? [];
     }
 
     /**
@@ -56,7 +56,7 @@ class Bibles extends ApiService {
      * @param array $record
      * @return array
      */
-    public function map_option(array $record): array {
+    public function map_option( array $record ): array {
         return [
             'value'    => $record['abbr'] ?? $record['id'] ?? null,
             'itemText' => $record['name'] ?? null
@@ -71,9 +71,9 @@ class Bibles extends ApiService {
      * @return array
      * @throws BibleBrainsException
      */
-    public function for_language(string $language_code, array $query = []): array {
-        $query = array_merge($query, ['language_code' => $language_code]);
-        return $this->all($query);
+    public function for_language( string $language_code, array $query = [] ): array {
+        $query = array_merge( $query, [ 'language_code' => $language_code ] );
+        return $this->all( $query );
     }
 
     /**
@@ -84,11 +84,11 @@ class Bibles extends ApiService {
      * @return array
      * @throws BibleBrainsException
      */
-    public function for_languages(array $language_codes, array $query = []): array {
-        $result = ['data' => []];
-        foreach ($language_codes as $language_code) {
-            $data = $this->for_language($language_code, $query)['data'] ?? [];
-            $result['data'] = array_merge($result['data'], $data);
+    public function for_languages( array $language_codes, array $query = [] ): array {
+        $result = [ 'data' => [] ];
+        foreach ( $language_codes as $language_code ) {
+            $data = $this->for_language( $language_code, $query )['data'] ?? [];
+            $result['data'] = array_merge( $result['data'], $data );
         }
         return $result;
     }
@@ -100,9 +100,9 @@ class Bibles extends ApiService {
      * @return array
      * @throws BibleBrainsException
      */
-    public function default_for_language(string $language_id): array {
-        $bible = $this->for_language($language_id);
-        return $this->find($bible['data'][0]['abbr']);
+    public function default_for_language( string $language_id ): array {
+        $bible = $this->for_language( $language_id );
+        return $this->find( $bible['data'][0]['abbr'] );
     }
 
     /**
@@ -112,10 +112,10 @@ class Bibles extends ApiService {
      * @return array
      * @throws BibleBrainsException
      */
-    public function default_for_languages(array $language_codes): array {
-        $result = ['data' => []];
-        foreach ($language_codes as $language_code) {
-            $language = $this->default_for_language($language_code);
+    public function default_for_languages( array $language_codes ): array {
+        $result = [ 'data' => [] ];
+        foreach ( $language_codes as $language_code ) {
+            $language = $this->default_for_language( $language_code );
             $result['data'][] = $language['data'];
         }
         return $result;
@@ -132,7 +132,7 @@ class Bibles extends ApiService {
      * @return array
      * @throws BibleBrainsException
      */
-    public function content($fileset, $book, $chapter, $verse_start, $verse_end): array {
+    public function content( $fileset, $book, $chapter, $verse_start, $verse_end ): array {
         return $this->get($this->endpoint . "/filesets/{$fileset}/{$book}/{$chapter}", [
             'verse_start' => $verse_start,
             'verse_end'   => $verse_end
@@ -147,8 +147,8 @@ class Bibles extends ApiService {
      * @return array
      * @throws BibleBrainsException
      */
-    public function reference($reference, $fileset): array {
-        [$book, $chapter, $verse_start, $verse_end] = Reference::spread($reference);
+    public function reference( $reference, $fileset ): array {
+        [$book, $chapter, $verse_start, $verse_end] = Reference::spread( $reference );
         return $this->get("{$this->endpoint}/filesets/{$fileset}/{$book}/{$chapter}", [
             'verse_start' => $verse_start,
             'verse_end'   => $verse_end

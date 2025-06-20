@@ -95,18 +95,18 @@ class Settings {
      * @return void
      */
     public function dispatch_routes(): void {
-        $tab = sanitize_text_field($_GET['tab'] ?? 'general');
-        $routes = include routes_path('settings.php');
+        $tab = sanitize_text_field( wp_unslash( $_GET['tab'] ?? 'general' ) );
+        $routes = include routes_path( 'settings.php' );
         $handler = $routes[$tab] ?? $routes['general'];
-        $request = container()->get(Request::class);
-        $controller = container()->get($handler[0]);
+        $request = container()->get( Request::class );
+        $controller = container()->get( $handler[0] );
         try {
-            $response = $controller->{$handler[1]}($request);
-        } catch (BibleBrainsException $e) {  // catch all exceptions
-            $response = $this->handle_exception($e);
+            $response = $controller->{$handler[1]}( $request );
+        } catch ( BibleBrainsException $e ) {  // catch all exceptions
+            $response = $this->handle_exception( $e );
         }
 
-        $this->handle_response($response);
+        $this->handle_response( $response );
     }
 
     /**
@@ -118,23 +118,27 @@ class Settings {
      *
      * @return void
      */
-    protected function handle_response($response) {
-        if (is_string($response)) {
-            echo $response;
+    protected function handle_response( $response ) {
+        if ( is_string( $response ) ) {
+            echo esc_html( $response );
             return;
         }
 
-        if (wp_is_json_request()) {
-            if (isset($response['error'])) {
-                wp_send_json_error($response);
+        if ( wp_is_json_request() ) {
+            if ( isset( $response['error'] ) || isset( $response['errors'] ) || isset( $response['code'] ) ) {
+                $code = isset( $response['code'] ) ? $response['code'] : 400;
+                if ( isset( $response['code'] ) ) {
+                    unset( $response['code'] );
+                }
+                wp_send_json_error( $response, $code );
             } else {
-                wp_send_json_success($response);
+                wp_send_json_success( $response );
             }
         }
     }
 
-    protected function handle_exception(\Exception $e) {
-        if (wp_is_json_request()) {
+    protected function handle_exception( \Exception $e ) {
+        if ( wp_is_json_request() ) {
             return [
                 'status' => $e->getCode(),
                 'error' => $e->getMessage(),
@@ -143,8 +147,8 @@ class Settings {
         }
 
         wp_die(
-            esc_html($e->getMessage()),
-            esc_attr($e->getCode())
+            esc_html( $e->getMessage() ),
+            esc_attr( $e->getCode() )
         );
     }
 }

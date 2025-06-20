@@ -38,14 +38,14 @@ class Translations
      */
     public function __construct()
     {
-        add_action('init', [$this, 'init']);
-        add_filter('gettext_with_context', [$this, 'gettext_with_context'], 10, 4);
-        add_filter("plugin_locale", [$this, 'plugin_locale'], 10, 2);
+        add_action( 'init', [ $this, 'init' ] );
+        add_filter( 'gettext_with_context', [ $this, 'gettext_with_context' ], 10, 4 );
+        add_filter( "plugin_locale", [ $this, 'plugin_locale' ], 10, 2 );
     }
 
     public function init()
     {
-        load_plugin_textdomain('bible-plugin', false, 'bible-plugin/languages');
+        load_plugin_textdomain( 'bible-plugin', false, 'bible-plugin/languages' );
     }
 
     /**
@@ -55,7 +55,7 @@ class Translations
      */
     public function paths(): array
     {
-        return glob(languages_path('*.po'));
+        return glob( languages_path( '*.po' ) );
     }
 
     /**
@@ -65,8 +65,8 @@ class Translations
      */
     public function files(): array
     {
-        return array_map(function ($file) {
-            return (new PoLoader())->loadFile($file);
+        return array_map(function ( $file ) {
+            return ( new PoLoader() )->loadFile( $file );
         }, $this->paths());
     }
 
@@ -77,11 +77,11 @@ class Translations
      */
     public function languages(): array
     {
-        $languages = array_map(function ($file) {
-            return strtolower($file->getLanguage());
+        $languages = array_map(function ( $file ) {
+            return strtolower( $file->getLanguage() );
         }, $this->files());
 
-        array_push($languages, 'en-us', 'en');
+        array_push( $languages, 'en-us', 'en' );
 
         return $languages;
     }
@@ -96,7 +96,7 @@ class Translations
         // phpcs:ignore
         $language_string = wp_unslash($_SERVER['HTTP_ACCEPT_LANGUAGE'] ?? '');
 
-        if (empty($language_string)) {
+        if ( empty( $language_string ) ) {
             return [];
         }
 
@@ -105,15 +105,15 @@ class Translations
 
         $languages = [];
         // Loop through each item of the array and split it into a separate array where index 0 is the language and index 1 is the priority
-        foreach ($lang_parse as $lang) {
-            $lang_parts = explode(';', $lang);
-            $languages[$lang_parts[0]] = isset($lang_parts[1]) ? str_replace('q=', '', $lang_parts[1]) : 1;
+        foreach ( $lang_parse as $lang ) {
+            $lang_parts = explode( ';', $lang );
+            $languages[$lang_parts[0]] = isset( $lang_parts[1] ) ? str_replace( 'q=', '', $lang_parts[1] ) : 1;
         }
 
         // Sort the languages by priority
-        arsort($languages);
+        arsort( $languages );
 
-        return array_keys($languages);
+        return array_keys( $languages );
     }
 
     /**
@@ -127,18 +127,18 @@ class Translations
     {
         $browser_languages = $this->browser_languages();
 
-        if (!$browser_languages || !count($browser_languages)) {
+        if ( !$browser_languages || !count( $browser_languages ) ) {
             return get_locale();
         }
 
         $supported_languages = $this->languages();
 
         // Convert the browser language using Lingua Service
-        foreach ($browser_languages as $browser_lang) {
-            $converted_lang = Service::createFromW3C($browser_lang)->toISO_639_1();
+        foreach ( $browser_languages as $browser_lang ) {
+            $converted_lang = Service::createFromW3C( $browser_lang )->toISO_639_1();
 
             // If browser language is supported in plugin, use that locale
-            if (in_array(strtolower($converted_lang), $supported_languages) || in_array(strtolower($browser_lang), $supported_languages)) {
+            if ( in_array( strtolower( $converted_lang ), $supported_languages ) || in_array( strtolower( $browser_lang ), $supported_languages ) ) {
                 return $converted_lang;
             }
         }
@@ -160,9 +160,9 @@ class Translations
      *
      * @return string The locale of the plugin.
      */
-    public function plugin_locale($locale, $domain): string
+    public function plugin_locale( $locale, $domain ): string
     {
-        if ($domain === 'bible-plugin') {
+        if ( $domain === 'bible-plugin' ) {
             return $this->resolve_locale();
         }
 
@@ -178,11 +178,11 @@ class Translations
      * @param string $domain The translation domain.
      * @return string The translated text with context.
      */
-    public function gettext_with_context($translation, $text, $context, $domain): string
+    public function gettext_with_context( $translation, $text, $context, $domain ): string
     {
-        if ('bible-plugin' === $domain && in_array($context, $this->custom_translation_contexts)) {
-            $custom_translation = $this->apply_custom_translation($text);
-            if ($custom_translation) {
+        if ( 'bible-plugin' === $domain && in_array( $context, $this->custom_translation_contexts ) ) {
+            $custom_translation = $this->apply_custom_translation( $text );
+            if ( $custom_translation ) {
                 return $custom_translation;
             }
         }
@@ -198,7 +198,7 @@ class Translations
      *
      * @return string The translated text.
      */
-    private function apply_custom_translation($text): string
+    private function apply_custom_translation( $text ): string
     {
         return $this->custom_translations()[$text] ?? '';
     }
@@ -210,8 +210,8 @@ class Translations
      */
     public function custom_translations(): array
     {
-        $translations = get_plugin_option('translations', []);
-        if (!is_array($translations)) {
+        $translations = get_plugin_option( 'translations', [] );
+        if ( !is_array( $translations ) ) {
             return [];
         }
         return $translations;
@@ -228,20 +228,20 @@ class Translations
         $translations = $this->get_text()->getTranslations();
 
         // Filter by context
-        $filtered = array_filter($translations, function (Translation $translation) {
-            return in_array($translation->getContext(), $this->custom_translation_contexts);
+        $filtered = array_filter($translations, function ( Translation $translation ) {
+            return in_array( $translation->getContext(), $this->custom_translation_contexts );
         });
 
         // Map to original strings
-        $originals = array_map(function (Translation $translation) {
+        $originals = array_map(function ( Translation $translation ) {
             return $translation->getOriginal();
         }, $filtered);
 
         // Remove duplicates and sort
-        $unique = array_unique($originals);
-        sort($unique);
+        $unique = array_unique( $originals );
+        sort( $unique );
 
-        return array_values($unique);
+        return array_values( $unique );
     }
 
 
@@ -252,7 +252,7 @@ class Translations
      */
     public function options(): array
     {
-        return array_map(function ($string) {
+        return array_map(function ( $string ) {
             return [
                 'value' => $string,
                 'itemText' => $string
@@ -265,6 +265,6 @@ class Translations
      */
     private function get_text(): GettextTranslations
     {
-        return container()->get(GettextTranslations::class);
+        return container()->get( GettextTranslations::class );
     }
 }

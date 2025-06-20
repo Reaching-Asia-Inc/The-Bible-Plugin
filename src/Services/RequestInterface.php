@@ -35,7 +35,7 @@ interface RequestInterface
      * @param mixed|null $default Default value if parameter not found
      * @return mixed              Parameter value or default if not found
      */
-    public function get(string $key = null, $default = null);
+    public function get( ?string $key = null, $default = null );
 
     /**
      * Check if a specified key exists.
@@ -43,7 +43,7 @@ interface RequestInterface
      * @param string $key The key to check for existence.
      * @return bool True if the key exists, false otherwise.
      */
-    public function has(string $key): bool;
+    public function has( string $key ): bool;
 
 
     /**
@@ -52,7 +52,7 @@ interface RequestInterface
      * @param string $key The key to check for existence
      * @return bool True if the key exists and is not null, otherwise false
      */
-    public function is_string(string $key): bool;
+    public function is_string( string $key ): bool;
 
     /**
      * Get a query string parameter value by key.
@@ -61,7 +61,7 @@ interface RequestInterface
      * @param mixed|null $default Default value if parameter not found
      * @return mixed             Query parameter value or default if not found
      */
-    public function get_query(string $key, $default = null);
+    public function get_query( string $key, $default = null );
 
     /**
      * Get a POST parameter value by key.
@@ -70,7 +70,7 @@ interface RequestInterface
      * @param mixed|null $default Default value if parameter not found
      * @return mixed             POST parameter value or default if not found
      */
-    public function get_post(string $key, $default = null);
+    public function get_post( string $key, $default = null );
 
     /**
      * Get all request parameters as an array.
@@ -100,5 +100,5 @@ interface RequestInterface
      * @param mixed|null $default Default value if parameter not found
      * @return mixed             URL parameter value or default if not found
      */
-    public function get_url_param(string $key, $default = null);
+    public function get_url_param( string $key, $default = null );
 }

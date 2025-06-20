@@ -1,8 +1,9 @@
 <?php
 
-namespace Tests;
+namespace Tests\Controllers;
 
 use CodeZone\Bible\Services\BibleBrains\Reference;
+use Tests\TestCase;
 use function CodeZone\Bible\container;
 
 /**

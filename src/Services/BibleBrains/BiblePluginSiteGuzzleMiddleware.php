@@ -20,26 +20,26 @@ class BiblePluginSiteGuzzleMiddleware
 
     protected function generate_key(): string
     {
-        if ($this->key === null) {
-            $this->key = base64_encode(file_get_contents(plugin_path('bible-plugin.php')));
+        if ( $this->key === null ) {
+            $this->key = base64_encode( file_get_contents( plugin_path( 'bible-plugin.php' ) ) );
         }
         return $this->key;
     }
 
-    public function __invoke(callable $handler)
+    public function __invoke( callable $handler )
     {
-        return function (RequestInterface $request, array $options) use ($handler) {
+        return function ( RequestInterface $request, array $options ) use ( $handler ) {
             // Resolve the URI
             $new_uri = UriResolver::resolve(
-                new Uri($this->base_url),
+                new Uri( $this->base_url ),
                 $request->getUri()
             );
 
             // Add authorization header
-            $request = $request->withHeader('Authorization', $this->generate_key())
-                ->withUri($new_uri);
+            $request = $request->withHeader( 'Authorization', $this->generate_key() )
+                ->withUri( $new_uri );
 
-            return $handler($request, $options);
+            return $handler( $request, $options );
         };
     }
 }

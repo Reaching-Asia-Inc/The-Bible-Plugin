@@ -138,12 +138,12 @@ class Books {
      *
      * @return array Returns an array representing the plucked book.
      */
-    public function pluck(string $book, array $books): array
+    public function pluck( string $book, array $books ): array
     {
-        foreach ($books as $b) {
-            if ($b['book_id'] === strtoupper($book)
-                || $b['name'] === ucfirst($book)
-                || $b['name_short'] === ucfirst($book)) {
+        foreach ( $books as $b ) {
+            if ( $b['book_id'] === strtoupper( $book )
+                || $b['name'] === ucfirst( $book )
+                || ( $b['name_short'] ?? null ) === ucfirst( $book ) ) {
                 return $b;
             }
         }

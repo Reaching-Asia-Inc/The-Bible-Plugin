@@ -19,6 +19,7 @@ use CodeZone\Bible\Plugin;
 use CodeZone\Bible\Providers\ConfigProvider;
 use CodeZone\Bible\CodeZone\WPSupport\Container\ContainerFactory;
 use CodeZone\Bible\Providers\PluginProvider;
+use CodeZone\Bible\Services\ErrorHandler;
 
 if ( ! defined( 'ABSPATH' ) ) {
     exit; // Exit if accessed directly
@@ -34,6 +35,8 @@ if ( file_exists( plugin_dir_path( __FILE__ ) . '/.env' ) ) {
     $dotenv->load();
 }
 
+new ErrorHandler();
+
 require_once plugin_dir_path( __FILE__ ) . 'includes/class-tgm-plugin-activation.php';
 require_once plugin_dir_path( __FILE__ ) . 'vendor-scoped/scoper-autoload.php';
 require_once plugin_dir_path( __FILE__ ) . 'vendor-scoped/autoload.php';
@@ -42,6 +45,9 @@ require_once plugin_dir_path( __FILE__ ) . 'vendor/autoload.php';
 $container = ContainerFactory::singleton();
 
 require_once plugin_dir_path( __FILE__ ) . 'src/helpers.php';
+
+$container->get( ErrorHandler::class );
+
 
 // Add any services providers required to init the plugin
 

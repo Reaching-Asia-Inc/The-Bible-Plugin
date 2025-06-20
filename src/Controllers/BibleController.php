@@ -21,19 +21,19 @@ class BibleController {
      * @param Request $request The request object.
      * @return array Bible data
      */
-    public function show(Request $request): array {
-        $bibles = container()->get(Bibles::class);
+    public function show( Request $request ): array {
+        $bibles = container()->get( Bibles::class );
         $errors = validate($request, [
             'id' => 'required'
         ]);
-        if ($errors !== true) {
-            wp_send_json_error([
-                'message'  => __('Please complete the required fields.', 'bible-plugin'),
-                'data' => $errors,
-            ], 400);
-            exit;
+        if ( $errors !== true ) {
+            return [
+                'code' => 400,
+                'message'  => __( 'Please complete the required fields.', 'bible-plugin' ),
+                'errors' => $errors,
+            ];
         }
-        return $bibles->find($request->get('id'));
+        return $bibles->find( $request->get( 'id' ) );
     }
 
 
@@ -43,9 +43,9 @@ class BibleController {
      * @param Request $request The request object.
      * @return array Data transformed into options format
      */
-    public function options(Request $request): array {
+    public function options( Request $request ): array {
         $response = $this->index( $request );
-        $bibles = container()->get(Bibles::class);
+        $bibles = container()->get( Bibles::class );
 
         return [
             'data' => $bibles->as_options( $response['data'] ?? [] )
@@ -60,15 +60,15 @@ class BibleController {
      * @param string|null $search A string representing the search term to filter the bible names.
      * @return array The filtered array of bibles containing only items where the name matches the search term.
      */
-    protected function filter(array $bibles, ?string $search): array
+    protected function filter( array $bibles, ?string $search ): array
     {
-        if (empty($search)) {
+        if ( empty( $search ) ) {
             return $bibles;
         }
 
         $bibles['data'] = array_filter(
             $bibles['data'] ?? [],
-            fn($bible) => stripos($bible['name'] ?? '', $search) !== false
+            fn( $bible ) => stripos( $bible['name'] ?? '', $search ) !== false
         );
 
         return $bibles;
@@ -81,23 +81,22 @@ class BibleController {
      * @param Request $request The request data
      * @return array Response data containing filtered bible data
      */
-    public function index(Request $request): array
+    public function index( Request $request ): array
     {
-        $bibles = container()->get(Bibles::class);
+        $bibles = container()->get( Bibles::class );
         $params = [
-            'page' => $request->get('paged', 1),
-            'limit' => $request->get('limit', 50)
+            'page' => $request->get( 'paged', 1 ),
+            'limit' => $request->get( 'limit', 50 )
         ];
 
-        $language_code = $request->get('language_code', '');
-        if ($language_code) {
-            $language_codes = explode(',', $language_code);
-            $result = $bibles->for_languages($language_codes, ['limit' => 150]);
+        $language_code = $request->get( 'language_code', '' );
+        if ( $language_code ) {
+            $language_codes = explode( ',', $language_code );
+            $result = $bibles->for_languages( $language_codes, [ 'limit' => 150 ] );
         } else {
-            $result = $bibles->all($params);
+            $result = $bibles->all( $params );
         }
 
-        return $this->filter($result, $request->get('search', ''));
+        return $this->filter( $result, $request->get( 'search', '' ) );
     }
-
 }

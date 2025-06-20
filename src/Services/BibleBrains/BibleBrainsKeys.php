@@ -19,7 +19,7 @@ class BibleBrainsKeys {
      * @param Options $options The options object used for configuring the class
      * @param ApiKeys $endpoint The API keys object used for accessing the endpoints
      */
-    public function __construct(Options $options, ApiKeys $endpoint)
+    public function __construct( Options $options, ApiKeys $endpoint )
     {
         $this->options = $options;
         $this->endpoint = $endpoint;
@@ -39,7 +39,7 @@ class BibleBrainsKeys {
      */
     public function has_remote_keys(): bool
     {
-        return !empty($this->fetch_remote());
+        return !empty( $this->fetch_remote() );
     }
 
     /**
@@ -49,9 +49,9 @@ class BibleBrainsKeys {
      *
      * @return array An array of items.
      */
-    public function all($override = true ) {
+    public function all( $override = true ) {
         // Check if the override constant is set and return the override if it is
-        if ( $override && $this->has_override()) {
+        if ( $override && $this->has_override() ) {
             return $this->get_override();
         }
 
@@ -76,10 +76,11 @@ class BibleBrainsKeys {
      *
      * @return mixed A random key.
      */
-    public function random($override = true ) {
+    public function random( $override = true ) {
         $keys = $this->all( $override );
-        if (!$keys) return null;
-        return $keys[ array_rand($keys) ];
+        if ( !$keys ) { return null;
+        }
+        return $keys[ array_rand( $keys ) ];
     }
 
     /**

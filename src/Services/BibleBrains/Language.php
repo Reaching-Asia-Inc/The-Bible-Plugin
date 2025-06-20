@@ -100,21 +100,21 @@ class Language {
 		return $language;
 	}
 
-    function get_direction( $text )
+    public function get_direction( $text )
     {
 
-        if (is_array($text)) {
-            if (!count($text)) {
+        if ( is_array( $text ) ) {
+            if ( !count( $text ) ) {
                 return 'auto';
             }
-            if (is_string($text[0])) {
+            if ( is_string( $text[0] ) ) {
                 $text = $text[0];
             }
-            if (isset($text[0]['verse_text'])) {
-                $text = array_map(function($item) {
+            if ( isset( $text[0]['verse_text'] ) ) {
+                $text = array_map(function ( $item ) {
                     return $item['verse_text'];
                 }, $text);
-                $text = implode(' ', $text);
+                $text = implode( ' ', $text );
             }
         }
 
@@ -129,9 +129,9 @@ class Language {
         $ltr_count = preg_match_all( $ltr_chars, $text );
 
         // Return the text direction based on the character count.
-        if ($rtl_count > $ltr_count) {
+        if ( $rtl_count > $ltr_count ) {
             return 'rtl';
-        } elseif ($ltr_count >= $rtl_count) {
+        } elseif ( $ltr_count >= $rtl_count ) {
             return 'ltr';
         }
 
@@ -160,8 +160,8 @@ class Language {
 			return false;
 		}
 
-        foreach ($languages as $config) {
-            if ($config['value'] === $code) {
+        foreach ( $languages as $config ) {
+            if ( $config['value'] === $code ) {
                 return true;
             }
         }
@@ -176,17 +176,17 @@ class Language {
 	public function default() {
 		$language = $this->options->get( 'languages', null, true );
 		if ( ! is_array( $language ) ) {
-			return config('options.defaults.language',  []);
+			return config( 'options.defaults.language', [] );
 		}
         $default_language = null;
-        foreach ($language as $config) {
-            if (!empty($config['is_default'])) {
+        foreach ( $language as $config ) {
+            if ( !empty( $config['is_default'] ) ) {
                 $default_language = $config;
                 break;
             }
         }
-        if (!$default_language) {
-            $default_language = reset($language);
+        if ( !$default_language ) {
+            $default_language = reset( $language );
         }
 
 		return $default_language;
@@ -209,8 +209,8 @@ class Language {
 				return false;
 			}
 
-            foreach ($languages as $config) {
-                if ($config['value'] === $code) {
+            foreach ( $languages as $config ) {
+                if ( $config['value'] === $code ) {
                     return $config;
                 }
             }

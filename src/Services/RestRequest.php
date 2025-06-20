@@ -23,7 +23,7 @@ class RestRequest extends BaseRequest implements RequestInterface
      *
      * @param WP_REST_Request $request The WordPress REST request instance
      */
-    public function __construct(WP_REST_Request $request)
+    public function __construct( WP_REST_Request $request )
     {
         $this->request = $request;
     }
@@ -50,7 +50,7 @@ class RestRequest extends BaseRequest implements RequestInterface
 
     public function all_post(): array
     {
-        if (wp_is_json_request()) {
+        if ( wp_is_json_request() ) {
             return $this->request->get_json_params();
         }
         return $this->request->get_body_params();

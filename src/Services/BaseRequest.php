@@ -18,9 +18,9 @@ abstract class BaseRequest implements RequestInterface
      * @param string $name The parameter name to retrieve
      * @return mixed The parameter value
      */
-    public function __get(string $name)
+    public function __get( string $name )
     {
-        return $this->get($name);
+        return $this->get( $name );
     }
 
     /**
@@ -43,21 +43,21 @@ abstract class BaseRequest implements RequestInterface
      * @param mixed|null $default Default value if parameter not found
      * @return mixed The parameter value or default
      */
-    public function get(string $key = null, $default = null)
+    public function get( ?string $key = null, $default = null )
     {
-        if ($key === null) {
+        if ( $key === null ) {
             return $this->all();
         }
 
-        $urlParam = $this->get_url_param($key);
-        if ($urlParam !== null) {
-            return $urlParam;
+        $url_param = $this->get_url_param( $key );
+        if ( $url_param !== null ) {
+            return $url_param;
         }
 
         return $this->cast(
             $this->method() === 'POST'
-                ? $this->get_post($key, $default)
-                : $this->get_query($key, $default)
+                ? $this->get_post( $key, $default )
+                : $this->get_query( $key, $default )
         );
     }
 
@@ -67,12 +67,12 @@ abstract class BaseRequest implements RequestInterface
      * @param mixed $value The value to be cast and sanitized
      * @return string|null The sanitized string if the input is a string, otherwise null
      */
-    protected function cast($value) {
-        if ($value === "true") {
+    protected function cast( $value ) {
+        if ( $value === "true" ) {
             return true;
         }
 
-        if ($value === "false") {
+        if ( $value === "false" ) {
             return false;
         }
 
@@ -85,9 +85,9 @@ abstract class BaseRequest implements RequestInterface
      * @param string $key The key to check for existence
      * @return bool True if the key exists and is not null, otherwise false
      */
-    public function has(string $key): bool
+    public function has( string $key ): bool
     {
-        return $this->get($key) !== null;
+        return $this->get( $key ) !== null;
     }
 
     /**
@@ -96,13 +96,13 @@ abstract class BaseRequest implements RequestInterface
      * @param string $key The key to check for existence
      * @return bool True if the key exists and is not null, otherwise false
      */
-    public function is_string(string $key): bool
+    public function is_string( string $key ): bool
     {
-        if (!$this->has($key)) {
+        if ( !$this->has( $key ) ) {
             return false;
         }
 
-        return is_string($this->get($key));
+        return is_string( $this->get( $key ) );
     }
 
     /**
@@ -112,15 +112,15 @@ abstract class BaseRequest implements RequestInterface
      * @param mixed|null $default Default value if not found
      * @return mixed Sanitized parameter value or default
      */
-    public function get_query(string $key, $default = null)
+    public function get_query( string $key, $default = null )
     {
         // Try WordPress query var first
-        $query_var = get_query_var($key, null);
-        if ($query_var !== null && $query_var !== '') {
-            return $this->sanitize($query_var);
+        $query_var = get_query_var( $key, null );
+        if ( $query_var !== null && $query_var !== '' ) {
+            return $this->sanitize( $query_var );
         }
 
-        return $this->sanitize($this->all_get()[$key] ?? $default);
+        return $this->sanitize( $this->all_get()[$key] ?? $default );
     }
 
     /**
@@ -130,13 +130,13 @@ abstract class BaseRequest implements RequestInterface
      * @param mixed|null $default Default value if not found
      * @return mixed Sanitized parameter value or default
      */
-    public function get_post(string $key, $default = null)
+    public function get_post( string $key, $default = null )
     {
-        if (!$this->is_post()) {
+        if ( !$this->is_post() ) {
             return $default;
         }
 
-        return $this->sanitize($this->all_post()[$key] ?? $default);
+        return $this->sanitize( $this->all_post()[$key] ?? $default );
     }
 
     /**
@@ -145,30 +145,30 @@ abstract class BaseRequest implements RequestInterface
      * @param mixed $value The value to be sanitized
      * @return mixed The sanitized value
      */
-    public function sanitize($value) {
-        if (is_string($value)) {
-            return sanitize_text_field($value);
+    public function sanitize( $value ) {
+        if ( is_string( $value ) ) {
+            return sanitize_text_field( $value );
         }
 
-        if (is_array($value)) {
-            return array_map([$this, 'sanitize'], $value);
+        if ( is_array( $value ) ) {
+            return array_map( [ $this, 'sanitize' ], $value );
         }
 
-        if (is_numeric($value)) {
-            return is_float($value) ? (float) $value : (int) $value;
+        if ( is_numeric( $value ) ) {
+            return is_float( $value ) ? (float) $value : (int) $value;
         }
 
-        if (is_bool($value)) {
+        if ( is_bool( $value ) ) {
             return (bool) $value;
         }
 
-        if (is_null($value)) {
+        if ( is_null( $value ) ) {
             return null;
         }
 
         // For any other type, convert to string and sanitize
-        if (is_object($value) || is_resource($value)) {
-            return sanitize_text_field((string) $value);
+        if ( is_object( $value ) || is_resource( $value ) ) {
+            return sanitize_text_field( (string) $value );
         }
 
         return $value;
@@ -203,9 +203,9 @@ abstract class BaseRequest implements RequestInterface
      * @param mixed|null $default Default value if parameter not found
      * @return mixed Sanitized route parameter value or default
      */
-    public function get_url_param(string $key, $default = null)
+    public function get_url_param( string $key, $default = null )
     {
         // URL parameters in WP_REST_Request are also accessed via get_param
-        return $this->sanitize($this->all_url_params()[$key] ?? $default);
+        return $this->sanitize( $this->all_url_params()[$key] ?? $default );
     }
 }

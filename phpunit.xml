@@ -16,7 +16,6 @@
     <testsuites>
         <testsuite name="all">
             <directory suffix=".php">./tests/</directory>
-            <file>./tests/CleanUp.php</file>
             <exclude>./tests/PluginTest.php</exclude>
         </testsuite>
     </testsuites>

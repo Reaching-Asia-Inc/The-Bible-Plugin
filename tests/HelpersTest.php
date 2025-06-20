@@ -1,0 +1,844 @@
+<?php
+
+namespace Tests;
+
+use CodeZone\Bible\Plugin;
+use CodeZone\Bible\League\Container\Container;
+use CodeZone\Bible\CodeZone\WPSupport\Config\ConfigInterface;
+use CodeZone\Bible\CodeZone\WPSupport\Options\OptionsInterface;
+use CodeZone\Bible\League\Plates\Engine;
+use CodeZone\Bible\Psr\Http\Message\ResponseInterface;
+use CodeZone\Bible\CodeZone\WPSupport\Router\ResponseFactory;
+use CodeZone\Bible\Services\Validator;
+use Brain\Monkey\Functions;
+
+class HelpersTest extends TestCase
+{
+    /**
+     * @test
+     */
+    public function plugin_returns_plugin_instance()
+    {
+        $plugin = $this->getMockBuilder( Plugin::class )
+            ->disableOriginalConstructor()
+            ->getMock();
+
+        $container = $this->getMockBuilder( Container::class )
+            ->disableOriginalConstructor()
+            ->getMock();
+
+        $container->expects( $this->once() )
+            ->method( 'get' )
+            ->with( Plugin::class )
+            ->willReturn( $plugin );
+
+        // Replace the container with our mock
+        $this->setContainerMock( $container );
+
+        // Call the plugin function
+        $result = \CodeZone\Bible\plugin();
+
+        // Check that the result is the plugin instance
+        $this->assertSame( $plugin, $result );
+    }
+
+    /**
+     * @test
+     */
+    public function container_returns_container_instance()
+    {
+        // Call the container function
+        $result = \CodeZone\Bible\container();
+
+        // Check that the result is a Container instance
+        $this->assertInstanceOf( Container::class, $result );
+    }
+
+    /**
+     * @test
+     */
+    public function config_returns_config_interface_when_no_key_provided()
+    {
+        $config = $this->getMockBuilder( ConfigInterface::class )
+            ->getMock();
+
+        $container = $this->getMockBuilder( Container::class )
+            ->disableOriginalConstructor()
+            ->getMock();
+
+        $container->expects( $this->once() )
+            ->method( 'get' )
+            ->with( ConfigInterface::class )
+            ->willReturn( $config );
+
+        // Replace the container with our mock
+        $this->setContainerMock( $container );
+
+        // Call the config function without a key
+        $result = \CodeZone\Bible\config();
+
+        // Check that the result is the config instance
+        $this->assertSame( $config, $result );
+    }
+
+    /**
+     * @test
+     */
+    public function config_returns_value_when_key_provided()
+    {
+        $config = $this->getMockBuilder( ConfigInterface::class )
+            ->getMock();
+
+        $config->expects( $this->once() )
+            ->method( 'get' )
+            ->with( 'test.key', null )
+            ->willReturn( 'test_value' );
+
+        $container = $this->getMockBuilder( Container::class )
+            ->disableOriginalConstructor()
+            ->getMock();
+
+        $container->expects( $this->once() )
+            ->method( 'get' )
+            ->with( ConfigInterface::class )
+            ->willReturn( $config );
+
+        // Replace the container with our mock
+        $this->setContainerMock( $container );
+
+        // Call the config function with a key
+        $result = \CodeZone\Bible\config( 'test.key' );
+
+        // Check that the result is the expected value
+        $this->assertEquals( 'test_value', $result );
+    }
+
+    /**
+     * @test
+     */
+    public function set_config_sets_config_value()
+    {
+        $config = $this->getMockBuilder( ConfigInterface::class )
+            ->getMock();
+
+        $config->expects( $this->once() )
+            ->method( 'set' )
+            ->with( 'test.key', 'test_value' )
+            ->willReturn( true );
+
+        $container = $this->getMockBuilder( Container::class )
+            ->disableOriginalConstructor()
+            ->getMock();
+
+        $container->expects( $this->once() )
+            ->method( 'get' )
+            ->with( ConfigInterface::class )
+            ->willReturn( $config );
+
+        // Replace the container with our mock
+        $this->setContainerMock( $container );
+
+        // Call the set_config function
+        $result = \CodeZone\Bible\set_config( 'test.key', 'test_value' );
+
+        // Check that the result is true
+        $this->assertTrue( $result );
+    }
+
+    /**
+     * @test
+     */
+    public function plugin_url_returns_correct_url()
+    {
+        Functions\expect( 'CodeZone\\Bible\\plugin_url' )
+            ->andReturn( "https://example.com/wp-content/plugins/test/path" );
+
+        // Call the plugin_url function
+        $result = \CodeZone\Bible\plugin_url( 'test/path' );
+
+        // Check that the result is the expected URL
+        $this->assertEquals( 'https://example.com/wp-content/plugins/bible-plugin/test/path', $result );
+    }
+
+    /**
+     * @test
+     */
+    public function api_url_returns_base_url_when_no_path_provided()
+    {
+        // Mock the rest_url function
+        Functions\expect( 'rest_url' )
+            ->andReturnUsing(function ( $path ) {
+                return "https://example.com/wp-json/{$path}";
+            });
+
+        // Call the api_url function without a path
+        $result = \CodeZone\Bible\api_url();
+
+        // Check that the result is the expected URL
+        $this->assertEquals( 'https://example.com/wp-json/' . \CodeZone\Bible\Services\RestApi::PATH, $result );
+    }
+
+    /**
+     * @test
+     */
+    public function api_url_returns_full_url_when_path_provided()
+    {
+        // Mock the rest_url function
+        Functions\expect( 'rest_url' )
+            ->andReturnUsing(function ( $path ) {
+                return "https://example.com/wp-json/{$path}";
+            });
+
+        // Call the api_url function with a path
+        $result = \CodeZone\Bible\api_url( 'test/path' );
+
+        // Check that the result is the expected URL
+        $this->assertEquals( 'https://example.com/wp-json/' . \CodeZone\Bible\Services\RestApi::PATH . '/test/path', $result );
+    }
+
+    /**
+     * @test
+     */
+    public function rgb_returns_rgb_format_when_hex_provided()
+    {
+        // Test with 6-digit hex
+        $result1 = \CodeZone\Bible\rgb( '#FFFFFF' );
+        $this->assertEquals( 'rgb(255, 255, 255)', $result1 );
+
+        // Test with 3-digit hex
+        $result2 = \CodeZone\Bible\rgb( '#FFF' );
+        $this->assertEquals( 'rgb(255, 255, 255)', $result2 );
+
+        // Test without hash
+        $result3 = \CodeZone\Bible\rgb( '000000' );
+        $this->assertEquals( 'rgb(0, 0, 0)', $result3 );
+    }
+
+    /**
+     * @test
+     */
+    public function rgb_returns_unchanged_when_rgb_provided()
+    {
+        $rgb = 'rgb(100, 150, 200)';
+        $result = \CodeZone\Bible\rgb( $rgb );
+        $this->assertEquals( $rgb, $result );
+    }
+
+    /**
+     * @test
+     */
+    public function cast_bool_values_converts_string_booleans_to_actual_booleans()
+    {
+        $input = [
+            'true_value' => 'true',
+            'false_value' => 'false',
+            'other_value' => 'something else'
+        ];
+
+        $expected = [
+            'true_value' => true,
+            'false_value' => false,
+            'other_value' => 'something else'
+        ];
+
+        $result = \CodeZone\Bible\cast_bool_values( $input );
+        $this->assertEquals( $expected, $result );
+    }
+
+    /**
+     * @test
+     */
+    public function validate_calls_validator_service()
+    {
+        $validator = $this->getMockBuilder( Validator::class )
+            ->disableOriginalConstructor()
+            ->getMock();
+
+        $validator->expects( $this->once() )
+            ->method( 'validate' )
+            ->with( [ 'test' => 'data' ], [ 'test' => 'required' ] )
+            ->willReturn( true );
+
+        $container = $this->getMockBuilder( Container::class )
+            ->disableOriginalConstructor()
+            ->getMock();
+
+        $container->expects( $this->once() )
+            ->method( 'get' )
+            ->with( Validator::class )
+            ->willReturn( $validator );
+
+        // Replace the container with our mock
+        $this->setContainerMock( $container );
+
+        // Call the validate function
+        $result = \CodeZone\Bible\validate( [ 'test' => 'data' ], [ 'test' => 'required' ] );
+
+        // Check that the result is true
+        $this->assertTrue( $result );
+    }
+
+    /**
+     * Helper method to set a mock container for testing
+     */
+    private function setContainerMock( $mock )
+    {
+        // This is a placeholder - in a real test, you would need to find a way
+        // to replace the container singleton with your mock
+    }
+
+    /**
+     * Helper method to mock WordPress functions
+     */
+    private function mockWordPressFunction( $function, $replacement )
+    {
+        // This is a placeholder - in a real test, you would need to find a way
+        // to mock WordPress functions
+    }
+
+    /**
+     * @test
+     */
+    public function plugin_path_returns_correct_path()
+    {
+        // Mock the Plugin::dir_path method
+        Functions\expect( 'CodeZone\Bible\Plugin::dir_path' )
+            ->andReturn( '/path/to/plugin' );
+
+        // Call the plugin_path function
+        $result = \CodeZone\Bible\plugin_path( 'test/path' );
+
+        // Check that the result is the expected path
+        $this->assertEquals( '/path/to/plugin/test/path', $result );
+    }
+
+    /**
+     * @test
+     */
+    public function src_path_returns_correct_path()
+    {
+
+        \expect( 'function_name' )
+            ->twice()
+            ->andReturn( 'First time I run', 'Second time I run' );
+
+        // Mock the config function
+        Functions\expect( 'CodeZone\Bible\config' )
+            ->andReturnUsing(function ( $key ) {
+                if ( $key === 'plugin.paths.src' ) {
+                    return 'src';
+                }
+                return null;
+            });
+
+        // Mock the plugin_path function
+        Functions\expect( 'CodeZone\Bible\plugin_path' )
+            ->andReturnUsing(function ( $path ) {
+                return '/path/to/plugin/' . $path;
+            });
+
+        // Call the src_path function
+        $result = \CodeZone\Bible\src_path( 'test/path' );
+
+        // Check that the result is the expected path
+        $this->assertEquals( '/path/to/plugin/src/test/path', $result );
+    }
+
+    /**
+     * @test
+     */
+    public function resources_path_returns_correct_path()
+    {
+        // Mock the config function
+        Functions\expect( 'CodeZone\Bible\config' )
+            ->andReturnUsing(function ( $key ) {
+                if ( $key === 'plugin.paths.resources' ) {
+                    return 'resources';
+                }
+                return null;
+            });
+
+        // Mock the plugin_path function
+        Functions\expect( 'CodeZone\Bible\plugin_path' )
+            ->andReturnUsing(function ( $path ) {
+                return '/path/to/plugin/' . $path;
+            });
+
+        // Call the resources_path function
+        $result = \CodeZone\Bible\resources_path( 'test/path' );
+
+        // Check that the result is the expected path
+        $this->assertEquals( '/path/to/plugin/resources/test/path', $result );
+    }
+
+    /**
+     * @test
+     */
+    public function admin_path_returns_correct_path()
+    {
+        // Mock the get_admin_url function
+        Functions\expect( 'get_admin_url' )
+            ->andReturnUsing(function ( $blog_id, $path ) {
+                return "https://example.com/wp-admin/{$path}";
+            });
+
+        // Call the admin_path function
+        $result = \CodeZone\Bible\admin_path( 'test/path' );
+
+        // Check that the result is the expected path
+        $this->assertEquals( 'wp-admin/test/path', $result );
+    }
+
+    /**
+     * @test
+     */
+    public function languages_path_returns_correct_path()
+    {
+        // Mock the plugin_path function
+        Functions\expect( 'CodeZone\Bible\plugin_path' )
+            ->andReturnUsing(function ( $path ) {
+                return '/path/to/plugin/' . $path;
+            });
+
+        // Call the languages_path function
+        $result = \CodeZone\Bible\languages_path( 'test/path' );
+
+        // Check that the result is the expected path
+        $this->assertEquals( '/path/to/plugin/languages/test/path', $result );
+    }
+
+    /**
+     * @test
+     */
+    public function routes_path_returns_correct_path()
+    {
+        // Mock the config function
+        Functions\expect( 'CodeZone\Bible\config' )
+            ->andReturnUsing(function ( $key ) {
+                if ( $key === 'plugin.paths.routes' ) {
+                    return 'routes';
+                }
+                return null;
+            });
+
+        // Mock the plugin_path function
+        Functions\expect( 'CodeZone\Bible\plugin_path' )
+            ->andReturnUsing(function ( $path ) {
+                return '/path/to/plugin/' . $path;
+            });
+
+        // Call the routes_path function
+        $result = \CodeZone\Bible\routes_path( 'test/path' );
+
+        // Check that the result is the expected path
+        $this->assertEquals( '/path/to/plugin/routes/test/path', $result );
+    }
+
+    /**
+     * @test
+     */
+    public function views_path_returns_correct_path()
+    {
+        // Mock the config function
+        Functions\expect( 'CodeZone\Bible\config' )
+            ->andReturnUsing(function ( $key ) {
+                if ( $key === 'plugin.paths.views' ) {
+                    return 'views';
+                }
+                return null;
+            });
+
+        // Mock the plugin_path function
+        Functions\expect( 'CodeZone\Bible\plugin_path' )
+            ->andReturnUsing(function ( $path ) {
+                return '/path/to/plugin/' . $path;
+            });
+
+        // Call the views_path function
+        $result = \CodeZone\Bible\views_path( 'test/path' );
+
+        // Check that the result is the expected path
+        $this->assertEquals( '/path/to/plugin/views/test/path', $result );
+    }
+
+    /**
+     * @test
+     */
+    public function view_returns_engine_when_no_view_provided()
+    {
+        $engine = $this->getMockBuilder( Engine::class )
+            ->disableOriginalConstructor()
+            ->getMock();
+
+        $container = $this->getMockBuilder( Container::class )
+            ->disableOriginalConstructor()
+            ->getMock();
+
+        $container->expects( $this->once() )
+            ->method( 'get' )
+            ->with( Engine::class )
+            ->willReturn( $engine );
+
+        // Replace the container with our mock
+        $this->setContainerMock( $container );
+
+        // Call the view function without a view
+        $result = \CodeZone\Bible\view();
+
+        // Check that the result is the engine instance
+        $this->assertSame( $engine, $result );
+    }
+
+    /**
+     * @test
+     */
+    public function view_renders_view_when_view_provided()
+    {
+        $engine = $this->getMockBuilder( Engine::class )
+            ->disableOriginalConstructor()
+            ->getMock();
+
+        $engine->expects( $this->once() )
+            ->method( 'render' )
+            ->with( 'test-view', [ 'test' => 'data' ] )
+            ->willReturn( '<html>Test</html>' );
+
+        $container = $this->getMockBuilder( Container::class )
+            ->disableOriginalConstructor()
+            ->getMock();
+
+        $container->expects( $this->once() )
+            ->method( 'get' )
+            ->with( Engine::class )
+            ->willReturn( $engine );
+
+        // Mock the apply_filters function
+        Functions\expect( 'apply_filters' )
+            ->andReturnUsing(function ( $tag, ...$args ) {
+                if ( $tag === 'bible-plugin.before_render_view' ) {
+                    return $args[0]; // Return the data unchanged
+                }
+                if ( $tag === 'bible-plugin.after_render_view' ) {
+                    return $args[0]; // Return the HTML unchanged
+                }
+                return $args[0];
+            });
+
+        // Mock the namespace_string function
+        Functions\expect( 'CodeZone\Bible\namespace_string' )
+            ->andReturnUsing(function ( $string ) {
+                return 'bible-plugin.' . $string;
+            });
+
+        // Replace the container with our mock
+        $this->setContainerMock( $container );
+
+        // Call the view function with a view
+        $result = \CodeZone\Bible\view( 'test-view', [ 'test' => 'data' ] );
+
+        // Check that the result is the rendered HTML
+        $this->assertEquals( '<html>Test</html>', $result );
+    }
+
+    /**
+     * @test
+     */
+    public function redirect_returns_response_interface()
+    {
+        $response = $this->getMockBuilder( ResponseInterface::class )
+            ->getMock();
+
+        // Mock the ResponseFactory::redirect method
+        Functions\expect( 'CodeZone\Bible\CodeZone\WPSupport\Router\ResponseFactory::redirect' )
+            ->andReturnUsing(function ( $url, $status, $headers ) use ( $response ) {
+                return $response;
+            });
+
+        // Call the redirect function
+        $result = \CodeZone\Bible\redirect( 'https://example.com', 301, [ 'X-Test' => 'test' ] );
+
+        // Check that the result is the response instance
+        $this->assertSame( $response, $result );
+    }
+
+    /**
+     * @test
+     */
+    public function set_option_adds_option_when_it_does_not_exist()
+    {
+        // Mock the get_option function
+        Functions\expect( 'get_option' )
+            ->andReturnUsing(function ( $option ) {
+                return false; // Option doesn't exist
+            });
+
+        // Mock the add_option function
+        Functions\expect( 'add_option' )
+            ->andReturnUsing(function ( $option, $value ) {
+                return true;
+            });
+
+        // Call the set_option function
+        $result = \CodeZone\Bible\set_option( 'test_option', 'test_value' );
+
+        // Check that the result is true
+        $this->assertTrue( $result );
+    }
+
+    /**
+     * @test
+     */
+    public function set_option_updates_option_when_it_exists()
+    {
+        // Mock the get_option function
+        Functions\expect( 'get_option' )
+            ->andReturnUsing(function ( $option ) {
+                return 'existing_value'; // Option exists
+            });
+
+        // Mock the update_option function
+        Functions\expect( 'update_option' )
+            ->andReturnUsing(function ( $option, $value ) {
+                return true;
+            });
+
+        // Call the set_option function
+        $result = \CodeZone\Bible\set_option( 'test_option', 'test_value' );
+
+        // Check that the result is true
+        $this->assertTrue( $result );
+    }
+
+    /**
+     * @test
+     */
+    public function get_plugin_option_returns_option_value()
+    {
+        $options = $this->getMockBuilder( OptionsInterface::class )
+            ->getMock();
+
+        $options->expects( $this->once() )
+            ->method( 'get' )
+            ->with( 'test_option', null, false )
+            ->willReturn( 'test_value' );
+
+        $container = $this->getMockBuilder( Container::class )
+            ->disableOriginalConstructor()
+            ->getMock();
+
+        $container->expects( $this->once() )
+            ->method( 'get' )
+            ->with( OptionsInterface::class )
+            ->willReturn( $options );
+
+        // Replace the container with our mock
+        $this->setContainerMock( $container );
+
+        // Call the get_plugin_option function
+        $result = \CodeZone\Bible\get_plugin_option( 'test_option' );
+
+        // Check that the result is the expected value
+        $this->assertEquals( 'test_value', $result );
+    }
+
+    /**
+     * @test
+     */
+    public function set_plugin_option_sets_option_value()
+    {
+        $options = $this->getMockBuilder( OptionsInterface::class )
+            ->getMock();
+
+        $options->expects( $this->once() )
+            ->method( 'set' )
+            ->with( 'test_option', 'test_value' )
+            ->willReturn( true );
+
+        $container = $this->getMockBuilder( Container::class )
+            ->disableOriginalConstructor()
+            ->getMock();
+
+        $container->expects( $this->once() )
+            ->method( 'get' )
+            ->with( OptionsInterface::class )
+            ->willReturn( $options );
+
+        // Replace the container with our mock
+        $this->setContainerMock( $container );
+
+        // Call the set_plugin_option function
+        $result = \CodeZone\Bible\set_plugin_option( 'test_option', 'test_value' );
+
+        // Check that the result is true
+        $this->assertTrue( $result );
+    }
+
+    /**
+     * @test
+     */
+    public function transaction_executes_callback_and_commits()
+    {
+        global $wpdb;
+
+        // Create a test table
+        $table_name = $wpdb->prefix . 'test_transactions';
+        $wpdb->query("CREATE TABLE IF NOT EXISTS {$table_name} (
+        id INT AUTO_INCREMENT PRIMARY KEY,
+        value VARCHAR(255)
+    )");
+
+        // Test successful transaction
+        $result = \CodeZone\Bible\transaction(function () use ( $wpdb, $table_name ) {
+            $wpdb->insert(
+                $table_name,
+                [ 'value' => 'test1' ],
+                [ '%s' ]
+            );
+            $wpdb->insert(
+                $table_name,
+                [ 'value' => 'test2' ],
+                [ '%s' ]
+            );
+            return true;
+        });
+
+        // Verify transaction was successful
+        $this->assertTrue( $result );
+        $this->assertEquals( 2, $wpdb->get_var( "SELECT COUNT(*) FROM {$table_name}" ) );
+
+        // Test failed transaction
+        $initial_count = $wpdb->get_var( "SELECT COUNT(*) FROM {$table_name}" );
+        $result = \CodeZone\Bible\transaction(function () use ( $wpdb, $table_name ) {
+            $wpdb->insert(
+                $table_name,
+                [ 'value' => 'test3' ],
+                [ '%s' ]
+            );
+            throw new \Exception( 'Test failure' );
+            return true;
+        });
+
+        // Verify transaction was rolled back
+        $this->assertFalse( $result );
+        $this->assertEquals( $initial_count, $wpdb->get_var( "SELECT COUNT(*) FROM {$table_name}" ) );
+
+        // Clean up
+        $wpdb->query( "DROP TABLE IF EXISTS {$table_name}" );
+    }
+
+    /**
+     * @test
+     */
+    public function transaction_rolls_back_on_error()
+    {
+        global $wpdb;
+
+        // Create a test table
+        $table_name = $wpdb->prefix . 'test_transactions';
+        $wpdb->query("CREATE TABLE IF NOT EXISTS {$table_name} (
+        id INT AUTO_INCREMENT PRIMARY KEY,
+        value VARCHAR(255) UNIQUE
+    )");
+
+        // First insert to create a duplicate key situation
+        $wpdb->insert(
+            $table_name,
+            [ 'value' => 'test_duplicate' ],
+            [ '%s' ]
+        );
+
+        // Test transaction with a database error (duplicate key)
+        $result = \CodeZone\Bible\transaction(function () use ( $wpdb, $table_name ) {
+            // This should cause a database error due to duplicate unique value
+            $wpdb->insert(
+                $table_name,
+                [ 'value' => 'test_duplicate' ],
+                [ '%s' ]
+            );
+            return true;
+        });
+
+        // The transaction function should return the error message
+        $this->assertIsString( $result );
+        $this->assertNotEmpty( $result );
+        $this->assertStringContainsString( 'Duplicate', $result );
+
+        // Verify only one row exists (the failed insert was rolled back)
+        $this->assertEquals( 1, $wpdb->get_var( "SELECT COUNT(*) FROM {$table_name}" ) );
+
+        // Clean up
+        $wpdb->query( "DROP TABLE IF EXISTS {$table_name}" );
+    }
+
+    /**
+     * @test
+     */
+    public function translate_calls_translations_service()
+    {
+        $translations = $this->getMockBuilder( \CodeZone\Bible\Services\Translations::class )
+            ->disableOriginalConstructor()
+            ->getMock();
+
+        $translations->expects( $this->once() )
+            ->method( 'translate' )
+            ->with( 'Hello', [ 'context' => 'test' ] )
+            ->willReturn( 'Translated Hello' );
+
+        $container = $this->getMockBuilder( Container::class )
+            ->disableOriginalConstructor()
+            ->getMock();
+
+        $container->expects( $this->once() )
+            ->method( 'make' )
+            ->with( \CodeZone\Bible\Services\Translations::class )
+            ->willReturn( $translations );
+
+        // Replace the container with our mock
+        $this->setContainerMock( $container );
+
+        // Call the translate function
+        $result = \CodeZone\Bible\translate( 'Hello', [ 'context' => 'test' ] );
+
+        // Check that the result is the translated text
+        $this->assertEquals( 'Translated Hello', $result );
+    }
+
+    /**
+     * @test
+     */
+    public function namespace_string_returns_namespaced_string()
+    {
+        // Mock the config function
+        Functions\expect( 'CodeZone\Bible\config' )
+            ->andReturnUsing(function ( $key ) {
+                if ( $key === 'plugin.text_domain' ) {
+                    return 'bible-plugin';
+                }
+                return null;
+            });
+
+        // Call the namespace_string function
+        $result = \CodeZone\Bible\namespace_string( 'test' );
+
+        // Check that the result is the expected namespaced string
+        $this->assertEquals( 'bible-plugin.test', $result );
+    }
+
+    /**
+     * Helper method to mock a static method
+     */
+    private function mockStaticMethod( $class, $method, $replacement )
+    {
+        // This is a placeholder - in a real test, you would need to find a way
+        // to mock static methods
+    }
+
+    /**
+     * Helper method to mock a function
+     */
+    private function mockFunction( $function, $replacement )
+    {
+        // This is a placeholder - in a real test, you would need to find a way
+        // to mock functions
+    }
+}

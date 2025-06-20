@@ -14,23 +14,23 @@ use function CodeZone\Bible\set_config;
 class ConfigProvider extends AbstractServiceProvider {
     public function __construct()
     {
-        add_action('init', [$this, 'init']);
+        add_action( 'init', [ $this, 'init' ] );
     }
 
     public function init() {
-        $this->hydrate_closure('assets.javascript_globals');
+        $this->hydrate_closure( 'assets.javascript_globals' );
     }
 
     public function hydrate_closure( $key, $default = [] ) {
         $config = $this->getContainer()->get( ConfigInterface::class );
-        $closure = $config->get($key, function() use($default) {
+        $closure = $config->get($key, function () use ( $default ) {
             return $default;
         });
-        if (!is_callable($closure)) {
+        if ( !is_callable( $closure ) ) {
             return $default;
         }
         $result = $closure();
-        $config->set($key, $result);
+        $config->set( $key, $result );
     }
 
     /**

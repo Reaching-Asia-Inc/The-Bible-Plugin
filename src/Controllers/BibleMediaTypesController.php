@@ -22,9 +22,9 @@ class BibleMediaTypesController {
      * @param Request $request The request data
      * @return array Media types data
      */
-    public function index(Request $request): array
+    public function index( Request $request ): array
     {
-        $bibles = container()->get(Bibles::class);
+        $bibles = container()->get( Bibles::class );
         return $bibles->media_types()->json();
     }
 
@@ -34,8 +34,8 @@ class BibleMediaTypesController {
      * @param Request $request The request data
      * @return array Media type options
      */
-    public function options(Request $request): array {
-        $bibles = container()->get(Bibles::class);
+    public function options( Request $request ): array {
+        $bibles = container()->get( Bibles::class );
         return $bibles->media_type_options();
     }
 }

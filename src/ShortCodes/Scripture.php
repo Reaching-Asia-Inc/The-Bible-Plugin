@@ -61,12 +61,12 @@ class Scripture {
 		$this->media_types = $media_types;
         $this->languages    = $language;
 
-        add_action('init', [$this, 'init']);
+        add_action( 'init', [ $this, 'init' ] );
         add_action( 'wp_enqueue_scripts', [ $this, 'enqueue_scripts' ] );
 	}
 
     public function init() {
-        add_shortcode('tbp-scripture', [$this, 'render']);
+        add_shortcode( 'tbp-scripture', [ $this, 'render' ] );
     }
 
 	/**

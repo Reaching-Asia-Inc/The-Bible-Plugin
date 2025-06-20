@@ -13,7 +13,7 @@ class Assets {
 	private static $enqueued = false;
 	private MediaTypes $media_types;
 
-	public function __construct( MediaTypes $media_types) {
+	public function __construct( MediaTypes $media_types ) {
 		$this->media_types = $media_types;
 	}
 
@@ -48,7 +48,7 @@ class Assets {
 	 * @return void
 	 */
 	public function wp_enqueue_scripts() {
-        if( wp_script_is('bible-plugin', 'enqueued')) {
+        if ( wp_script_is( 'bible-plugin', 'enqueued' ) ) {
             return;
         }
 
@@ -64,7 +64,7 @@ class Assets {
 			]
 		);
 
-		wp_localize_script( 'bible-plugin', config('assets.javascript_global_scope'), apply_filters( namespace_string( 'javascript_globals' ), []));
+		wp_localize_script( 'bible-plugin', config( 'assets.javascript_global_scope' ), apply_filters( namespace_string( 'javascript_globals' ), [] ) );
 
 		wp_enqueue_style( 'plyr', 'https://cdn.plyr.io/3.6.8/plyr.css' );
 	}
@@ -90,7 +90,7 @@ class Assets {
 			]
 		);
 
-		wp_localize_script( 'bible-plugin-admin', config('assets.javascript_global_scope'), apply_filters( namespace_string( 'javascript_globals' ), []) );
+		wp_localize_script( 'bible-plugin-admin', config( 'assets.javascript_global_scope' ), apply_filters( namespace_string( 'javascript_globals' ), [] ) );
 	}
 
 	/**

@@ -24,7 +24,6 @@ class ShortcodeProvider extends AbstractServiceProvider implements BootableServi
      */
     public function register(): void
     {
-
     }
 
     /**
@@ -35,21 +34,21 @@ class ShortcodeProvider extends AbstractServiceProvider implements BootableServi
 
         $this->container->addShared(Bible::class, function () {
             return new Bible(
-                $this->container->get(Assets::class),
-                $this->container->get(Request::class)
+                $this->container->get( Assets::class ),
+                $this->container->get( Request::class )
             );
         });
-        $this->container->get(Bible::class);
+        $this->container->get( Bible::class );
 
         $this->container->addShared(Scripture::class, function () {
             return new Scripture(
-                $this->container->get(\CodeZone\Bible\Services\BibleBrains\Scripture::class),
-                $this->container->get(Assets::class),
-                $this->container->get(MediaTypes::class),
-                $this->container->get(Language::class)
+                $this->container->get( \CodeZone\Bible\Services\BibleBrains\Scripture::class ),
+                $this->container->get( Assets::class ),
+                $this->container->get( MediaTypes::class ),
+                $this->container->get( Language::class )
             );
         });
-        $this->container->get(Scripture::class);
+        $this->container->get( Scripture::class );
     }
 
 
@@ -59,7 +58,7 @@ class ShortcodeProvider extends AbstractServiceProvider implements BootableServi
      * @param string $id The identifier to check.
      * @return bool Returns true if the identifier is provided, otherwise false.
      */
-    public function provides(string $id): bool
+    public function provides( string $id ): bool
     {
         return in_array($id, [
             Bible::class,

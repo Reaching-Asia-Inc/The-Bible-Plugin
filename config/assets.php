@@ -21,7 +21,7 @@ $config->merge( [
             'bible-plugin-admin',
         ],
         'javascript_global_scope' => '$tbp',
-        'javascript_globals' => function() {
+        'javascript_globals' => function () {
            return [
                'translations' => [
                    // Reader
@@ -52,10 +52,9 @@ $config->merge( [
                    'Bible Version'                                                                => __( 'Bible Version', 'bible-plugin' ),
                ],
                'apiUrl' => api_url(),
-               'nonce' => wp_create_nonce('wp_rest'),
-               'mediaTypes' => container()->get(MediaTypes::class)->all(),
+               'nonce' => wp_create_nonce( 'wp_rest' ),
+               'mediaTypes' => container()->get( MediaTypes::class )->all(),
            ];
-
         },
         'manifest_dir' => plugin_path( '/dist' )
     ]

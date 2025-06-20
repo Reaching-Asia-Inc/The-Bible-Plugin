@@ -17,10 +17,10 @@ use CodeZone\Bible\Controllers\Settings\CustomizationFomController;
 use CodeZone\Bible\Controllers\Settings\SupportController;
 
 return [
-    'general'        => [BibleBrainsFormController::class, 'show'],
-    'advanced'       => [AdvancedController::class, 'show'],
-    'support'        => [SupportController::class, 'show'],
-    'bible_brains_key' => [BibleBrainsFormController::class, 'add_key'],
-    'bible'          => [BibleBrainsFormController::class, 'show'],
-    'customization'  => [CustomizationFomController::class, 'show'],
+    'general'        => [ BibleBrainsFormController::class, 'show' ],
+    'advanced'       => [ AdvancedController::class, 'show' ],
+    'support'        => [ SupportController::class, 'show' ],
+    'bible_brains_key' => [ BibleBrainsFormController::class, 'add_key' ],
+    'bible'          => [ BibleBrainsFormController::class, 'show' ],
+    'customization'  => [ CustomizationFomController::class, 'show' ],
 ];

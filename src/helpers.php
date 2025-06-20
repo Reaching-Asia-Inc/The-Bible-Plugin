@@ -47,7 +47,7 @@ function container(): Container {
  * @return mixed The ConfigInterface object if no key is provided, or the value of the specified configuration key.
  * @see https://config.thephpleague.com/
  */
- function config( $key = null, $default = null ) {
+function config( $key = null, $default = null ) {
 	$service = container()->get( ConfigInterface::class );
 
 	if ( $key ) {
@@ -65,7 +65,7 @@ function container(): Container {
  *
  * @return mixed The result of the configuration set operation.
  */
-function set_config($key, $value ) {
+function set_config( $key, $value ) {
 	$service = container()->get( ConfigInterface::class );
 
 	return $service->set( $key, $value );
@@ -90,10 +90,10 @@ function plugin_url( string $path = '' ): string {
  * @return string The full API URL including the provided path or the base API URL if no path is specified.
  */
 function api_url( string $path = "" ) {
-    if (!$path) {
+    if ( !$path ) {
        return rest_url( RestApi::PATH );
     }
-	return rest_url(RestApi::PATH . '/' . $path);
+	return rest_url( RestApi::PATH . '/' . $path );
 }
 
 /**
@@ -136,7 +136,7 @@ function resources_path( string $path = '' ): string {
  */
 function admin_path( string $path = '' ): string {
     $full_url = get_admin_url( null, $path );
-    return trim( parse_url( $full_url )[ 'path' ] , '/' );
+    return trim( parse_url( $full_url )['path'], '/' );
 }
 
 /**
@@ -181,11 +181,11 @@ function views_path( string $path = '' ): string {
  * @return ResponseInterface The rendered view if a view name is provided, otherwise the view engine object.
  * @see https://platesphp.com/v3/
  */
-function view(string $view = "", array $args = []): mixed {
-    $engine = container()->get(Engine::class);
+function view( string $view = "", array $args = [] ): mixed {
+    $engine = container()->get( Engine::class );
 
     // Return engine if no view specified
-    if (!$view) {
+    if ( !$view ) {
         return $engine;
     }
 
@@ -196,15 +196,15 @@ function view(string $view = "", array $args = []): mixed {
     ];
 
     // Allow pre-render modifications
-    $data = apply_filters(namespace_string('before_render_view'), $data);
+    $data = apply_filters( namespace_string( 'before_render_view' ), $data );
 
     // Only render if html hasn't been set by a filter
-    if (empty($data['html'])) {
-        $data['html'] = $engine->render($data['view'], $data['args']);
+    if ( empty( $data['html'] ) ) {
+        $data['html'] = $engine->render( $data['view'], $data['args'] );
     }
 
     // Allow post-render modifications
-    return apply_filters(namespace_string('after_render_view'), $data['html'], $data['view'], $data['args']);
+    return apply_filters( namespace_string( 'after_render_view' ), $data['html'], $data['view'], $data['args'] );
 }
 
 /**
@@ -315,7 +315,7 @@ function namespace_string( string $string ): string {
  * @return string The color in RGB format. If the provided color is already in RGB format, it is returned unchanged.
  */
 function rgb( $color ): string {
-    if (str_contains($color, 'rgb')) {
+    if ( str_contains( $color, 'rgb' ) ) {
         return $color;
 	}
 	$color = str_replace( '#', '', $color );
@@ -352,13 +352,14 @@ function cast_bool_values( $map ): array {
 }
 
 /**
- * Validate a request against a set of rules.
+ * Validates the provided data or request against a set of rules.
  *
- * @param RequestInterface|array $data The request to validate
- * @param array $rules The validation rules
- * @return array|bool True if validation passes, array of errors if it fails
+ * @param mixed $data_or_request The data or request to be validated. Can be an array or an object depending on the implementation.
+ * @param array $rules An array of validation rules that the data or request should comply with.
+ *
+ * @return mixed The result of the validation process. The specific return type may vary based on the validator implementation.
  */
-function validate($dataOrRequest, array $rules) {
-	$validator = container()->get(Services\Validator::class);
-	return $validator->validate($dataOrRequest, $rules);
+function validate( $data_or_request, array $rules ) {
+	$validator = container()->get( Services\Validator::class );
+	return $validator->validate( $data_or_request, $rules );
 }

@@ -22,8 +22,8 @@ class RequestServiceProvider extends AbstractServiceProvider
      */
     public function register(): void
     {
-        $this->container->addShared(Validator::class);
-        $this->container->add(RequestInterface::class, function() {
+        $this->container->addShared( Validator::class );
+        $this->container->add(RequestInterface::class, function () {
             return new Request();
         });
     }
@@ -34,8 +34,8 @@ class RequestServiceProvider extends AbstractServiceProvider
      * @param string $id The service identifier to check for
      * @return bool Returns true if this provider provides the service, false otherwise
      */
-    public function provides(string $id): bool
+    public function provides( string $id ): bool
     {
-        return in_array($id, [Validator::class, RequestInterface::class]);
+        return in_array( $id, [ Validator::class, RequestInterface::class ] );
     }
 }

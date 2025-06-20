@@ -64,7 +64,7 @@ class MediaTypes {
     public function options(): array
     {
         $options = [];
-        foreach ($this->all() as $value => $data) {
+        foreach ( $this->all() as $value => $data ) {
             $options[] = [
                 'value' => $value,
                 'itemText' => $data['label']
@@ -80,21 +80,21 @@ class MediaTypes {
      *
      * @throws BibleBrainsException If the media type is not found in the collection.
      */
-    public function find($media_type): array {
+    public function find( $media_type ): array {
         $all = $this->all();
         $result = array_filter(
             $all,
-            function ($data, $value) use ($media_type) {
+            function ( $data, $value ) use ( $media_type ) {
                 return $value === $media_type;
             },
             ARRAY_FILTER_USE_BOTH
         );
 
-        if (empty($result)) {
-            throw new BibleBrainsException(esc_html("Invalid media type: {$media_type}."));
+        if ( empty( $result ) ) {
+            throw new BibleBrainsException( esc_html( "Invalid media type: {$media_type}." ) );
         }
 
-        return reset($result);
+        return reset( $result );
     }
 
     /**
@@ -104,16 +104,15 @@ class MediaTypes {
      *
      * @return bool True if the media type exists, false otherwise.
      */
-    public function exists(string $media_type): bool {
+    public function exists( string $media_type ): bool {
         $filtered = array_filter(
             $this->all(),
-            function ($data, $value) use ($media_type) {
+            function ( $data, $value ) use ( $media_type ) {
                 return $value === $media_type;
             },
             ARRAY_FILTER_USE_BOTH
         );
 
-        return !empty($filtered);
+        return !empty( $filtered );
     }
-
 }

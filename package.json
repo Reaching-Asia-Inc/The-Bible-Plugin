@@ -9,7 +9,9 @@
     "watch": "vite build --watch",
     "build": "vite build",
     "preview": "vite preview",
-    "ci": "act -j local"
+    "ci": "act -j local",
+    "phpcs": "vendor/bin/phpcs -s",
+    "phpcbf": "vendor/bin/phpcbf"
   },
   "author": "",
   "devDependencies": {

@@ -102,8 +102,8 @@ class Reference {
 		$reference = self::normalize( $reference );
 
 		//Extract the verse from the string reference
-        if (str_contains($reference, ":")) {
-            [$reference_without_verses, $verses] = array_pad(explode(':', $reference ?? "", 2), 2, null);
+        if ( str_contains( $reference, ":" ) ) {
+            [$reference_without_verses, $verses] = array_pad( explode( ':', $reference ?? "", 2 ), 2, null );
         } else {
             $reference_without_verses = $reference;
             $verses = null;
@@ -150,12 +150,12 @@ class Reference {
      *
      * @return string The normalized string reference.
      */
-    private static function normalize(string $reference)
+    private static function normalize( string $reference )
     {
-        $reference = str_replace('  ', ' ', $reference);
-        $reference = str_replace('–', '-', $reference);
-        $reference = trim($reference);
+        $reference = str_replace( '  ', ' ', $reference );
+        $reference = str_replace( '–', '-', $reference );
+        $reference = trim( $reference );
 
-        return str_replace('—', '-', $reference);
+        return str_replace( '—', '-', $reference );
     }
 }

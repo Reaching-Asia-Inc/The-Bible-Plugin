@@ -176,7 +176,6 @@
 
     <!-- Keeping these ones: -->
     <rule ref="Generic.ControlStructures.InlineControlStructure"/>
-    <rule ref="Generic.Debug.ClosureLinter"/>
     <rule ref="Generic.Files.ByteOrderMark"/>
     <rule ref="Generic.Files.LineEndings"/>
     <rule ref="Generic.Formatting.DisallowMultipleStatements"/>
@@ -194,8 +193,11 @@
     <rule ref="Generic.WhiteSpace.ScopeIndent">
         <properties>
             <property name="indent" value="4"/>
-            <property name="ignoreIndentationTokens" type="array" value="T_COMMENT,T_DOC_COMMENT_OPEN_TAG"/>
+            <property name="exact" value="false"/>
+            <property name="tabIndent" value="false"/>
         </properties>
+        <element key="T_COMMENT" value=""/>
+        <element key="T_DOC_COMMENT_OPEN_TAG" value=""/>
     </rule>
     <rule ref="PSR2.ControlStructures.ElseIfDeclaration"/>
     <rule ref="Squiz.Functions.FunctionDeclarationArgumentSpacing">
@@ -238,12 +240,24 @@
     <!-- <rule ref="PSR2.Files.ClosingTag"/> -->
     <!-- <rule ref="Squiz.PHP.ForbiddenFunctions"/> -->
 
+    <rule ref="Generic.Functions.CallTimePassByReference">
+        <exclude name="Generic.Functions.CallTimePassByReference"/>
+    </rule>
+
     <rule ref="WordPress.Security.ValidatedSanitizedInput">
         <properties>
             <property name="customUnslashingSanitizingFunctions" type="array">
                 <element value="dt_recursive_sanitize_array"/>
             </property>
         </properties>
+    </rule>
+
+    <rule ref="WordPress.Security.NonceVerification.Missing">
+        <exclude-pattern>*/tests/*</exclude-pattern>
+    </rule>
+
+    <rule ref="WordPress.DB.PreparedSQL.InterpolatedNotPrepared">
+        <exclude-pattern>*/tests/*</exclude-pattern>
     </rule>
 
 </ruleset>

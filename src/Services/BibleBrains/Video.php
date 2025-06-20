@@ -27,7 +27,7 @@ class Video {
      *
      * @param Bibles $bibles Bible API service instance
      */
-    public function __construct(Bibles $bibles, Client $http = null)
+    public function __construct( Bibles $bibles, ?Client $http = null )
     {
         $this->bibles = $bibles;
         $this->http = $http;
@@ -39,38 +39,38 @@ class Video {
      * @param array $content Array of references to hydrate
      * @return array Hydrated content array
      */
-    public function hydrate_content(array $content)
+    public function hydrate_content( array $content )
     {
-        if (!isset($content['media'])) {
+        if ( !isset( $content['media'] ) ) {
             return $content;
         }
-        $content['media'] = $this->hydrate_media($content['media']);
+        $content['media'] = $this->hydrate_media( $content['media'] );
         return $content;
     }
 
     /**
-     * Hydrates a single reference with video content.
+     * Hydrates a media entry by processing its video component.
      *
-     * @param array $reference Reference array to hydrate
-     * @return array Hydrated reference array
+     * @param array $media Media array containing the video to be hydrated
+     * @return array Media array with the video component hydrated
      */
-    public function hydrate_media(array $media)
+    public function hydrate_media( array $media )
     {
-        if (!isset($media['video'])) {
+        if ( !isset( $media['video'] ) ) {
             return $media;
         }
 
-        $media['video'] = $this->hydrate_video($media['video']);
+        $media['video'] = $this->hydrate_video( $media['video'] );
 
         return $media;
     }
 
-    public function hydrate_video(array $video)
+    public function hydrate_video( array $video )
     {
-        if (!isset($video['content'])) {
+        if ( !isset( $video['content'] ) ) {
             return $video;
         }
-        $video['content'] = $this->hydrate_video_content($video['content']);
+        $video['content'] = $this->hydrate_video_content( $video['content'] );
         return $video;
     }
 
@@ -80,15 +80,14 @@ class Video {
      * @param array $content Video content array to hydrate
      * @return array Hydrated video content array
      */
-    public function hydrate_video_content(array $content): array
+    public function hydrate_video_content( array $content ): array
     {
-        if (!isset($content['data'])) {
+        if ( !isset( $content['data'] ) ) {
             return $content;
         }
 
-        $content['data'] = array_map([$this, 'hydrate_files'], $content['data']);
+        $content['data'] = array_map( [ $this, 'hydrate_files' ], $content['data'] );
         return $content;
-
     }
 
     /**
@@ -97,19 +96,19 @@ class Video {
      * @param array $video Video array to hydrate
      * @return array Hydrated video array with playlist information
      */
-    public function hydrate_files(array $video): array
+    public function hydrate_files( array $video ): array
     {
-        if (!isset($video['path'])) {
+        if ( !isset( $video['path'] ) ) {
             return $video;
         }
-        $response = $this->http->get($video['path']);
+        $response = $this->http->get( $video['path'] );
 
-        if (!$response || $response->getStatusCode() !== 200) {
+        if ( !$response || $response->getStatusCode() !== 200 ) {
             return $video;
         }
         try {
-            $playlist = $this->parse_m3u8($response->getBody()->getContents(), $video['path']);
-        } catch (\Exception $e) {
+            $playlist = $this->parse_m3u8( $response->getBody()->getContents(), $video['path'] );
+        } catch ( \Exception $e ) {
             return $video;
         }
 
@@ -118,42 +117,43 @@ class Video {
         return $video;
     }
 
-    function parse_m3u8($content, $path)
+    public function parse_m3u8( $content, $path )
     {
-        $lines = explode("\n", trim($content));
+        $lines = explode( "\n", trim( $content ) );
         $videos = [];
-        $currentStream = null;
+        $current_stream = null;
 
         // Get the base URL by removing 'playlist.m3u8' and everything after it
-        $baseUrl = preg_replace('/playlist\.m3u8.*$/', '', $path);
+        $base_url = preg_replace( '/playlist\.m3u8.*$/', '', $path );
 
-        foreach ($lines as $line) {
-            $line = trim($line);
-            if (empty($line)) continue;
+        foreach ( $lines as $line ) {
+            $line = trim( $line );
+            if ( empty( $line ) ) { continue;
+            }
 
-            if (strpos($line, '#EXT-X-STREAM-INF:') === 0) {
+            if ( strpos( $line, '#EXT-X-STREAM-INF:' ) === 0 ) {
                 // Parse stream information
-                $currentStream = [];
-                $attributes = substr($line, strlen('#EXT-X-STREAM-INF:'));
+                $current_stream = [];
+                $attributes = substr( $line, strlen( '#EXT-X-STREAM-INF:' ) );
 
                 // Parse attributes
-                preg_match_all('/([^,=]+)=([^,]+)/', $attributes, $matches, PREG_SET_ORDER);
-                foreach ($matches as $match) {
-                    $key = trim($match[1]);
-                    $value = trim($match[2], '"');
-                    $currentStream[$key] = $value;
+                preg_match_all( '/([^,=]+)=([^,]+)/', $attributes, $matches, PREG_SET_ORDER );
+                foreach ( $matches as $match ) {
+                    $key = trim( $match[1] );
+                    $value = trim( $match[2], '"' );
+                    $current_stream[$key] = $value;
                 }
-            } elseif ($currentStream !== null && !str_starts_with($line, '#')) {
+            } elseif ( $current_stream !== null && !str_starts_with( $line, '#' ) ) {
                 // Construct the full URL by combining the base URL with the quality-specific filename
-                $url = $baseUrl . $line;
+                $url = $base_url . $line;
 
                 $videos[] = [
-                    'bandwidth' => (int)$currentStream['BANDWIDTH'],
-                    'resolution' => $currentStream['RESOLUTION'],
-                    'codecs' => trim($currentStream['CODECS'], '"'),
+                    'bandwidth' => (int) $current_stream['BANDWIDTH'],
+                    'resolution' => $current_stream['RESOLUTION'],
+                    'codecs' => trim( $current_stream['CODECS'], '"' ),
                     'url' => $url
                 ];
-                $currentStream = null;
+                $current_stream = null;
             }
         }
 

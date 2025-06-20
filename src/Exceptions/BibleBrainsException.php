@@ -10,14 +10,16 @@ use Exception;
  * Custom exception class for BibleBrains application
  */
 class BibleBrainsException extends \Exception {
-	/**
-	 * Constructor of the class.
-	 *
-	 * @param string $message The error message.
-	 * @param int $code The error code.
-	 * @param \Exception $previous The previous exception (if any).
-	 */
-	public function __construct( $message = "", $code = 0, Exception $previous = null ) {
+    /**
+     * Constructs a new exception instance.
+     *
+     * @param string $message The exception message. Default is an empty string.
+     * @param int $code The exception code. Default is 0.
+     * @param Exception|null $previous The previous exception used for exception chaining. Default is null.
+     *
+     * @return void
+     */
+	public function __construct( $message = "", $code = 0, ?Exception $previous = null ) {
 		parent::__construct( $message, $code, $previous );
 	}
 

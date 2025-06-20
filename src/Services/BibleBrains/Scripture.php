@@ -4,7 +4,8 @@ namespace CodeZone\Bible\Services\BibleBrains;
 
 use CodeZone\Bible\Exceptions\BibleBrainsException;
 use CodeZone\Bible\Services\BibleBrains\Api\Bibles;
-use CodeZone\Bible\CodeZone\WPSupport\Options\OptionsInterface as Options;;
+use CodeZone\Bible\CodeZone\WPSupport\Options\OptionsInterface as Options;
+;
 
 /**
  * The Scripture class is responsible for handling scripture references and retrieving scripture content from a Bible object.
@@ -146,23 +147,23 @@ class Scripture {
      * @return array The fileset as an array.
      * @throws BibleBrainsException If an invalid media type is specified or if there are any other errors.
      */
-    private function query(array $parameters): array
+    private function query( array $parameters ): array
     {
-        $parameters = $this->normalize_query($parameters);
+        $parameters = $this->normalize_query( $parameters );
 
         // Get language and bible data
-        $language = $this->resolve_language($parameters);
-        $bible = $this->resolve_bible($parameters, $language);
-        $book = $this->resolve_book($parameters, $bible);
+        $language = $this->resolve_language( $parameters );
+        $bible = $this->resolve_bible( $parameters, $language );
+        $book = $this->resolve_book( $parameters, $bible );
 
-        if ($book) {
+        if ( $book ) {
             // Update parameters with resolved book ID
             $parameters['book'] = $book['book_id'];
         }
 
 
         // Process media types
-        $media = $this->process_media_types($parameters, $language, $bible, $book);
+        $media = $this->process_media_types( $parameters, $language, $bible, $book );
 
         return array_merge(
             $parameters,
@@ -181,9 +182,9 @@ class Scripture {
      * @param array $parameters
      * @return array
      */
-    private function resolve_language(array $parameters): array
+    private function resolve_language( array $parameters ): array
     {
-        return $this->language->find_or_resolve($parameters['language'] ?? null);
+        return $this->language->find_or_resolve( $parameters['language'] ?? null );
     }
 
     /**
@@ -193,14 +194,14 @@ class Scripture {
      * @param array $language
      * @return array
      */
-    private function resolve_bible(array $parameters, array $language): array
+    private function resolve_bible( array $parameters, array $language ): array
     {
-        $bible = ($parameters['bible'] ?? null)
-            ? $this->bibles->find($parameters['bible'])["data"]
+        $bible = ( $parameters['bible'] ?? null )
+            ? $this->bibles->find( $parameters['bible'] )["data"]
             : null;
 
-        if (!$bible) {
-            $bible = $this->bibles->find_or_default($language['bibles'], $language['value'])["data"];
+        if ( !$bible ) {
+            $bible = $this->bibles->find_or_default( $language['bibles'], $language['value'] )["data"];
         }
 
         return $bible;
@@ -214,12 +215,12 @@ class Scripture {
      * @return array
      * @throws BibleBrainsException
      */
-    private function resolve_book(array $parameters, array $bible): array
+    private function resolve_book( array $parameters, array $bible ): array
     {
-        $book = $this->books->pluck($parameters['book'], $bible['books']);
-        if (!$book) {
+        $book = $this->books->pluck( $parameters['book'], $bible['books'] );
+        if ( !$book ) {
             throw new BibleBrainsException(
-                esc_attr("Bible, {$bible['name']}, does not contain {$parameters['book']}.")
+                esc_attr( "Bible, {$bible['name']}, does not contain {$parameters['book']}." )
             );
         }
         return $book;
@@ -231,11 +232,11 @@ class Scripture {
      * @param array $language
      * @return array
      */
-    private function get_media_types(array $language): array
+    private function get_media_types( array $language ): array
     {
-        $media_types = $language['media_types'] ?? $this->options->get('media_types');
-        if (is_string($media_types)) {
-            return explode(',', $media_types);
+        $media_types = $language['media_types'] ?? $this->options->get( 'media_types' );
+        if ( is_string( $media_types ) ) {
+            return explode( ',', $media_types );
         }
         return $media_types;
     }
@@ -249,19 +250,19 @@ class Scripture {
      * @param array $book
      * @return array
      */
-    private function process_media_types(array $parameters, array $language, array $bible, array $book): array
+    private function process_media_types( array $parameters, array $language, array $bible, array $book ): array
     {
         $media = [];
-        $media_types = $this->get_media_types($language);
+        $media_types = $this->get_media_types( $language );
 
-        foreach ($media_types as $media_type_key) {
+        foreach ( $media_types as $media_type_key ) {
             $media_content = $this->process_media_type(
                 $media_type_key,
                 $parameters,
                 $bible,
                 $book
             );
-            if ($media_content) {
+            if ( $media_content ) {
                 $media[$media_type_key] = $media_content;
             }
         }
@@ -285,10 +286,10 @@ class Scripture {
         array $book
     ): ?array {
         try {
-            $media_type = $this->media_types->find($media_type_key);
-            $fileset = $this->file_sets->pluck($bible, $book, $media_type['fileset_types']);
+            $media_type = $this->media_types->find( $media_type_key );
+            $fileset = $this->file_sets->pluck( $bible, $book, $media_type['fileset_types'] );
 
-            if (!$fileset) {
+            if ( !$fileset ) {
                 return null;
             }
 
@@ -298,13 +299,13 @@ class Scripture {
                     'content' => $this->fetch_content(
                         array_merge(
                             $parameters,
-                            ['fileset' => $fileset['id']]
+                            [ 'fileset' => $fileset['id'] ]
                         )
                     ),
                     'fileset' => $fileset,
                 ]
             );
-        } catch (\Exception $e) {
+        } catch ( \Exception $e ) {
             return null; // Skip invalid media types
         }
     }

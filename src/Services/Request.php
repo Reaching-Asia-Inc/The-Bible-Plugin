@@ -1,4 +1,5 @@
 <?php
+// phpcs:ignoreFile WordPress.Security.NonceVerification.Missing
 
 namespace CodeZone\Bible\Services;
 
@@ -21,9 +22,9 @@ class Request extends BaseRequest implements RequestInterface
      */
     public function __construct()
     {
-        $this->get = wp_unslash($_GET);
-        $this->post = wp_unslash($_POST);
-        $this->method = $_SERVER['REQUEST_METHOD'] ?? 'GET';
+        $this->get = wp_unslash( $_GET );
+        $this->post = wp_unslash( $_POST );
+        $this->method = sanitize_key(wp_unslash($_SERVER['REQUEST_METHOD'] ?? 'GET'));
     }
 
     /**

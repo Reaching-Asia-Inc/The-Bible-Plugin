@@ -21,8 +21,8 @@ class RestApiProvider extends AbstractServiceProvider implements BootableService
      */
     public function boot(): void
     {
-        $this->container->addShared(RestApi::class);
-        $this->container->get(RestApi::class);
+        $this->container->addShared( RestApi::class );
+        $this->container->get( RestApi::class );
     }
 
     /**
@@ -44,7 +44,7 @@ class RestApiProvider extends AbstractServiceProvider implements BootableService
      * @param string $id The service identifier to check for
      * @return bool Returns true if this provider provides the service, false otherwise
      */
-    public function provides(string $id): bool
+    public function provides( string $id ): bool
     {
         return $id === RestApi::class;
     }

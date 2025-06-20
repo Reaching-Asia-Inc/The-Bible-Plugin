@@ -7,7 +7,8 @@
     "gettext/gettext": "^5.7",
     "psr/log": "^1.1",
     "vlucas/phpdotenv": "^5.4.1",
-    "whitecube/lingua": "^1.1"
+    "whitecube/lingua": "^1.1",
+    "opis/closure": "^3.6"
   },
   "config": {
     "autoloader-suffix": "bible_plugin_scoped",
@@ -16,5 +17,9 @@
       "php": "7.4.27"
     },
     "platform-check": false
+  },
+  "extra": {
+    "enable-patching": true,
+    "patches-file": "composer.patches.json"
   }
 }

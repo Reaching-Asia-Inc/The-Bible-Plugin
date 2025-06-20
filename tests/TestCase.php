@@ -2,10 +2,21 @@
 
 namespace Tests;
 
+use Brain\Monkey;
 use Faker;
 use WP_UnitTestCase;
 
 abstract class TestCase extends WP_UnitTestCase {
+    protected function setUp(): void {
+        parent::setUp();
+        Monkey\setUp();
+    }
+
+    protected function tearDown(): void {
+        Monkey\tearDown();
+        parent::tearDown();
+    }
+
 	/**
 	 * Set up the test case by starting a transaction and calling the parent's setUp method.
 	 *
@@ -16,27 +27,9 @@ abstract class TestCase extends WP_UnitTestCase {
 	 */
 	protected Faker\Generator $faker;
 
-	public function __construct( ?string $name = null, array $data = [], $data_nme = '' ) {
+	public function __construct( ?string $name = null, array $data = [], $data_name = '' ) {
 		$this->faker = Faker\Factory::create();
-		parent::__construct( $name, $data, $data_nme );
-	}
-
-	public function setUp(): void {
-		global $wpdb;
-		$wpdb->query( 'START TRANSACTION' );
-		parent::setUp();
-	}
-
-	/**
-	 * The tearDown method is used to clean up any resources or connections after each test case is executed.
-	 * In this specific case, it performs a rollback in the database using the global $wpdb variable of WordPress.
-	 * It then calls the tearDown method of the parent class to ensure any additional cleanup tasks are performed.
-	 * @return void
-	 */
-	public function tearDown(): void {
-		global $wpdb;
-		$wpdb->query( 'ROLLBACK' );
-		parent::tearDown();
+		parent::__construct( $name, $data, $data_name );
 	}
 
 	/**

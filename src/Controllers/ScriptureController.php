@@ -29,36 +29,35 @@ class ScriptureController
      * @param Request $request The request object
      * @return array Scripture data or error response
      */
-    public function index(Request $request): array
+    public function index( Request $request ): array
     {
         try {
-           $errors = validate($request, [
+        $errors = validate($request, [
                'reference' => 'required|string',
                'video' => 'boolean'
-           ]);
+        ]);
 
-           if ($errors !== true) {
-               wp_send_json_error([
-                   'message'  => __('Invalid request.', 'bible-plugin'),
-                   'data' => $errors,
-               ], 400);
-               exit;
-           }
+			if ( $errors !== true ) {
+				return [
+                    'code' => 400,
+                    'message'  => __( 'Invalid request.', 'bible-plugin' ),
+                    'errors' => $errors,
+				];
+			}
 
-            $scripture = container()->get(Scripture::class);
-            $content = $scripture->by_reference($request->reference);
-            if ($request->video) {
-                $video = container()->get(Video::class);
-                $content = $video->hydrate_content($content);
+            $scripture = container()->get( Scripture::class );
+            $content = $scripture->by_reference( $request->reference );
+            if ( $request->video ) {
+                $video = container()->get( Video::class );
+                $content = $video->hydrate_content( $content );
             }
             return $content;
 
-        } catch (Exception $e) {
+        } catch ( Exception $e ) {
             return [
-                'status' => 500,
+                'code' => 500,
                 'error' => $e->getMessage()
             ];
         }
     }
-
 }

@@ -19,7 +19,7 @@ class GuzzleMiddleware {
 	/***
 	 * @return void
 	 */
-	public function __construct(BibleBrainsKeys $keys) {
+	public function __construct( BibleBrainsKeys $keys ) {
 		$this->key = $keys->random();
 	}
 

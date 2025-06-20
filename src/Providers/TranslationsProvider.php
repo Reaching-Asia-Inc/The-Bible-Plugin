@@ -16,7 +16,7 @@ class TranslationsProvider extends AbstractServiceProvider implements BootableSe
      * @param string $id The service identifier to check.
      * @return bool Returns true if the service identifier is provided, false otherwise.
      */
-    public function provides(string $id): bool
+    public function provides( string $id ): bool
     {
         return in_array($id, [
             GetText::class,
@@ -29,7 +29,6 @@ class TranslationsProvider extends AbstractServiceProvider implements BootableSe
 	 * Do any setup needed before the theme is ready.
 	 */
 	public function register(): void {
-
 	}
 
     /**

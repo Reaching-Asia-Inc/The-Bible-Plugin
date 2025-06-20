@@ -4,6 +4,7 @@ namespace CodeZone\Bible;
 
 use CodeZone\Bible\League\Container\Container;
 use CodeZone\Bible\CodeZone\WPSupport\Config\ConfigInterface as Config;
+use CodeZone\Bible\Services\ErrorHandler;
 
 /**
  * Class Plugin
@@ -23,7 +24,12 @@ class Plugin {
 	public function __construct( Container $container, Config $config ) {
         $this->config = $config;
         $this->container = $container;
-	}
+        add_filter( 'deprecated_constructor_trigger_error', '__return_false' );
+        add_filter( 'deprecated_function_trigger_error', '__return_false' );
+        add_filter( 'deprecated_file_trigger_error', '__return_false' );
+        add_filter( 'deprecated_argument_trigger_error', '__return_false' );
+        add_filter( 'deprecated_hook_trigger_error', '__return_false' );
+    }
 
 	/**
 	 * Get the instance of the plugin

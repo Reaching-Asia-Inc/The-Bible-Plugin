@@ -24,47 +24,47 @@ class CustomizationFomController {
      * @param Request $request The HTTP request object.
      * @return string The view containing the customization settings page.
      */
-    public function show(Request $request): string {
-        $translations_service = container()->get(Translations::class);
+    public function show( Request $request ): string {
+        $translations_service = container()->get( Translations::class );
 
         $tab = "customization";
-        $nonce = wp_create_nonce('bible-brains');
+        $nonce = wp_create_nonce( 'bible-brains' );
         $color_scheme_options = [
             [
-                'itemText' => __('Light', 'bible-plugin'),
+                'itemText' => __( 'Light', 'bible-plugin' ),
                 'value'    => 'light',
             ],
             [
-                'itemText' => __('Dark', 'bible-plugin'),
+                'itemText' => __( 'Dark', 'bible-plugin' ),
                 'value'    => 'dark',
             ]
         ];
 
         $translation_options = $translations_service->options();
-        $translations = get_plugin_option('translations', [], true);
+        $translations = get_plugin_option( 'translations', [], true );
 
         //Make sure all translation keys are present and remove any keys that are not present in the translation options
-        foreach ($translation_options as $option) {
-            if (!array_key_exists($option['value'], $translations)) {
+        foreach ( $translation_options as $option ) {
+            if ( !array_key_exists( $option['value'], $translations ) ) {
                 $translations[$option['value']] = "";
             }
         }
 
         // Get all valid translation values
-        $valid_translations = array_map(function($option) {
+        $valid_translations = array_map(function ( $option ) {
             return $option['value'];
         }, $translation_options);
 
 
-        $translations = array_intersect_key($translations, array_flip($valid_translations));
+        $translations = array_intersect_key( $translations, array_flip( $valid_translations ) );
         $fields = [
-            'color_scheme' => get_plugin_option('color_scheme', null, true),
-            'colors'       => $this->format_colors(get_plugin_option('colors', null, true)),
+            'color_scheme' => get_plugin_option( 'color_scheme', null, true ),
+            'colors'       => $this->format_colors( get_plugin_option( 'colors', null, true ) ),
             'translations' => $translations
         ];
 
         return view("settings/customization-form",
-            compact('tab', 'nonce', 'color_scheme_options', 'fields')
+            compact( 'tab', 'nonce', 'color_scheme_options', 'fields' )
         );
     }
 
@@ -74,7 +74,7 @@ class CustomizationFomController {
      * @param Request $request The request object
      * @return array Response data
      */
-    public function submit(Request $request): array {
+    public function submit( Request $request ): array {
         // Validate required fields
         $errors = validate($request, [
             'color_scheme' => 'required|string',
@@ -82,23 +82,28 @@ class CustomizationFomController {
             'translations' => 'required|array',
         ]);
 
-        if (!$errors === true) {
-            wp_send_json_error([
-                'message'  => __('Please complete the required fields.', 'bible-plugin'),
-                'data' => $errors,
-            ], 400);
+        if ( $errors !== true ) {
+            return [
+                'code' => 400,
+                'errors' => $errors,
+                'message' => __( 'Please complete the required fields.', 'bible-plugin' ),
+            ];
         }
 
-        $result = transaction(function () use ($request) {
-            set_plugin_option('color_scheme', $request->color_scheme);
-            set_plugin_option('colors', $this->format_colors($request->colors));
-            set_plugin_option('translations', $request->translations);
+        $result = transaction(function () use ( $request ) {
+            set_plugin_option( 'color_scheme', $request->color_scheme );
+            set_plugin_option( 'colors', $this->format_colors( $request->colors ) );
+            set_plugin_option( 'translations', $request->translations );
         });
 
-        if (!$result === true) {
-            wp_send_json_error([
-                'message' => __('Form could not be submitted.', 'bible-plugin'),
-            ], 400);
+        if ( $result !== true ) {
+            return [
+                'code' => 500,
+                'errors' => [
+                    'general' => __( 'Form could not be submitted.', 'bible-plugin' ),
+                ],
+                'message' => __( 'Form could not be submitted.', 'bible-plugin' ),
+            ];
         }
 
         return [
@@ -112,25 +117,26 @@ class CustomizationFomController {
      * @param array $colors The input array containing color configurations. It can be null or incomplete.
      * @return array The formatted colors array with all required keys and defaults applied.
      */
-    public function format_colors($colors) {
-        if (!is_array($colors)) {
+    public function format_colors( $colors ) {
+        if ( !is_array( $colors ) ) {
             $colors = [];
         }
 
-        if (isset($colors[0]) && empty($colors['accent'])) {
+        if ( isset( $colors[0] ) && empty( $colors['accent'] ) ) {
             $colors['accent'] = $colors[0];
         }
 
-        if (isset($colors[1]) && empty($colors['accent_steps'])) {
+        if ( isset( $colors[1] ) && empty( $colors['accent_steps'] ) ) {
             $colors['accent_steps'] = $colors[1];
         }
 
-        if (empty($colors['accent_steps'])) {
-            $colors['accent_steps'] = config('options.defaults.colors.accent_steps');
+        if ( empty( $colors['accent_steps'] ) ) {
+            $colors['accent_steps'] = config( 'options.defaults.colors.accent_steps' );
         }
 
-        if (empty($colors['accent'])) {
-            $colors['accent'] = config('options.defaults.colors.accent');;
+        if ( empty( $colors['accent'] ) ) {
+            $colors['accent'] = config( 'options.defaults.colors.accent' );
+;
         }
 
         return [

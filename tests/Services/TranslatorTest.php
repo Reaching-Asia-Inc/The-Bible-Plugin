@@ -1,8 +1,9 @@
 <?php
 
-namespace Tests;
+namespace Tests\Services;
 
 use CodeZone\Bible\Services\Translations;
+use Tests\TestCase;
 use function CodeZone\Bible\container;
 use function CodeZone\Bible\set_plugin_option;
 

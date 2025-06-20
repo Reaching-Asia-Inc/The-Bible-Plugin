@@ -7,9 +7,9 @@ use CodeZone\Bible\League\Container\Exception\NotFoundException;
 use CodeZone\Bible\League\Container\ServiceProvider\AbstractServiceProvider;
 use CodeZone\Bible\Plugin;
 use CodeZone\Bible\Psr\Container\ContainerExceptionInterface;
+use CodeZone\Bible\Services\ErrorHandler;
 
 class PluginProvider extends AbstractServiceProvider {
-
     /**
      * Determines if the given identifier is provided.
      *

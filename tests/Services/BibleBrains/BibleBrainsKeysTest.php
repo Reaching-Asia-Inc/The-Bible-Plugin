@@ -1,14 +1,16 @@
 <?php
 
+namespace Tests\Services\BibleBrains;
+
 use CodeZone\Bible\Services\BibleBrains\Api\ApiKeys;
 use CodeZone\Bible\Services\BibleBrains\BibleBrainsKeys;
 use Tests\TestCase;
 use function CodeZone\Bible\container;
 
 /**
- * Class BibleBrainsSettingsTest
+ * Class BibleBrainsKeysTest
  *
- * This class is responsible for testing the BibleBrains settings page.
+ * This class is responsible for testing the BibleBrainsKeys service.
  *
  * @test
  */
@@ -21,13 +23,13 @@ class BibleBrainsKeysTest extends TestCase {
         $keys = container()->make( ApiKeys::class );
         $keys_service = container()->make( BibleBrainsKeys::class );
         $response = $keys->all();
-        $this->assertIsArray($response);
-        $this->assertNotEmpty($response);
-        foreach($response as $key) {
-            $this->assertIsString($key);
+        $this->assertIsArray( $response );
+        $this->assertNotEmpty( $response );
+        foreach ( $response as $key ) {
+            $this->assertIsString( $key );
         }
 
-        $this->assertEquals($response, $keys_service->fetch_remote());
+        $this->assertEquals( $response, $keys_service->fetch_remote() );
     }
 
     /**
@@ -35,19 +37,19 @@ class BibleBrainsKeysTest extends TestCase {
      */
     public function it_can_fetch_override_keys()
     {
-        if (!defined('TBP_BIBLE_BRAINS_KEYS')) {
-            define('TBP_BIBLE_BRAINS_KEYS', 'key1,key2,key3');
+        if ( !defined( 'TBP_BIBLE_BRAINS_KEYS' ) ) {
+            define( 'TBP_BIBLE_BRAINS_KEYS', 'key1,key2,key3' );
         }
-        $override = explode(',', TBP_BIBLE_BRAINS_KEYS);
+        $override = explode( ',', TBP_BIBLE_BRAINS_KEYS );
         $keys_service = container()->make( BibleBrainsKeys::class );
 
 
-        $this->assertTrue($keys_service->has_override());
+        $this->assertTrue( $keys_service->has_override() );
 
         $response = $keys_service->all();
-        $this->assertIsArray($response);
-        $this->assertNotEmpty($response);
-        $this->assertEquals($override, $response);
+        $this->assertIsArray( $response );
+        $this->assertNotEmpty( $response );
+        $this->assertEquals( $override, $response );
     }
 
     /**
@@ -58,12 +60,12 @@ class BibleBrainsKeysTest extends TestCase {
         $keys_service = container()->make( BibleBrainsKeys::class );
 
         $options->set( BibleBrainsKeys::OPTION_KEY, 'key1' );
-        $this->assertTrue($keys_service->has_option());
+        $this->assertTrue( $keys_service->has_option() );
 
         $response = $keys_service->all( false );
-        $this->assertIsArray($response);
-        $this->assertNotEmpty($response);
-        $this->assertEquals([ 'key1' ], $response);
+        $this->assertIsArray( $response );
+        $this->assertNotEmpty( $response );
+        $this->assertEquals( [ 'key1' ], $response );
     }
 
     /**
@@ -77,5 +79,4 @@ class BibleBrainsKeysTest extends TestCase {
         $random = $keys_service->random( false );
         $this->assertContains( $random, $keys_service->fetch_remote() );
     }
-
 }

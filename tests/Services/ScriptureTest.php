@@ -1,8 +1,9 @@
 <?php
 
-namespace Tests;
+namespace Tests\Services;
 
 use CodeZone\Bible\Services\BibleBrains\Scripture;
+use Tests\TestCase;
 use function CodeZone\Bible\container;
 
 class ScriptureTest extends TestCase {

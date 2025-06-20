@@ -3,9 +3,9 @@
 namespace CodeZone\Bible\ShortCodes;
 
 use CodeZone\Bible\Services\Assets;
+use CodeZone\Bible\Services\Request;
 use function CodeZone\Bible\view;
 use function CodeZone\Bible\cast_bool_values;
-use CodeZone\Bible\Services\Request;
 
 /**
  * Class Bible
@@ -19,6 +19,7 @@ class Bible {
 	 * @var Assets
 	 */
 	protected $assets;
+    protected $request;
 
 	/**
 	 * Constructs a new instance of the class.
@@ -31,7 +32,7 @@ class Bible {
 		$this->assets = $assets;
         $this->request = $request;
 
-        add_action('init', [$this, 'init']);
+        add_action( 'init', [ $this, 'init' ] );
 		add_action( 'wp_enqueue_scripts', [ $this, 'enqueue_scripts' ] );
 	}
 

@@ -23,7 +23,7 @@ class Languages extends ApiService {
      *
      * @return array The mapped option as an associative array.
      */
-    public function map_option(array $record): array {
+    public function map_option( array $record ): array {
         return [
             'value'         => (string) $record['id'],
             'language_code' => (string) $record['iso'],
@@ -38,18 +38,18 @@ class Languages extends ApiService {
      *
      * @return array The languages as options, with 'value' and 'label' keys.
      */
-    public function as_options(iterable $records): array {
+    public function as_options( iterable $records ): array {
         $seen = [];
         $unique = [];
 
-        foreach ($records as $record) {
+        foreach ( $records as $record ) {
             $id = $record['id'] ?? null;
-            if ($id !== null && !isset($seen[$id])) {
+            if ( $id !== null && !isset( $seen[$id] ) ) {
                 $seen[$id] = true;
                 $unique[] = $record;
             }
         }
 
-        return parent::as_options($unique);
+        return parent::as_options( $unique );
     }
 }

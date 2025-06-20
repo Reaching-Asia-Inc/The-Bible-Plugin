@@ -20,7 +20,7 @@ class RestApi
      */
     public function __construct()
     {
-        add_action('rest_api_init', [$this, 'register_routes']);
+        add_action( 'rest_api_init', [ $this, 'register_routes' ] );
     }
 
     /**
@@ -34,22 +34,30 @@ class RestApi
      */
     public function register_routes(): void
     {
-        $routes = include routes_path('api.php');
+        $routes = include routes_path( 'api.php' );
 
-        foreach ($routes as $route) {
+        foreach ( $routes as $route ) {
             register_rest_route(
                 self::PATH,
                 $route['route'],
                 [
                     'methods' => $route['method'],
-                    'callback' => function (\WP_REST_Request $request) use ($route) {
-                        $controller = container()->get($route['callback'][0]);
+                    'callback' => function ( \WP_REST_Request $request ) use ( $route ) {
+                        $controller = container()->get( $route['callback'][0] );
                         $method = $route['callback'][1];
-                        $request = new RestRequest($request);
+                        $request = new RestRequest( $request );
                         try {
-                            $response = $controller->$method($request);
-                        } catch (BibleBrainsException $e) {
-                            $this->handle_exception($e);
+                            $response = $controller->$method( $request );
+                        } catch ( BibleBrainsException $e ) {
+                            $this->handle_exception( $e );
+                        }
+
+                        if ( is_array( $response ) && ( isset( $response['error'] ) || isset( $response['errors'] ) || isset( $response['code'] ) ) ) {
+                            $code = isset( $response['code'] ) ? $response['code'] : 400;
+                            if ( isset( $response['code'] ) ) {
+                                unset( $response['code'] );
+                            }
+                            wp_send_json_error( $response, $code );
                         }
 
                         return rest_ensure_response(
@@ -68,9 +76,9 @@ class RestApi
      * @param \Exception $e The exception to handle
      * @return array|void Returns error array for JSON requests, calls wp_die() otherwise
      */
-    public function handle_exception(\Exception $e)
+    public function handle_exception( \Exception $e )
     {
-        if (wp_is_json_request()) {
+        if ( wp_is_json_request() ) {
             wp_send_json([
                 'message' => $e->getMessage(),
             ], $e->getCode());
@@ -78,8 +86,8 @@ class RestApi
         }
 
         wp_die(
-            esc_html($e->getMessage()),
-            esc_attr($e->getCode())
+            esc_html( $e->getMessage() ),
+            esc_attr( $e->getCode() )
         );
     }
 }

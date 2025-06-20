@@ -12,54 +12,61 @@ class Validator
     /**
      * Validate request data against a set of rules.
      *
-     * @param RequestInterface|array $dataOrRequest The request to validate
+     * @param RequestInterface|array $data_or_request The request to validate
      * @param array $rules The validation rules
      * @return array|bool True if validation passes, array of errors if it fails
      */
-    public function validate($dataOrRequest, array $rules)
+    public function validate( $data_or_request, array $rules )
     {
         $errors = [];
-        $data = $dataOrRequest;
+        $data = $data_or_request;
 
-        if (!is_array($data) && $data instanceof RequestInterface) {
-            return $this->validateRequest($data, $rules);
+        if ( !is_array( $data ) && $data instanceof RequestInterface ) {
+            return $this->validate_request( $data, $rules );
         }
 
-        foreach ($rules as $field => $ruleString) {
-            $fieldRules = explode('|', $ruleString);
-            $value = is_array($data) ? ($data[$field] ?? null) : null;
+        foreach ( $rules as $field => $rule_string ) {
+            $field_rules = explode( '|', $rule_string );
+            $value = is_array( $data ) ? ( $data[$field] ?? null ) : null;
 
-            foreach ($fieldRules as $rule) {
-                $result = $this->validateRule($field, $value, $rule);
-                if ($result !== true) {
+            foreach ( $field_rules as $rule ) {
+                $result = $this->validate_rule( $field, $value, $rule );
+                if ( $result !== true ) {
                     $errors[$field] = $result;
                     break; // Stop validating this field once an error is found
                 }
             }
         }
 
-        return empty($errors) ? true : $errors;
+        return empty( $errors ) ? true : $errors;
     }
 
 
-    public function validateRequest(RequestInterface $request, array $rules)
+    /**
+     * Validates a request based on a set of rules and returns validation results.
+     *
+     * @param RequestInterface $request The request object containing input data.
+     * @param array $rules An associative array where keys are field names and values are validation rules.
+     * @return bool|array Returns true if all validations pass, or an array of errors if any validations fail.
+     */
+    public function validate_request( RequestInterface $request, array $rules )
     {
         $errors = [];
 
-        foreach ($rules as $field => $ruleString) {
-            $fieldRules = explode('|', $ruleString);
-            $value = $request->get($field);
+        foreach ( $rules as $field => $rule_string ) {
+            $field_rules = explode( '|', $rule_string );
+            $value = $request->get( $field );
 
-            foreach ($fieldRules as $rule) {
-                $result = $this->validateRule($field, $value, $rule);
-                if ($result !== true) {
+            foreach ( $field_rules as $rule ) {
+                $result = $this->validate_rule( $field, $value, $rule );
+                if ( $result !== true ) {
                     $errors[$field] = $result;
                     break; // Stop validating this field once an error is found
                 }
             }
         }
 
-        return empty($errors) ? true : $errors;
+        return empty( $errors ) ? true : $errors;
     }
 
     /**
@@ -70,85 +77,85 @@ class Validator
      * @param string $rule The rule to validate against
      * @return string|bool True if validation passes, error message if it fails
      */
-    protected function validateRule(string $field, $value, string $rule)
+    protected function validate_rule( string $field, $value, string $rule )
     {
         // Handle rules with parameters (e.g., min:3)
-        if (strpos($rule, ':') !== false) {
-            list($ruleName, $parameter) = explode(':', $rule, 2);
+        if ( strpos( $rule, ':' ) !== false ) {
+            list($rule_name, $parameter) = explode( ':', $rule, 2 );
         } else {
-            $ruleName = $rule;
+            $rule_name = $rule;
             $parameter = null;
         }
 
-        switch ($ruleName) {
+        switch ( $rule_name ) {
             case 'required':
-                if ($value === null || $value === '') {
-                    return __('This field is required.', 'bible-plugin');
+                if ( $value === null || $value === '' ) {
+                    return __( 'This field is required.', 'bible-plugin' );
                 }
                 break;
 
             case 'string':
-                if ($value !== null && !is_string($value)) {
-                    return __('This field must be a string.', 'bible-plugin');
+                if ( $value !== null && !is_string( $value ) ) {
+                    return __( 'This field must be a string.', 'bible-plugin' );
                 }
                 break;
 
             case 'numeric':
-                if ($value !== null && !is_numeric($value)) {
-                    return __('This field must be a number.', 'bible-plugin');
+                if ( $value !== null && !is_numeric( $value ) ) {
+                    return __( 'This field must be a number.', 'bible-plugin' );
                 }
                 break;
 
             case 'email':
-                if ($value !== null && !filter_var($value, FILTER_VALIDATE_EMAIL)) {
-                    return __('This field must be a valid email address.', 'bible-plugin');
+                if ( $value !== null && !filter_var( $value, FILTER_VALIDATE_EMAIL ) ) {
+                    return __( 'This field must be a valid email address.', 'bible-plugin' );
                 }
                 break;
 
             case 'url':
-                if ($value !== null && !filter_var($value, FILTER_VALIDATE_URL)) {
-                    return __('This field must be a valid URL.', 'bible-plugin');
+                if ( $value !== null && !filter_var( $value, FILTER_VALIDATE_URL ) ) {
+                    return __( 'This field must be a valid URL.', 'bible-plugin' );
                 }
                 break;
 
             case 'min':
-                if ($value !== null) {
-                    if (is_string($value) && mb_strlen($value) < $parameter) {
-                        return sprintf(__('This field must be at least %s characters.', 'bible-plugin'), $parameter);
-                    } elseif (is_numeric($value) && $value < $parameter) {
-                        return sprintf(__('This field must be at least %s.', 'bible-plugin'), $parameter);
+                if ( $value !== null ) {
+                    if ( is_string( $value ) && mb_strlen( $value ) < $parameter ) {
+                        return sprintf( __( 'This field must be at least %s characters.', 'bible-plugin' ), $parameter );
+                    } elseif ( is_numeric( $value ) && $value < $parameter ) {
+                        return sprintf( __( 'This field must be at least %s.', 'bible-plugin' ), $parameter );
                     }
                 }
                 break;
 
             case 'max':
-                if ($value !== null) {
-                    if (is_string($value) && mb_strlen($value) > $parameter) {
-                        return sprintf(__('This field must not exceed %s characters.', 'bible-plugin'), $parameter);
-                    } elseif (is_numeric($value) && $value > $parameter) {
-                        return sprintf(__('This field must not exceed %s.', 'bible-plugin'), $parameter);
+                if ( $value !== null ) {
+                    if ( is_string( $value ) && mb_strlen( $value ) > $parameter ) {
+                        return sprintf( __( 'This field must not exceed %s characters.', 'bible-plugin' ), $parameter );
+                    } elseif ( is_numeric( $value ) && $value > $parameter ) {
+                        return sprintf( __( 'This field must not exceed %s.', 'bible-plugin' ), $parameter );
                     }
                 }
                 break;
 
             case 'in':
-                if ($value !== null) {
-                    $allowedValues = explode(',', $parameter);
-                    if (!in_array($value, $allowedValues)) {
-                        return __('This field contains an invalid value.', 'bible-plugin');
+                if ( $value !== null ) {
+                    $allowed_values = explode( ',', $parameter );
+                    if ( !in_array( $value, $allowed_values ) ) {
+                        return __( 'This field contains an invalid value.', 'bible-plugin' );
                     }
                 }
                 break;
 
             case 'boolean':
-                if ($value !== null && !is_bool($value) && $value !== 0 && $value !== 1 && $value !== '0' && $value !== '1') {
-                    return __('This field must be a boolean.', 'bible-plugin');
+                if ( $value !== null && !is_bool( $value ) && $value !== 0 && $value !== 1 && $value !== '0' && $value !== '1' ) {
+                    return __( 'This field must be a boolean.', 'bible-plugin' );
                 }
                 break;
 
             case 'array':
-                if ($value !== null && !is_array($value)) {
-                    return __('This field must be an array.', 'bible-plugin');
+                if ( $value !== null && !is_array( $value ) ) {
+                    return __( 'This field must be an array.', 'bible-plugin' );
                 }
                 break;
         }
