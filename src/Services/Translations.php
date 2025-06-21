@@ -170,6 +170,26 @@ class Translations
     }
 
     /**
+     * Translates the given text using the 'bible_plugin' translation domain.
+     *
+     * @param string $text The text to be translated.
+     *
+     * @return string The translated text.
+     */
+    public function translate( $text, $context = [] ) {
+        if ( count( $context ) ) {
+            // phpcs:ignore
+            $default = _x( $text, $context, 'bible-plugin' );
+        } else {
+            // phpcs:ignore
+            $default = __( $text, 'bible-plugin' );
+        }
+
+        $translations = $this->custom_translations();
+        return $translations[$text] ?? $default;
+    }
+
+    /**
      * Retrieves a gettext translation with context.
      *
      * @param string $translation The original translation.
@@ -189,7 +209,6 @@ class Translations
 
         return $translation;
     }
-
 
     /**
      * Translates the given text using the 'bible_plugin' translation domain.

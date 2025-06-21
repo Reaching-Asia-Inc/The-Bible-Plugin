@@ -64,8 +64,18 @@ class Cache {
 	 *
 	 * @return void
 	 */
-	public function flush() {
-		global $wpdb;
-		$wpdb->query( "DELETE FROM $wpdb->options WHERE option_name LIKE '_transient_bible_plugin_%'" );
-	}
+    public function flush() {
+        global $wpdb;
+
+        $table = isset( $wpdb->options ) ? $wpdb->options : $wpdb->prefix . 'options';
+        $table = esc_sql( $table );
+
+        $wpdb->query(
+            "DELETE FROM `$table` WHERE " . $wpdb->prepare( //phpcs:ignore
+                "option_name LIKE %s OR option_name LIKE %s",
+                '_transient_bible_plugin_%',
+                '_transient_timeout_bible_plugin_%'
+            )
+        );
+    }
 }

@@ -4,6 +4,10 @@ namespace Tests\Routes;
 
 use Tests\TestCase;
 
+/**
+ * @group routes
+ * @group api
+ */
 class ApiRoutesTest extends TestCase
 {
     /**
@@ -18,7 +22,7 @@ class ApiRoutesTest extends TestCase
         $expected_controllers = [
             'CodeZone\Bible\Controllers\LanguageController',
             'CodeZone\Bible\Controllers\BibleController',
-            'CodeZone\Bible\Controllers\BibleMediaTypesController',
+            'CodeZone\Bible\Controllers\MediaTypesController',
             'CodeZone\Bible\Controllers\ScriptureController',
             'CodeZone\Bible\Controllers\Settings\AdvancedController',
             'CodeZone\Bible\Controllers\Settings\BibleBrainsFormController',
@@ -142,22 +146,22 @@ class ApiRoutesTest extends TestCase
     /**
      * @test
      */
-    public function it_registers_bible_media_types_controller_routes()
+    public function it_registers_media_types_controller_routes()
     {
         // Load the routes file
         $routes = include __DIR__ . '/../../routes/api.php';
 
-        // Define the expected routes for BibleMediaTypesController
+        // Define the expected routes for MediaTypesController
         $expected_routes = [
             [
                 'method' => 'GET',
-                'route' => '/bibles/media-types',
-                'callback' => [ 'CodeZone\Bible\Controllers\BibleMediaTypesController', 'index' ]
+                'route' => '/media-types',
+                'callback' => [ 'CodeZone\Bible\Controllers\MediaTypesController', 'index' ]
             ],
             [
                 'method' => 'GET',
-                'route' => '/bibles/media-types/options',
-                'callback' => [ 'CodeZone\Bible\Controllers\BibleMediaTypesController', 'options' ]
+                'route' => '/media-types/options',
+                'callback' => [ 'CodeZone\Bible\Controllers\MediaTypesController', 'options' ]
             ]
         ];
 

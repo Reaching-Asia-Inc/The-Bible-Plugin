@@ -16,7 +16,8 @@ class ErrorHandler {
      */
     protected array $blacklist = [
         'CodeZone\Bible\Opis\Closure\unserialize(): Implicitly marking parameter $options as nullable is deprecated, the explicit nullable type must be used instead',
-        '::$termmeta'
+        '::$termmeta',
+        'CodeZone\Bible\League\Plates\Template\Template::data(): Implicitly marking parameter $data as nullable is deprecated, the explicit nullable type must be used instead'
     ];
 
     /**
@@ -80,13 +81,21 @@ class ErrorHandler {
         // Only handle deprecation warnings
         if ( $errno === E_DEPRECATED || $errno === E_USER_DEPRECATED ) {
             foreach ( $this->blacklist as $string ) {
-                if ( ( strpos( $errstr, $string ) !== false ) || strpos( $errfile, $string ) !== false ) {
+                if (
+                    strpos( $errstr, $string ) !== false ||
+                    strpos( $errfile, $string ) !== false
+                ) {
                     // Ignore this deprecation warning
                     return true;
                 }
             }
-        }
 
+            // If running in PHPUnit, suppress callstack and just print message
+            if ( getenv( 'PHPUNIT' ) === '1' ) {
+                fwrite( STDERR, "Deprecation Notice: $errstr in $errfile on line $errline\n" );
+                return true;
+            }
+        }
 
         // If we have a previous error handler, call it
         if ( $this->previous_handler ) {
@@ -99,7 +108,7 @@ class ErrorHandler {
             );
         }
 
-        // Fall back to the default PHP error handler
+        // Let default PHP error handler handle it
         return false;
     }
 

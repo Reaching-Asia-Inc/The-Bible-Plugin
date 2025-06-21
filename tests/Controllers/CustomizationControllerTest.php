@@ -3,16 +3,14 @@
 namespace Tests\Controllers;
 
 use CodeZone\Bible\Controllers\Settings\CustomizationFomController;
+use CodeZone\Bible\Services\Request;
 use CodeZone\Bible\Services\RequestInterface;
 use Tests\TestCase;
 use function CodeZone\Bible\get_plugin_option;
 
 /**
- * Class CustomizationControllerTest
- *
- * This class is responsible for testing the Customization settings controller.
- *
- * @test
+ * @group controllers
+ * @group settings
  */
 class CustomizationControllerTest extends TestCase
 {
@@ -43,20 +41,18 @@ class CustomizationControllerTest extends TestCase
      */
     public function it_validates_and_returns_error_if_validation_fails() {
         // Create a mock Request object
-        $request = $this->createMock( RequestInterface::class );
+        $request = $this->getMockBuilder( Request::class )
+            ->onlyMethods( [ 'all_get' ] ) // or setMethods() for older PHPUnit
+            ->getMock();
 
         // Configure the mock to return empty values
-        $request->method( 'get' )
-            ->willReturnMap([
-                [ 'color_scheme', null, '' ],
-                [ 'colors', null, [] ],
-                [ 'translations', null, [] ]
+        $request->expects( $this->any() )
+            ->method( 'all_get' )
+            ->willReturn([
+                'color_scheme' => '',
+                'colors' => [],
+                'translations' => []
             ]);
-
-        // Add magic property access
-        $request->color_scheme = '';
-        $request->colors = [];
-        $request->translations = [];
 
         // Create the controller
         $controller = new CustomizationFomController();
@@ -80,28 +76,41 @@ class CustomizationControllerTest extends TestCase
         $color_scheme = 'light';
         $colors = [
             'accent' => '#3490dc',
-            'accent_steps' => 5
+            'accent_steps' => [
+                100  => 'rgb(10, 41, 1)',
+                200  => 'rgb(14, 60, 2)',
+                300  => 'rgb(19, 79, 72)',
+                400  => 'rgb(23, 97, 89)',
+                500  => 'rgb(28, 116, 106)',
+                600  => 'rgb(32, 135, 123)',
+                700  => 'rgb(37, 153, 140)',
+                800  => 'rgb(41, 172, 157)',
+                900  => 'rgb(49, 204, 187)',
+                1000 => 'rgb(80, 213, 198)',
+                1100 => 'rgb(113, 221, 209)',
+                1200 => 'rgb(145, 229, 219)',
+                1300 => 'rgb(178, 237, 230)',
+                1400 => 'rgb(210, 244, 240)',
+                1500 => 'rgb(243, 252, 251)'
+            ]
         ];
         $translations = [
             'en' => 'English',
             'es' => 'Spanish'
         ];
 
-        // Create a mock Request object
-        $request = $this->createMock( RequestInterface::class );
+        $request = $this->getMockBuilder( Request::class )
+            ->onlyMethods( [ 'all_get' ] ) // or setMethods() for older PHPUnit
+            ->getMock();
 
-        // Configure the mock to return the test data
-        $request->method( 'get' )
-            ->willReturnMap([
-                [ 'color_scheme', null, $color_scheme ],
-                [ 'colors', null, $colors ],
-                [ 'translations', null, $translations ]
+        // Configure the mock to return empty values
+        $request->expects( $this->any() )
+            ->method( 'all_get' )
+            ->willReturn([
+                'color_scheme' => $color_scheme,
+                'colors' => $colors,
+                'translations' => $translations
             ]);
-
-        // Add magic property access
-        $request->color_scheme = $color_scheme;
-        $request->colors = $colors;
-        $request->translations = $translations;
 
         // Create the controller
         $controller = new CustomizationFomController();

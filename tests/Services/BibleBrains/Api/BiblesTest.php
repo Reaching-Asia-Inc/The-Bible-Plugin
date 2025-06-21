@@ -1,6 +1,6 @@
 <?php
 
-namespace Tests\Services\BibleBrains\Api;
+namespace Services\BibleBrains\Api;
 
 use CodeZone\Bible\Exceptions\BibleBrainsException;
 use CodeZone\Bible\Services\BibleBrains\Api\Bibles;
@@ -44,7 +44,7 @@ class BiblesTest extends TestCase
         // Create a mock Bibles service
         $bibles = $this->getMockBuilder( Bibles::class )
             ->disableOriginalConstructor()
-            ->onlyMethods( [ 'get', 'post' ] )
+            ->onlyMethods( [ 'get' ] )
             ->getMock();
 
         // Test mapping an option
@@ -56,7 +56,7 @@ class BiblesTest extends TestCase
 
         $expected = [
             'value' => 'KJV',
-            'item_text' => 'King James Version'
+            'itemText' => 'King James Version'
         ];
 
         // Call the map_option method
@@ -74,7 +74,7 @@ class BiblesTest extends TestCase
         // Create a mock Bibles service
         $bibles = $this->getMockBuilder( Bibles::class )
             ->disableOriginalConstructor()
-            ->onlyMethods( [ 'get', 'post' ] )
+            ->onlyMethods( [ 'get' ] )
             ->getMock();
 
         // Test mapping an option without abbr
@@ -85,7 +85,7 @@ class BiblesTest extends TestCase
 
         $expected = [
             'value' => '123',
-            'item_text' => 'King James Version'
+            'itemText' => 'King James Version'
         ];
 
         // Call the map_option method
@@ -103,7 +103,7 @@ class BiblesTest extends TestCase
         // Create a mock Bibles service
         $bibles = $this->getMockBuilder( Bibles::class )
             ->disableOriginalConstructor()
-            ->onlyMethods( [ 'get', 'post' ] )
+            ->onlyMethods( [ 'get' ] )
             ->getMock();
 
         // Expect an exception

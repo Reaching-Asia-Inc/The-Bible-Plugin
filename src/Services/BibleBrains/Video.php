@@ -112,7 +112,7 @@ class Video {
             return $video;
         }
 
-        $video['playlist'] = $playlist;
+        $video['files'] = $playlist;
 
         return $video;
     }
@@ -137,6 +137,14 @@ class Video {
                 $attributes = substr( $line, strlen( '#EXT-X-STREAM-INF:' ) );
 
                 // Parse attributes
+                // First, extract CODECS attribute separately since it can contain commas
+                if ( preg_match( '/CODECS="([^"]+)"/', $attributes, $codecs_match ) ) {
+                    $current_stream['CODECS'] = $codecs_match[1];
+                    // Remove the CODECS part from attributes to avoid double processing
+                    $attributes = str_replace( $codecs_match[0], '', $attributes );
+                }
+
+                // Parse remaining attributes
                 preg_match_all( '/([^,=]+)=([^,]+)/', $attributes, $matches, PREG_SET_ORDER );
                 foreach ( $matches as $match ) {
                     $key = trim( $match[1] );

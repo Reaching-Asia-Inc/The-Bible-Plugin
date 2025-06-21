@@ -3,10 +3,16 @@
 namespace Tests\Controllers;
 
 use CodeZone\Bible\Controllers\Settings\BibleBrainsFormController;
+use CodeZone\Bible\Services\Request;
 use CodeZone\Bible\Services\RequestInterface;
 use Tests\TestCase;
 use function CodeZone\Bible\container;
 
+/**
+ * @group controllers
+ * @group settings
+ * @group biblebrains
+ */
 class BibleBrainsFormControllerTest extends TestCase
 {
     /**
@@ -18,7 +24,8 @@ class BibleBrainsFormControllerTest extends TestCase
         $request = $this->createMock( RequestInterface::class );
 
         // Configure the mock to return empty array for languages
-        $request->method( 'get' )
+        $request->expects( $this->any() )
+            ->method( 'get' )
             ->willReturnMap([
                 [ 'languages', [], [] ]
             ]);
@@ -56,12 +63,15 @@ class BibleBrainsFormControllerTest extends TestCase
         ];
 
         // Create a mock Request object
-        $request = $this->createMock( RequestInterface::class );
+        $request = $this->getMockBuilder( Request::class )
+            ->onlyMethods( [ 'all_get' ] ) // or setMethods() for older PHPUnit
+            ->getMock();
 
         // Configure the mock to return the test languages
-        $request->method( 'get' )
-            ->willReturnMap([
-                [ 'languages', [], $languages ]
+        $request->expects( $this->any() )
+            ->method( 'all_get' )
+            ->willReturn([
+                'languages' => $languages
             ]);
 
         // Create the controller

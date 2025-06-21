@@ -1,6 +1,6 @@
 <?php
 
-namespace Tests\Services\BibleBrains\Api;
+namespace Services\BibleBrains\Api;
 
 use CodeZone\Bible\Services\BibleBrains\Api\Languages;
 use Tests\TestCase;
@@ -15,7 +15,7 @@ class LanguagesTest extends TestCase
         // Create a mock Languages service
         $languages_mock = $this->getMockBuilder( Languages::class )
             ->disableOriginalConstructor()
-            ->onlyMethods( [ 'get', 'post' ] )
+            ->onlyMethods( [ 'get' ] )
             ->getMock();
 
         // Test mapping an option
@@ -48,7 +48,7 @@ class LanguagesTest extends TestCase
         // Create a mock Languages service
         $languages_mock = $this->getMockBuilder( Languages::class )
             ->disableOriginalConstructor()
-            ->onlyMethods( [ 'get', 'post' ] )
+            ->onlyMethods( [ 'get' ] )
             ->getMock();
 
         // Test data

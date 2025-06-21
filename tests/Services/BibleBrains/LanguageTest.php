@@ -2,15 +2,17 @@
 
 namespace Tests\Services\BibleBrains;
 
-use Brain\Monkey\Functions;
 use CodeZone\Bible\CodeZone\WPSupport\Options\OptionsInterface;
 use CodeZone\Bible\Services\BibleBrains\Api\Languages;
 use CodeZone\Bible\Services\BibleBrains\Language;
 use CodeZone\Bible\Services\Translations;
-use CodeZone\Bible\WhiteCube\Lingua\Service as Lingua;
 use Tests\TestCase;
-use function CodeZone\Bible\config;
+use function Patchwork\redefine;
 
+/**
+ * @group biblebrains
+ * @group languages
+ */
 class LanguageTest extends TestCase
 {
     /**
@@ -384,13 +386,12 @@ class LanguageTest extends TestCase
 
         // Mock the config function to return a default language
         $default_language = [ 'value' => 'eng', 'itemText' => 'English' ];
-        Functions\expect( 'CodeZone\Bible\config' )
-            ->andReturnUsing(function ( $path, $default = null ) use ( $default_language ) {
-                if ( $path === 'options.defaults.language' ) {
-                    return $default_language;
-                }
-                return $default;
-            });
+        redefine('CodeZone\Bible\config', function ( $path, $default = null ) use ( $default_language ) {
+            if ( $path === 'options.defaults.language' ) {
+                return $default_language;
+            }
+            return $default;
+        });
 
         // Test getting default language when no languages are configured
         $result = $language->default();

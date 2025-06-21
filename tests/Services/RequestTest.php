@@ -5,6 +5,10 @@ namespace Tests\Services;
 use CodeZone\Bible\Services\Request;
 use Tests\TestCase;
 
+/**
+ * @group services
+ * @group requests
+ */
 class RequestTest extends TestCase
 {
     /**
@@ -32,7 +36,7 @@ class RequestTest extends TestCase
         $this->assertEquals( [ 'email' => 'john@example.com' ], $request->all_post() );
 
         // Test method
-        $this->assertEquals( 'GET', $request->method() );
+        $this->assertEquals( 'get', $request->method() );
 
         // Restore original superglobals
         $_GET = $original_get;
@@ -68,7 +72,7 @@ class RequestTest extends TestCase
         $request = new Request();
 
         // Test method
-        $this->assertEquals( 'POST', $request->method() );
+        $this->assertEquals( 'post', $request->method() );
 
         // Test is_post method
         $this->assertTrue( $request->is_post() );
@@ -102,7 +106,7 @@ class RequestTest extends TestCase
         $request = new Request();
 
         // Test method
-        $this->assertEquals( 'GET', $request->method() );
+        $this->assertEquals( 'get', $request->method() );
 
         // Test is_get method
         $this->assertTrue( $request->is_get() );
@@ -132,7 +136,7 @@ class RequestTest extends TestCase
         $request = new Request();
 
         // Test method
-        $this->assertEquals( 'GET', $request->method() );
+        $this->assertEquals( 'get', $request->method() );
 
         // Restore original superglobals
         $_SERVER = $original_server;

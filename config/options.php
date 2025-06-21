@@ -12,7 +12,7 @@ $config->merge( [
             'languages'        => [
                 [
                     'bibles'      => 'ENGESV',
-                    'media_types' => 'text,audio-video',
+                    'media_types' => 'text,audio-video,video',
                     'itemText'    => 'English',
                     'value'       => 'eng'
                 ]

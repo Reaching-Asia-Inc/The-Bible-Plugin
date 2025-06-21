@@ -11,6 +11,7 @@
     <php>
         <env name="APP_ENV" value="testing"/>
         <env name="TBP_BIBLE_BRAINS_KEYS" value="1c5f5713-fba7-428a-b52b-3dadb39e21c0" />
+        <env name="PHPUNIT" value="1"/>
     </php>
 
     <testsuites>

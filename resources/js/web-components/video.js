@@ -28,8 +28,8 @@ export class Video extends TBPElement {
 
     init() {
         setTimeout(() => {
-            const isHls = this.content.some(({playlist}) => {
-              return Array.isArray(playlist) && playlist.some(stream => stream.url.includes('.m3u8'));
+            const isHls = this.content.some(({files}) => {
+              return Array.isArray(files) && files.some(stream => stream.url.includes('.m3u8'));
             });
             let initEvent = new CustomEvent('tpb-player:initialize', {
                 bubbles: true,
@@ -38,17 +38,17 @@ export class Video extends TBPElement {
 
             if (isHls && Hls.isSupported()) {
                 const hls = new Hls();
-                this.content.forEach(({playlist}) => {
-                    hls.loadSource(this.selectStream(playlist)?.url);
+                this.content.forEach(({files}) => {
+                    hls.loadSource(this.selectStream(files)?.url);
                 });
                 hls.attachMedia(this.videoRef.value);
                 hls.on(Hls.Events.MANIFEST_PARSED, () => {
                     this.playerRef.value.dispatchEvent(initEvent);
                 });
             } else {
-                this.content.forEach(({playlist}) => {
+                this.content.forEach(({files}) => {
                     const source = document.createElement('source');
-                    source.src = this.selectStream(playlist)?.url;
+                    source.src = this.selectStream(files)?.url;
                     this.videoRef.value.appendChild(source);
                 });
             }
@@ -68,13 +68,13 @@ export class Video extends TBPElement {
 
     }
 
-  selectStream(playlist) {
+  selectStream(files) {
     // Get screen dimensions
     const screenWidth = window.innerWidth;
     const screenHeight = window.innerHeight;
 
     // Parse resolutions into width and height
-    const streams = playlist.map(stream => {
+    const streams = files.map(stream => {
       const [width, height] = stream.resolution.split('x').map(Number);
       return {
         ...stream,

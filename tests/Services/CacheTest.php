@@ -5,6 +5,10 @@ namespace Tests\Services;
 use CodeZone\Bible\Services\Cache;
 use Tests\TestCase;
 
+/**
+ * @group services
+ * @group cache
+ */
 class CacheTest extends TestCase
 {
     /**
@@ -65,6 +69,56 @@ class CacheTest extends TestCase
     {
         global $wpdb;
 
+        // phpcs:ignore
+        $wpdb = $this->getMockBuilder(\stdClass::class)
+            ->addMethods( [ 'query', '_escape', 'prepare' ] )
+            ->getMock();
+
+        // Add required methods
+        $wpdb->method( 'query' )->willReturn( true );
+        $wpdb->method( 'prepare' )->willReturnCallback(function ( $query, ...$args ) {
+            // This is a dummy replacement. You can simulate basic substitution if needed.
+            return vsprintf( $query, $args );
+        });
+        $wpdb->method( '_escape' )->willReturnCallback( fn( $v ) => $v );
+
+        // Add required properties
+        $wpdb->prefix = 'wp_'; // <-- or whatever your test expects
+
+        $wpdb->expects( $this->once() )
+            ->method( 'query' )
+            ->with( $this->stringContains( "DELETE FROM" ) )
+            ->willReturn( true );
+
+        // Mock get_transient to return values before flush and false after
+        $transients = [
+            'bible_plugin_test1' => 'value1',
+            'bible_plugin_test2' => 'value2',
+            'other_plugin_test' => 'value3'
+        ];
+
+        $flushed = false;
+
+        \Patchwork\redefine('get_transient', function ( $key ) use ( &$transients, &$flushed ) {
+            if ( $flushed && ( $key === 'bible_plugin_test1' || $key === 'bible_plugin_test2' ) ) {
+                return false;
+            }
+            return $transients[$key] ?? false;
+        });
+
+        \Patchwork\redefine('set_transient', function ( $key, $value ) use ( &$transients ) {
+            $transients[$key] = $value;
+            return true;
+        });
+
+        \Patchwork\redefine('delete_transient', function ( $key ) use ( &$transients ) {
+            if ( isset( $transients[$key] ) ) {
+                unset( $transients[$key] );
+                return true;
+            }
+            return false;
+        });
+
         // First, add some test transients
         set_transient( 'bible_plugin_test1', 'value1' );
         set_transient( 'bible_plugin_test2', 'value2' );
@@ -77,6 +131,7 @@ class CacheTest extends TestCase
 
         // Run the flush operation
         $cache = new Cache();
+        $flushed = true; // Mark as flushed so get_transient returns false for our plugin's transients
         $cache->flush();
 
         // Verify our plugin's transients were deleted
@@ -85,8 +140,5 @@ class CacheTest extends TestCase
 
         // Verify other plugin's transient wasn't affected
         $this->assertNotFalse( get_transient( 'other_plugin_test' ) );
-
-        // Clean up
-        delete_transient( 'other_plugin_test' );
     }
 }

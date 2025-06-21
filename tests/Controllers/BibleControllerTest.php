@@ -3,11 +3,18 @@
 namespace Tests\Controllers;
 
 use CodeZone\Bible\Controllers\BibleController;
+use CodeZone\Bible\GuzzleHttp\Psr7\Response;
 use CodeZone\Bible\Services\BibleBrains\Api\Bibles;
 use CodeZone\Bible\Services\RequestInterface;
 use Tests\TestCase;
 use function CodeZone\Bible\container;
 
+/**
+ * @group controllers
+ * @group settings
+ * @group biblebrains
+ * @group bibles
+ */
 class BibleControllerTest extends TestCase
 {
     /**
@@ -19,7 +26,8 @@ class BibleControllerTest extends TestCase
         $request = $this->createMock( RequestInterface::class );
 
         // Configure the mock to return empty id
-        $request->method( 'get' )
+        $request->expects( $this->any() )
+            ->method( 'get' )
             ->willReturnMap([
                 [ 'id', null, '' ]
             ]);
@@ -54,7 +62,8 @@ class BibleControllerTest extends TestCase
         $request = $this->createMock( RequestInterface::class );
 
         // Configure the mock to return the test bible_id
-        $request->method( 'get' )
+        $request->expects( $this->any() )
+            ->method( 'get' )
             ->willReturnMap([
                 [ 'id', null, $bible_id ]
             ]);
@@ -66,10 +75,9 @@ class BibleControllerTest extends TestCase
             ->willReturn( $expected_data );
 
         // Mock the container to return our mock Bibles service
-        $container = container();
-        $container->singleton(Bibles::class, function () use ( $bibles ) {
-            return $bibles;
-        });
+        $this->mock_api_response('bibles/' . $bible_id, new Response(200, [], json_encode([
+            'data' => $expected_data
+        ])));
 
         // Create the controller
         $controller = new BibleController();
@@ -78,7 +86,7 @@ class BibleControllerTest extends TestCase
         $response = $controller->show( $request );
 
         // Assert that the response contains the expected data
-        $this->assertEquals( $expected_data, $response );
+        $this->assertEquals( $expected_data, $response['data'] );
     }
 
     /**
@@ -116,19 +124,8 @@ class BibleControllerTest extends TestCase
         // Create a mock Request object
         $request = $this->createMock( RequestInterface::class );
 
-        // Mock the Bibles service
-        $bibles = $this->createMock( Bibles::class );
-        $bibles->method( 'all' )
-            ->willReturn( $bible_data );
-        $bibles->method( 'as_options' )
-            ->with( $bible_data['data'] )
-            ->willReturn( $expected_options['data'] );
-
         // Mock the container to return our mock Bibles service
-        $container = container();
-        $container->singleton(Bibles::class, function () use ( $bibles ) {
-            return $bibles;
-        });
+        $this->mock_api_response( 'bibles', new Response( 200, [], json_encode( $bible_data ) ) );
 
         // Create the controller
         $controller = new BibleController();
@@ -164,7 +161,8 @@ class BibleControllerTest extends TestCase
         $request = $this->createMock( RequestInterface::class );
 
         // Configure the mock to return the test language_code
-        $request->method( 'get' )
+        $request->expects( $this->any() )
+            ->method( 'get' )
             ->willReturnMap([
                 [ 'language_code', '', $language_code ],
                 [ 'paged', 1, 1 ],
@@ -172,17 +170,8 @@ class BibleControllerTest extends TestCase
                 [ 'search', '', '' ]
             ]);
 
-        // Mock the Bibles service
-        $bibles = $this->createMock( Bibles::class );
-        $bibles->method( 'for_languages' )
-            ->with( [ $language_code ], [ 'limit' => 150 ] )
-            ->willReturn( $expected_data );
-
         // Mock the container to return our mock Bibles service
-        $container = container();
-        $container->singleton(Bibles::class, function () use ( $bibles ) {
-            return $bibles;
-        });
+        $this->mock_api_response( 'bibles', new Response( 200, [], json_encode( $expected_data ) ) );
 
         // Create the controller
         $controller = new BibleController();
@@ -214,20 +203,12 @@ class BibleControllerTest extends TestCase
             ]
         ];
 
-        $expected_filtered_data = [
-            'data' => [
-                [
-                    'abbr' => 'ENGESV',
-                    'name' => 'English Standard Version'
-                ]
-            ]
-        ];
-
         // Create a mock Request object
         $request = $this->createMock( RequestInterface::class );
 
         // Configure the mock to return the test search term
-        $request->method( 'get' )
+        $request->expects( $this->any() )
+            ->method( 'get' )
             ->willReturnMap([
                 [ 'language_code', '', '' ],
                 [ 'paged', 1, 1 ],
@@ -235,16 +216,8 @@ class BibleControllerTest extends TestCase
                 [ 'search', '', $search_term ]
             ]);
 
-        // Mock the Bibles service
-        $bibles = $this->createMock( Bibles::class );
-        $bibles->method( 'all' )
-            ->willReturn( $all_bibles );
-
         // Mock the container to return our mock Bibles service
-        $container = container();
-        $container->singleton(Bibles::class, function () use ( $bibles ) {
-            return $bibles;
-        });
+        $this->mock_api_response( 'bibles', new Response( 200, [], json_encode( $all_bibles ) ) );
 
         // Create the controller
         $controller = new BibleController();

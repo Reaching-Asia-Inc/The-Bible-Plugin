@@ -2,9 +2,12 @@
 
 namespace Tests\Services\BibleBrains;
 
+use CodeZone\Bible\GuzzleHttp\Psr7\Response;
 use CodeZone\Bible\Services\BibleBrains\Api\ApiKeys;
 use CodeZone\Bible\Services\BibleBrains\BibleBrainsKeys;
 use Tests\TestCase;
+use CodeZone\Bible\CodeZone\WPSupport\Options\OptionsInterface as Options;
+use function CodeZone\Bible\config;
 use function CodeZone\Bible\container;
 
 /**
@@ -12,7 +15,8 @@ use function CodeZone\Bible\container;
  *
  * This class is responsible for testing the BibleBrainsKeys service.
  *
- * @test
+ * @group biblebrains
+ * @group apikeys
  */
 class BibleBrainsKeysTest extends TestCase {
     /**
@@ -20,12 +24,17 @@ class BibleBrainsKeysTest extends TestCase {
      */
     public function it_can_fetch_keys()
     {
-        $keys = container()->make( ApiKeys::class );
-        $keys_service = container()->make( BibleBrainsKeys::class );
+        // Mock the API response
+        $this->mock_api_response('keys', new Response(200, [], json_encode([
+            'data' => [ 'key1', 'key2', 'key3' ]
+        ])));
+
+        $keys = container()->get( ApiKeys::class );
+        $keys_service = container()->get( BibleBrainsKeys::class );
         $response = $keys->all();
         $this->assertIsArray( $response );
         $this->assertNotEmpty( $response );
-        foreach ( $response as $key ) {
+        foreach ( $response['data'] as $key ) {
             $this->assertIsString( $key );
         }
 
@@ -41,7 +50,7 @@ class BibleBrainsKeysTest extends TestCase {
             define( 'TBP_BIBLE_BRAINS_KEYS', 'key1,key2,key3' );
         }
         $override = explode( ',', TBP_BIBLE_BRAINS_KEYS );
-        $keys_service = container()->make( BibleBrainsKeys::class );
+        $keys_service = container()->get( BibleBrainsKeys::class );
 
 
         $this->assertTrue( $keys_service->has_override() );
@@ -56,8 +65,8 @@ class BibleBrainsKeysTest extends TestCase {
      * @test
      */
     public function it_can_fetch_options() {
-        $options = container()->make( 'CodeZone\Bible\Services\Options' );
-        $keys_service = container()->make( BibleBrainsKeys::class );
+        $options = container()->get( Options::class );
+        $keys_service = container()->get( BibleBrainsKeys::class );
 
         $options->set( BibleBrainsKeys::OPTION_KEY, 'key1' );
         $this->assertTrue( $keys_service->has_option() );
@@ -73,9 +82,13 @@ class BibleBrainsKeysTest extends TestCase {
      */
     public function it_can_fetch_random_key()
     {
-        $keys_service = container()->make( BibleBrainsKeys::class );
-        $options = container()->make( 'CodeZone\Bible\Services\Options' );
-        $options->delete( BibleBrainsKeys::OPTION_KEY );
+        // Mock the API response
+        $this->mock_api_response('keys', new Response(200, [], json_encode([
+            'data' => [ 'key1', 'key2', 'key3' ]
+        ])));
+
+        $keys_service = container()->get( BibleBrainsKeys::class );
+        delete_option( config( 'options.prefix' ) . '_' . BibleBrainsKeys::OPTION_KEY );
         $random = $keys_service->random( false );
         $this->assertContains( $random, $keys_service->fetch_remote() );
     }

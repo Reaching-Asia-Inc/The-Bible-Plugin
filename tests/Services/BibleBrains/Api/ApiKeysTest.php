@@ -1,10 +1,14 @@
 <?php
 
-namespace Tests\Services\BibleBrains\Api;
+namespace Services\BibleBrains\Api;
 
 use CodeZone\Bible\Services\BibleBrains\Api\ApiKeys;
 use Tests\TestCase;
 
+/**
+ * @group biblebrains
+ * @group apikeys
+ */
 class ApiKeysTest extends TestCase
 {
     /**

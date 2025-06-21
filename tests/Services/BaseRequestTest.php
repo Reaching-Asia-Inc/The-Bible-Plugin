@@ -3,59 +3,13 @@
 namespace Tests\Services;
 
 use CodeZone\Bible\Services\BaseRequest;
-use CodeZone\Bible\Services\RequestInterface;
 use Tests\TestCase;
 
-// phpcs:disable Generic.Files.OneObjectStructurePerFile.MultipleFound
-class ConcreteBaseRequest extends BaseRequest
-{
-    private array $url_params = [];
-    private string $method_value = 'GET';
-    private array $get_params = [];
-    private array $post_params = [];
-
-    public function method(): string
-    {
-        return $this->method_value;
-    }
-
-    public function all_url_params(): array
-    {
-        return $this->url_params;
-    }
-
-    public function all_post(): array
-    {
-        return $this->post_params;
-    }
-
-    public function all_get(): array
-    {
-        return $this->get_params;
-    }
-
-    // Helper methods for testing
-    public function set_method( string $method ): void
-    {
-        $this->method_value = $method;
-    }
-
-    public function set_url_params( array $params ): void
-    {
-        $this->url_params = $params;
-    }
-
-    public function set_get_params( array $params ): void
-    {
-        $this->get_params = $params;
-    }
-
-    public function set_post_params( array $params ): void
-    {
-        $this->post_params = $params;
-    }
-}
-
+/**
+ * phpcs:disable Generic.Files.OneObjectStructurePerFile.MultipleFound
+ * @group services
+ * @group requests
+ */
 class BaseRequestTest extends TestCase
 {
     /**
@@ -179,5 +133,54 @@ class BaseRequestTest extends TestCase
         $this->assertEquals( 'John', $request->name );
         $this->assertEquals( 30, $request->age );
         $this->assertNull( $request->unknown );
+    }
+}
+
+class ConcreteBaseRequest extends BaseRequest
+{
+    private array $url_params = [];
+    private string $method_value = 'GET';
+    private array $get_params = [];
+    private array $post_params = [];
+
+    public function method(): string
+    {
+        return $this->method_value;
+    }
+
+    public function all_url_params(): array
+    {
+        return $this->url_params;
+    }
+
+    public function all_post(): array
+    {
+        return $this->post_params;
+    }
+
+    public function all_get(): array
+    {
+        return $this->get_params;
+    }
+
+    // Helper methods for testing
+    public function set_method( string $method ): void
+    {
+        $this->method_value = $method;
+    }
+
+    public function set_url_params( array $params ): void
+    {
+        $this->url_params = $params;
+    }
+
+    public function set_get_params( array $params ): void
+    {
+        $this->get_params = $params;
+    }
+
+    public function set_post_params( array $params ): void
+    {
+        $this->post_params = $params;
     }
 }

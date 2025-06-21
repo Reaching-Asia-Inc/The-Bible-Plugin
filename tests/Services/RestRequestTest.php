@@ -2,11 +2,15 @@
 
 namespace Tests\Services;
 
-use Brain\Monkey\Functions;
 use CodeZone\Bible\Services\RestRequest;
 use Tests\TestCase;
 use WP_REST_Request;
+use function Patchwork\redefine;
 
+/**
+ * @group services
+ * @group requests
+ */
 class RestRequestTest extends TestCase
 {
     /**
@@ -57,8 +61,9 @@ class RestRequestTest extends TestCase
         $request = new RestRequest( $wp_request );
 
         // Mock wp_is_json_request to return true
-        Functions\expect( 'wp_is_json_request' )
-            ->andReturn( true );
+        redefine('wp_is_json_request', function () {
+            return true;
+        });
 
         // Test all_post method
         $this->assertEquals( [ 'name' => 'John', 'email' => 'john@example.com' ], $request->all_post() );
@@ -78,8 +83,9 @@ class RestRequestTest extends TestCase
         $request = new RestRequest( $wp_request );
 
         // Mock wp_is_json_request to return false
-        Functions\expect( 'wp_is_json_request' )
-            ->andReturn( false );
+        redefine('wp_is_json_request', function () {
+            return false;
+        });
 
         // Test all_post method
         $this->assertEquals( [ 'name' => 'John', 'email' => 'john@example.com' ], $request->all_post() );

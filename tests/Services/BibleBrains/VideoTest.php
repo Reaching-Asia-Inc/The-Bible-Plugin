@@ -8,6 +8,10 @@ use CodeZone\Bible\Services\BibleBrains\Api\Bibles;
 use CodeZone\Bible\Services\BibleBrains\Video;
 use Tests\TestCase;
 
+/**
+ * @group biblebrains
+ * @group videos
+ */
 class VideoTest extends TestCase
 {
     /**
@@ -54,11 +58,11 @@ class VideoTest extends TestCase
         $this->assertArrayHasKey( 'data', $result['media']['video']['content'] );
 
         $video_data = $result['media']['video']['content']['data'][0];
-        $this->assertArrayHasKey( 'playlist', $video_data );
-        $this->assertIsArray( $video_data['playlist'] );
+        $this->assertArrayHasKey( 'files', $video_data );
+        $this->assertIsArray( $video_data['files'] );
 
         // Check the playlist structure
-        $playlist = $video_data['playlist'][0];
+        $playlist = $video_data['files'][0];
         $this->assertArrayHasKey( 'bandwidth', $playlist );
         $this->assertArrayHasKey( 'resolution', $playlist );
         $this->assertArrayHasKey( 'codecs', $playlist );

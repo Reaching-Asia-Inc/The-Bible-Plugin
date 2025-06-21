@@ -6,6 +6,10 @@ use CodeZone\Bible\Controllers\Settings\SupportController;
 use CodeZone\Bible\Services\RequestInterface;
 use Tests\TestCase;
 
+/**
+ * @group controllers
+ * @group settings
+ */
 class SupportControllerTest extends TestCase
 {
     /**

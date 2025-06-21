@@ -55,7 +55,7 @@ abstract class BaseRequest implements RequestInterface
         }
 
         return $this->cast(
-            $this->method() === 'POST'
+            strtoupper( $this->method() ) === 'POST'
                 ? $this->get_post( $key, $default )
                 : $this->get_query( $key, $default )
         );
@@ -181,7 +181,7 @@ abstract class BaseRequest implements RequestInterface
      */
     public function is_post(): bool
     {
-        return $this->method() === 'POST';
+        return strtoupper( $this->method() ) === 'POST';
     }
 
     /**
@@ -191,7 +191,7 @@ abstract class BaseRequest implements RequestInterface
      */
     public function is_get(): bool
     {
-        return $this->method() === 'GET';
+        return strtoupper( $this->method() ) === 'GET';
     }
 
 

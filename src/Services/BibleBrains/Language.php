@@ -121,8 +121,8 @@ class Language {
         // Regular expression to match RTL Unicode characters.
         $rtl_chars = '/[\x{0600}-\x{06FF}\x{0750}-\x{077F}\x{0590}-\x{05FF}\x{08A0}-\x{08FF}\x{FB50}-\x{FDCF}\x{FDF0}-\x{FDFF}\x{FE70}-\x{FEFF}]/u';
 
-        // Regular expression to match LTR Unicode characters.
-        $ltr_chars = '/[\x{0000}-\x{05FF}\x{0700}-\x{08FF}\x{FB00}-\x{FB4F}\x{FB50}-\x{FDFF}\x{FE70}-\x{FEFF}]/u';
+        // Regular expression to match LTR Unicode characters (excluding RTL ranges).
+        $ltr_chars = '/[\x{0000}-\x{058F}\x{0700}-\x{074F}\x{0780}-\x{089F}\x{0900}-\x{FBFF}\x{FE00}-\x{FE6F}]/u';
 
         // Count the number of RTL and LTR characters in the text.
         $rtl_count = preg_match_all( $rtl_chars, $text );

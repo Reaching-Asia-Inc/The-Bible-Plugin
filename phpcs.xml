@@ -172,6 +172,7 @@
         <exclude name="Universal.Files.SeparateFunctionsFromOO.Mixed"/>
         <exclude name="WordPress.PHP.DontExtract.extract_extract"/>
         <exclude name="WordPress.Files.FileName.NotHyphenatedLowercase"/>
+        <exclude name="Universal.Operators.DisallowShortTernary.Found" />
     </rule>
 
     <!-- Keeping these ones: -->

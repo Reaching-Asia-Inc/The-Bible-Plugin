@@ -6,6 +6,10 @@ use CodeZone\Bible\Services\RequestInterface;
 use CodeZone\Bible\Services\Validator;
 use Tests\TestCase;
 
+/**
+ * @group services
+ * @group validation
+ */
 class ValidatorTest extends TestCase
 {
     /**
@@ -274,7 +278,8 @@ class ValidatorTest extends TestCase
         $request = $this->createMock( RequestInterface::class );
 
         // Configure the mock to return test values
-        $request->method( 'get' )
+        $request->expects( $this->any() )
+            ->method( 'get' )
             ->willReturnMap([
                 [ 'name', null, 'John' ],
                 [ 'email', null, 'test@example.com' ],

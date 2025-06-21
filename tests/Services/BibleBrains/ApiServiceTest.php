@@ -1,19 +1,16 @@
 <?php
 
-namespace Tests\Services\BibleBrains\Api;
+namespace Services\BibleBrains\Api;
 
 use CodeZone\Bible\Services\BibleBrains\Api\ApiService;
 use Tests\TestCase;
 
-// phpcs:disable Generic.Files.OneObjectStructurePerFile.MultipleFound
-class ConcreteApiService extends ApiService
-{
-    protected string $endpoint = 'test-endpoint';
-    protected array $default_options = [
-        'test_option' => 'test_value',
-    ];
-}
-
+/**
+ * phpcs:disable Generic.Files.OneObjectStructurePerFile.MultipleFound
+ *
+ * @group biblebrains
+ * @group apikeys
+ */
 class ApiServiceTest extends TestCase
 {
     /**
@@ -24,7 +21,7 @@ class ApiServiceTest extends TestCase
         // Create a mock ApiService
         $api_service = $this->getMockBuilder( ConcreteApiService::class )
             ->disableOriginalConstructor()
-            ->onlyMethods( [ 'get', 'post' ] )
+            ->onlyMethods( [ 'get' ] )
             ->getMock();
 
         // Test mapping an option
@@ -53,7 +50,7 @@ class ApiServiceTest extends TestCase
         // Create a mock ApiService
         $api_service = $this->getMockBuilder( ConcreteApiService::class )
             ->disableOriginalConstructor()
-            ->onlyMethods( [ 'get', 'post' ] )
+            ->onlyMethods( [ 'get' ] )
             ->getMock();
 
         // Test data
@@ -119,4 +116,12 @@ class ApiServiceTest extends TestCase
             'test_option' => 'test_value',
         ], $default_options);
     }
+}
+
+class ConcreteApiService extends ApiService
+{
+    protected string $endpoint = 'test-endpoint';
+    protected array $default_options = [
+        'test_option' => 'test_value',
+    ];
 }

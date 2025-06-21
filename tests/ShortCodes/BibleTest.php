@@ -2,12 +2,16 @@
 
 namespace Tests\ShortCodes;
 
-use Brain\Monkey\Functions;
+use Tests\TestCase;
 use CodeZone\Bible\Services\Assets;
 use CodeZone\Bible\Services\Request;
 use CodeZone\Bible\ShortCodes\Bible;
-use Tests\TestCase;
+use function Patchwork\redefine;
 
+/**
+ * @group shortcodes
+ * @group bibles
+ */
 class BibleTest extends TestCase
 {
     /**
@@ -19,10 +23,13 @@ class BibleTest extends TestCase
         $assets = $this->createMock( Assets::class );
         $request = $this->createMock( Request::class );
 
-        // Configure the request mock
-        $request->method( 'has' )
-            ->with( 'reference' )
-            ->willReturn( false );
+        // Use Patchwork to redefine the Request class methods
+        redefine('CodeZone\Bible\Services\Request::has', function ( $param ) {
+            if ( $param === 'reference' ) {
+                return false;
+            }
+            return false;
+        });
 
         // Create the Bible shortcode
         $bible = new Bible( $assets, $request );
@@ -47,10 +54,13 @@ class BibleTest extends TestCase
         $assets = $this->createMock( Assets::class );
         $request = $this->createMock( Request::class );
 
-        // Configure the request mock
-        $request->method( 'has' )
-            ->with( 'reference' )
-            ->willReturn( false );
+        // Use Patchwork to redefine the Request class methods
+        redefine('CodeZone\Bible\Services\Request::has', function ( $param ) {
+            if ( $param === 'reference' ) {
+                return false;
+            }
+            return false;
+        });
 
         // Create the Bible shortcode
         $bible = new Bible( $assets, $request );
@@ -75,15 +85,23 @@ class BibleTest extends TestCase
     {
         // Create mock dependencies
         $assets = $this->createMock( Assets::class );
-        $request = $this->createMock( Request::class );
 
-        // Configure the request mock
-        $request->method( 'has' )
-            ->with( 'reference' )
-            ->willReturn( true );
-        $request->method( 'get' )
-            ->with( 'reference' )
-            ->willReturn( 'Psalm 23' );
+        // Create a custom Request mock that actually works
+        $request = new class() extends Request {
+            public function has( string $key ): bool {
+                if ( $key === 'reference' ) {
+                    return true;
+                }
+                return false;
+            }
+
+            public function get( ?string $key = null, $default = null ) {
+                if ( $key === 'reference' ) {
+                    return 'Psalm 23';
+                }
+                return $default;
+            }
+        };
 
         // Create the Bible shortcode
         $bible = new Bible( $assets, $request );
@@ -116,12 +134,14 @@ class BibleTest extends TestCase
         $bible = new Bible( $assets, $request );
 
         // Mock has_shortcode to return true
-        Functions\expect( 'has_shortcode' )
-            ->andReturn( true );
+        redefine('has_shortcode', function () {
+            return true;
+        });
 
         // Mock get_the_content to return content with shortcode
-        Functions\expect( 'get_the_content' )
-            ->andReturn( 'Some content with [tbp-bible] shortcode' );
+        redefine('get_the_content', function () {
+            return 'Some content with [tbp-bible] shortcode';
+        });
 
         // Call the enqueue_scripts method
         $bible->enqueue_scripts();
@@ -144,12 +164,14 @@ class BibleTest extends TestCase
         $bible = new Bible( $assets, $request );
 
         // Mock has_shortcode to return false
-        Functions\expect( 'has_shortcode' )
-            ->andReturn( false );
+        redefine('has_shortcode', function () {
+            return false;
+        });
 
         // Mock get_the_content to return content without shortcode
-        Functions\expect( 'get_the_content' )
-            ->andReturn( 'Some content without shortcode' );
+        redefine('get_the_content', function () {
+            return 'Some content without shortcode';
+        });
 
         // Call the enqueue_scripts method
         $bible->enqueue_scripts();
@@ -172,13 +194,12 @@ class BibleTest extends TestCase
         $shortcode_tag = '';
         $callback = null;
 
-        Functions\expect( 'add_shortcode' )
-            ->andReturnUsing(function ( $tag, $func ) use ( &$add_shortcode_called, &$shortcode_tag, &$callback ) {
-                $add_shortcode_called = true;
-                $shortcode_tag = $tag;
-                $callback = $func;
-                return true;
-            });
+        redefine('add_shortcode', function ( $tag, $func ) use ( &$add_shortcode_called, &$shortcode_tag, &$callback ) {
+            $add_shortcode_called = true;
+            $shortcode_tag = $tag;
+            $callback = $func;
+            return true;
+        });
 
         // Call the init method
         $bible->init();

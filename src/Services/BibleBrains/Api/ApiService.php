@@ -7,6 +7,7 @@ use CodeZone\Bible\Services\Cache;
 use CodeZone\Bible\GuzzleHttp\Client;
 use CodeZone\Bible\GuzzleHttp\Exception\GuzzleException;
 use function CodeZone\Bible\container;
+use function CodeZone\Bible\namespace_string;
 
 /**
  * Abstract base class for making HTTP requests to the BibleBrains API.
@@ -20,7 +21,7 @@ abstract class ApiService {
      *
      * @var Client
      */
-    protected Client $http;
+    protected ?Client $http = null;
 
     /**
      * Default options to be merged with request parameters.
@@ -44,7 +45,7 @@ abstract class ApiService {
      * @param Client|null $http Optional HTTP client instance
      */
     public function init( ?Client $http = null ): void {
-        $this->http = $http ?? container()->get( 'http.bibleBrains' );
+        $this->http = $http;
     }
 
     /**
@@ -58,11 +59,11 @@ abstract class ApiService {
     public function get( string $endpoint = '', array $params = [] ): array {
         $should_cache = $params['cache'] ?? true;
         $cache = container()->get( Cache::class );
+        $client = apply_filters( namespace_string( 'api_response' ), $this->client ?? container()->get( 'http.bibleBrains' ), $endpoint, $params );
 
         if ( $should_cache ) {
             $cache_key = $endpoint . '?' . http_build_query( $params );
             $cached = $cache->get( $cache_key );
-;
 
             if ( $cached ) {
                 return $cached;
@@ -71,7 +72,7 @@ abstract class ApiService {
 
 
         try {
-            $response = $this->http->request( 'GET', $endpoint, [ 'query' => $params ] );
+            $response = $client->request( 'GET', $endpoint, [ 'query' => $params ] );
             $result = json_decode( $response->getBody()->getContents(), true );
 
             if ( !is_array( $result ) ) {
@@ -99,8 +100,17 @@ abstract class ApiService {
      * @return array          Transformed array of options
      */
     public function as_options( array $records ): array {
+        // Deduplicate records based on their 'id' value
+        $unique_records = [];
+        foreach ( $records as $record ) {
+            $id = $record['id'] ?? $record['abbr'] ?? null;
+            if ( !empty( $id ) && !isset( $unique_records[$id] ) ) {
+                $unique_records[$id] = $record;
+            }
+        }
+
         return array_values(array_filter(
-            array_map( [ $this, 'map_option' ], $records ),
+            array_map( [ $this, 'map_option' ], $unique_records ),
             fn( $option ) => !empty( $option['value'] ) && !empty( $option['itemText'] )
         ));
     }

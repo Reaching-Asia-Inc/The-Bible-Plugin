@@ -3,12 +3,14 @@
 namespace Tests\Controllers;
 
 use CodeZone\Bible\Controllers\ScriptureController;
-use CodeZone\Bible\Services\BibleBrains\Scripture;
-use CodeZone\Bible\Services\BibleBrains\Video;
-use CodeZone\Bible\Services\RequestInterface;
 use Tests\TestCase;
-use function CodeZone\Bible\container;
+use CodeZone\Bible\Services\Request;
 
+/**
+ * @group controllers
+ * @group biblebrains
+ * @group scripture
+ */
 class ScriptureControllerTest extends TestCase
 {
     /**
@@ -17,18 +19,15 @@ class ScriptureControllerTest extends TestCase
     public function it_validates_and_returns_error_if_validation_fails()
     {
         // Create a mock Request object
-        $request = $this->createMock( RequestInterface::class );
+        $request = $this->createMock( Request::class );
 
         // Configure the mock to return empty reference
-        $request->method( 'get' )
-            ->willReturnMap([
-                [ 'reference', null, '' ],
-                [ 'video', null, false ]
+        $request->expects( $this->any() )
+            ->method( 'all_get' )
+            ->willReturn([
+                'reference' => null,
+                'video' => false
             ]);
-
-        // Add magic property access
-        $request->reference = '';
-        $request->video = false;
 
         // Create the controller
         $controller = new ScriptureController();
@@ -50,45 +49,32 @@ class ScriptureControllerTest extends TestCase
     {
         // Create test data
         $reference = 'John 3:16';
-        $expected_content = [
-            'reference' => 'John 3:16',
-            'content' => 'For God so loved the world...'
-        ];
 
         // Create a mock Request object
-        $request = $this->createMock( RequestInterface::class );
+        $request = $this->getMockBuilder( Request::class )
+            ->onlyMethods( [ 'all_get' ] ) // or setMethods() for older PHPUnit
+            ->getMock();
+
 
         // Configure the mock to return the test reference
-        $request->method( 'get' )
-            ->willReturnMap([
-                [ 'reference', null, $reference ],
-                [ 'video', null, false ]
+        $request->expects( $this->any() )
+            ->method( 'all_get' )
+            ->willReturn([
+                'reference' => $reference,
+                'video' => false
             ]);
 
-        // Add magic property access
-        $request->reference = $reference;
-        $request->video = false;
-
-        // Mock the Scripture service
-        $scripture = $this->createMock( Scripture::class );
-        $scripture->method( 'by_reference' )
-            ->with( $reference )
-            ->willReturn( $expected_content );
-
-        // Mock the container to return our mock Scripture service
-        $container = container();
-        $container->singleton(Scripture::class, function () use ( $scripture ) {
-            return $scripture;
-        });
-
-        // Create the controller
         $controller = new ScriptureController();
 
         // Call the index method
         $response = $controller->index( $request );
 
-        // Assert that the response contains the expected content
-        $this->assertEquals( $expected_content, $response );
+        $this->assertIsArray( $response['media']['video']['content']['data'] );
+        $this->assertGreaterThan( 0, count( $response['media']['video']['content']['data'] ) );
+
+        foreach ( $response['media']['video']['content']['data'] as $content ) {
+            $this->assertArrayNotHasKey( 'files', $content, 'Unexpected "files" key found in video content.' );
+        }
     }
 
     /**
@@ -98,50 +84,19 @@ class ScriptureControllerTest extends TestCase
     {
         // Create test data
         $reference = 'John 3:16';
-        $content = [
-            'reference' => 'John 3:16',
-            'content' => 'For God so loved the world...'
-        ];
-        $expected_content = [
-            'reference' => 'John 3:16',
-            'content' => 'For God so loved the world...',
-            'video' => 'https://example.com/video.mp4'
-        ];
 
         // Create a mock Request object
-        $request = $this->createMock( RequestInterface::class );
+        $request = $this->getMockBuilder( Request::class )
+            ->onlyMethods( [ 'all_get' ] ) // or setMethods() for older PHPUnit
+            ->getMock();
 
         // Configure the mock to return the test reference with video=true
-        $request->method( 'get' )
-            ->willReturnMap([
-                [ 'reference', null, $reference ],
-                [ 'video', null, true ]
+        $request->expects( $this->any() )
+            ->method( 'all_get' )
+            ->willReturn([
+                'reference' => $reference,
+                'video' => true
             ]);
-
-        // Add magic property access
-        $request->reference = $reference;
-        $request->video = true;
-
-        // Mock the Scripture service
-        $scripture = $this->createMock( Scripture::class );
-        $scripture->method( 'by_reference' )
-            ->with( $reference )
-            ->willReturn( $content );
-
-        // Mock the Video service
-        $video = $this->createMock( Video::class );
-        $video->method( 'hydrate_content' )
-            ->with( $content )
-            ->willReturn( $expected_content );
-
-        // Mock the container to return our mock services
-        $container = container();
-        $container->singleton(Scripture::class, function () use ( $scripture ) {
-            return $scripture;
-        });
-        $container->singleton(Video::class, function () use ( $video ) {
-            return $video;
-        });
 
         // Create the controller
         $controller = new ScriptureController();
@@ -149,8 +104,30 @@ class ScriptureControllerTest extends TestCase
         // Call the index method
         $response = $controller->index( $request );
 
-        // Assert that the response contains the expected content with video
-        $this->assertEquals( $expected_content, $response );
+        $this->assertIsArray( $response['media']['video']['content']['data'] );
+        $this->assertGreaterThan( 0, count( $response['media']['video']['content']['data'] ) );
+
+        foreach ( $response['media']['video']['content']['data'] as $content ) {
+            $this->assertArrayHasKey( 'files', $content );
+            $this->assertIsArray( $content['files'] );
+            $this->assertGreaterThan( 0, count( $content['files'] ) ); // Note: count here, not just the array itself
+
+            foreach ( $content['files'] as $video ) {
+                // You can add more assertions here if needed
+                // Check that required keys exist
+                $this->assertArrayHasKey( 'bandwidth', $video );
+                $this->assertArrayHasKey( 'resolution', $video );
+                $this->assertArrayHasKey( 'codecs', $video );
+                $this->assertArrayHasKey( 'url', $video );
+
+                // Check that URL is a valid URL
+                $this->assertNotEmpty( $video['url'], 'Video URL is empty' );
+                $this->assertTrue(
+                    filter_var( $video['url'], FILTER_VALIDATE_URL ) !== false,
+                    'Video URL is not a valid URL: ' . $video['url']
+                );
+            }
+        }
     }
 
     /**
@@ -162,30 +139,17 @@ class ScriptureControllerTest extends TestCase
         $reference = 'Invalid Reference';
 
         // Create a mock Request object
-        $request = $this->createMock( RequestInterface::class );
+        $request = $this->getMockBuilder( Request::class )
+            ->onlyMethods( [ 'all_get' ] ) // or setMethods() for older PHPUnit
+            ->getMock();
 
         // Configure the mock to return the test reference
-        $request->method( 'get' )
-            ->willReturnMap([
-                [ 'reference', null, $reference ],
-                [ 'video', null, false ]
+        $request->expects( $this->any() )
+            ->method( 'all_get' )
+            ->willReturn([
+                'reference' => $reference,
+                'video' => true
             ]);
-
-        // Add magic property access
-        $request->reference = $reference;
-        $request->video = false;
-
-        // Mock the Scripture service to throw an exception
-        $scripture = $this->createMock( Scripture::class );
-        $scripture->method( 'by_reference' )
-            ->with( $reference )
-            ->willThrowException( new \Exception( 'Invalid reference' ) );
-
-        // Mock the container to return our mock Scripture service
-        $container = container();
-        $container->singleton(Scripture::class, function () use ( $scripture ) {
-            return $scripture;
-        });
 
         // Create the controller
         $controller = new ScriptureController();

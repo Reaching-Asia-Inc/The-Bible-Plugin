@@ -7,6 +7,10 @@ use CodeZone\Bible\Services\BibleBrains\Api\Bibles;
 use CodeZone\Bible\Services\BibleBrains\Books;
 use Tests\TestCase;
 
+/**
+ * @group biblebrains
+ * @group books
+ */
 class BooksTest extends TestCase
 {
     /**

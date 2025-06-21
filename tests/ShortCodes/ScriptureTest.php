@@ -2,15 +2,19 @@
 
 namespace Tests\ShortCodes;
 
-use Brain\Monkey\Functions;
+use Tests\TestCase;
 use CodeZone\Bible\Exceptions\BibleBrainsException;
 use CodeZone\Bible\Services\Assets;
 use CodeZone\Bible\Services\BibleBrains\Language;
 use CodeZone\Bible\Services\BibleBrains\MediaTypes;
 use CodeZone\Bible\Services\BibleBrains\Scripture as ScriptureService;
 use CodeZone\Bible\ShortCodes\Scripture;
-use Tests\TestCase;
+use function Patchwork\redefine;
 
+/**
+ * @group shortcodes
+ * @group scriptures
+ */
 class ScriptureTest extends TestCase
 {
     /**
@@ -73,7 +77,8 @@ class ScriptureTest extends TestCase
         $this->assertIsString( $result );
 
         // Assert that the result contains expected content
-        $this->assertStringContainsString( 'tbp-scripture', $result );
+        $this->assertStringContainsString( 'tbp-content', $result );
+        $this->assertStringContainsString( 'tbp__shortcode', $result );
         $this->assertStringContainsString( 'For God so loved the world', $result );
     }
 
@@ -200,12 +205,14 @@ class ScriptureTest extends TestCase
         $scripture = new Scripture( $scripture_service, $assets, $media_types, $language );
 
         // Mock has_shortcode to return true
-        Functions\expect( 'has_shortcode' )
-            ->andReturn( true );
+        redefine('has_shortcode', function () {
+            return true;
+        });
 
         // Mock get_the_content to return content with shortcode
-        Functions\expect( 'get_the_content' )
-            ->andReturn( 'Some content with [tbp-scripture] shortcode' );
+        redefine('get_the_content', function () {
+            return 'Some content with [tbp-scripture] shortcode';
+        });
 
         // Call the enqueue_scripts method
         $scripture->enqueue_scripts();
@@ -230,12 +237,14 @@ class ScriptureTest extends TestCase
         $scripture = new Scripture( $scripture_service, $assets, $media_types, $language );
 
         // Mock has_shortcode to return false
-        Functions\expect( 'has_shortcode' )
-            ->andReturn( false );
+        redefine('has_shortcode', function () {
+            return false;
+        });
 
         // Mock get_the_content to return content without shortcode
-        Functions\expect( 'get_the_content' )
-            ->andReturn( 'Some content without shortcode' );
+        redefine('get_the_content', function () {
+            return 'Some content without shortcode';
+        });
 
         // Call the enqueue_scripts method
         $scripture->enqueue_scripts();
@@ -260,13 +269,12 @@ class ScriptureTest extends TestCase
         $shortcode_tag = '';
         $callback = null;
 
-        Functions\expect( 'add_shortcode' )
-            ->andReturnUsing(function ( $tag, $func ) use ( &$add_shortcode_called, &$shortcode_tag, &$callback ) {
-                $add_shortcode_called = true;
-                $shortcode_tag = $tag;
-                $callback = $func;
-                return true;
-            });
+        redefine('add_shortcode', function ( $tag, $func ) use ( &$add_shortcode_called, &$shortcode_tag, &$callback ) {
+            $add_shortcode_called = true;
+            $shortcode_tag = $tag;
+            $callback = $func;
+            return true;
+        });
 
         // Call the init method
         $scripture->init();

@@ -5,7 +5,7 @@ use CodeZone\Bible\Controllers\Settings\BibleBrainsFormController;
 use CodeZone\Bible\Controllers\Settings\CustomizationFomController;
 use CodeZone\Bible\Controllers\ScriptureController;
 use CodeZone\Bible\Controllers\LanguageController;
-use CodeZone\Bible\Controllers\BibleMediaTypesController;
+use CodeZone\Bible\Controllers\MediaTypesController;
 use CodeZone\Bible\Controllers\BibleController;
 
 return [
@@ -48,14 +48,14 @@ return [
     ],
     [
         'method'  => 'GET',
-        'route'   => '/bibles/media-types',
-        'callback' => [ BibleMediaTypesController::class, 'index' ],
+        'route'   => '/media-types',
+        'callback' => [ MediaTypesController::class, 'index' ],
         'permission_callback' => '__return_true',
     ],
     [
         'method'  => 'GET',
-        'route'   => '/bibles/media-types/options',
-        'callback' => [ BibleMediaTypesController::class, 'options' ],
+        'route'   => '/media-types/options',
+        'callback' => [ MediaTypesController::class, 'options' ],
         'permission_callback' => '__return_true',
     ],
     [

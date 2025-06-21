@@ -79,7 +79,7 @@ function set_config( $key, $value ) {
  * @return string The URL of the specified file or directory within the Bible Plugin directory.
  */
 function plugin_url( string $path = '' ): string {
-	return plugins_url( 'bible-plugin' ) . '/' . ltrim( $path, '/' );
+    return plugins_url() . '/' . basename( dirname( __DIR__ ) ) . '/' . ltrim( $path, '/' );
 }
 
 /**
@@ -271,29 +271,44 @@ function set_plugin_option( $option, $value ): bool {
  *
  * @param callable $callback The callback function to execute within the transaction.
  *
- * @return bool|string Returns true if the transaction is successful, otherwise returns the last database error.
+ * @return bool|string Returns true if the transaction is successful, otherwise returns the last database error or exception message.
  *
  * @throws Exception If there is a database error before starting the transaction.
  */
-function transaction( $callback ) {
-	global $wpdb;
-	if ( $wpdb->last_error ) {
-		return $wpdb->last_error;
-	}
-	$wpdb->query( 'START TRANSACTION' );
-	$callback();
-	if ( $wpdb->last_error ) {
-		$wpdb->query( 'ROLLBACK' );
+function transaction( callable $callback ) {
+    global $wpdb;
 
-		return $wpdb->last_error;
-	}
-	$wpdb->query( 'COMMIT' );
+    $wpdb->last_error = ''; // clear old errors
 
-	return true;
+    $previous_suppress_errors = $wpdb->suppress_errors();
+    $wpdb->suppress_errors( false );
+
+    if ( $wpdb->query( 'START TRANSACTION' ) === false ) {
+        $wpdb->suppress_errors( $previous_suppress_errors );
+        return $wpdb->last_error ?: 'Failed to start transaction.';
+    }
+
+    try {
+        $result = $callback();
+
+        if ( $result === false || ! empty( $wpdb->last_error ) ) {
+            $wpdb->query( 'ROLLBACK' );
+            $wpdb->suppress_errors( $previous_suppress_errors );
+            return $wpdb->last_error ?: 'Unknown database error in transaction.';
+        }
+
+        $wpdb->query( 'COMMIT' );
+        $wpdb->suppress_errors( $previous_suppress_errors );
+        return $result === null ? true : $result;
+    } catch ( \Throwable $e ) {
+        $wpdb->query( 'ROLLBACK' );
+        $wpdb->suppress_errors( $previous_suppress_errors );
+        throw $e;
+    }
 }
 
 function translate( $text, $context = [] ): string {
-	return container()->make( Translations::class )->translate( $text, $context );
+	return container()->get( Translations::class )->translate( $text, $context );
 }
 
 /**

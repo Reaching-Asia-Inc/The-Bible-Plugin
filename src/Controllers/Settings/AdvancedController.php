@@ -21,7 +21,7 @@ class AdvancedController
      * @param string|null $error Optional error message
      * @return string The rendered view
      */
-    public function show( Request $request, string $error = null ) {
+    public function show( Request $request, ?string $error = null ) {
         $tab = "advanced";
         $keys = container()->get( BibleBrainsKeys::class );
 

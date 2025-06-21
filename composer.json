@@ -5,10 +5,7 @@
   "autoload": {
     "psr-4": {
       "CodeZone\\Bible\\": "src/"
-    },
-    "files": [
-      "src/helpers.php"
-    ]
+    }
   },
   "autoload-dev": {
     "psr-4": {
@@ -39,8 +36,8 @@
     "yoast/phpunit-polyfills": "^1.0",
     "wp-coding-standards/wpcs": "^3.0",
     "phpunit/phpunit": "^9",
-    "brain/monkey": "2.*",
-    "fakerphp/faker": "^1.14"
+    "fakerphp/faker": "^1.14",
+    "antecedent/patchwork": "^2.0"
   },
   "extra": {
     "composer-runtime-api": {

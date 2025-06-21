@@ -4,6 +4,10 @@ namespace Tests\Routes;
 
 use Tests\TestCase;
 
+/**
+ * @group routes
+ * @group settings
+ */
 class SettingsRoutesTest extends TestCase
 {
     /**

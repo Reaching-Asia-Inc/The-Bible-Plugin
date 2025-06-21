@@ -1,22 +1,21 @@
 <?php
 
-namespace Tests\Controllers;
+namespace Services;
 
 use CodeZone\Bible\Services\BibleBrains\Reference;
 use Tests\TestCase;
 use function CodeZone\Bible\container;
 
 /**
- * Test bible reference parsing
- *
- * @test
+ * @group controllers
+ * @group services
  */
 class ReferenceTest extends TestCase {
 	/**
 	 * @test
 	 */
 	public function it_can_parse_book_only() {
-		$service   = container()->make( Reference::class );
+		$service   = container()->get( Reference::class );
 		$reference = $service::parse_string( 'John' );
 		$this->assertEquals( 'JHN', $reference['book'] );
 		$this->assertEquals( 1, $reference['chapter'] );
@@ -28,7 +27,7 @@ class ReferenceTest extends TestCase {
 	 * @test
 	 */
 	public function it_can_parse_chapter_only() {
-		$service   = container()->make( Reference::class );
+		$service   = container()->get( Reference::class );
 		$reference = $service::parse_string( 'John 3' );
 		$this->assertEquals( 'JHN', $reference['book'] );
 		$this->assertEquals( 3, $reference['chapter'] );
@@ -40,7 +39,7 @@ class ReferenceTest extends TestCase {
 	 * @test
 	 */
 	public function it_can_verse_only() {
-		$service   = container()->make( Reference::class );
+		$service   = container()->get( Reference::class );
 		$reference = $service::parse_string( 'John 3:16' );
 		$this->assertEquals( 'JHN', $reference['book'] );
 		$this->assertEquals( 3, $reference['chapter'] );
@@ -52,7 +51,7 @@ class ReferenceTest extends TestCase {
 	 * @test
 	 */
 	public function it_can_parse_verse_range() {
-		$service   = container()->make( Reference::class );
+		$service   = container()->get( Reference::class );
 		$reference = $service::parse_string( 'John 3:16-18' );
 		$this->assertEquals( 'JHN', $reference['book'] );
 		$this->assertEquals( 3, $reference['chapter'] );
@@ -64,7 +63,7 @@ class ReferenceTest extends TestCase {
 	 * @test
 	 */
 	public function it_can_parse_books_with_number_and_chapter() {
-		$service   = container()->make( Reference::class );
+		$service   = container()->get( Reference::class );
 		$reference = $service::parse_string( '1 Peter 3' );
 		$this->assertEquals( '1PE', $reference['book'] );
 		$this->assertEquals( 3, $reference['chapter'] );
@@ -76,7 +75,7 @@ class ReferenceTest extends TestCase {
 	 * @test
 	 */
 	public function it_can_parse_books_with_number() {
-		$service   = container()->make( Reference::class );
+		$service   = container()->get( Reference::class );
 		$reference = $service::parse_string( '1 Peter 3:12' );
 		$this->assertEquals( '1PE', $reference['book'] );
 		$this->assertEquals( 3, $reference['chapter'] );
@@ -88,7 +87,7 @@ class ReferenceTest extends TestCase {
 	 * @test
 	 */
 	public function it_can_parse_books_with_number_and_verse_range() {
-		$service   = container()->make( Reference::class );
+		$service   = container()->get( Reference::class );
 		$reference = $service::parse_string( '1 Peter 3:12-13' );
 		$this->assertEquals( '1PE', $reference['book'] );
 		$this->assertEquals( 3, $reference['chapter'] );

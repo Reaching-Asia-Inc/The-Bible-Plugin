@@ -46,7 +46,6 @@ class BibleController {
     public function options( Request $request ): array {
         $response = $this->index( $request );
         $bibles = container()->get( Bibles::class );
-
         return [
             'data' => $bibles->as_options( $response['data'] ?? [] )
         ];

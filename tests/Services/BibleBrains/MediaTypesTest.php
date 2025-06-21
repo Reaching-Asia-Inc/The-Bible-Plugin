@@ -6,6 +6,10 @@ use CodeZone\Bible\Exceptions\BibleBrainsException;
 use CodeZone\Bible\Services\BibleBrains\MediaTypes;
 use Tests\TestCase;
 
+/**
+ * @group biblebrains
+ * @group mediatypes
+ */
 class MediaTypesTest extends TestCase
 {
     /**

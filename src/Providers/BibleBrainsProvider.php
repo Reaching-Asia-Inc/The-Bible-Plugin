@@ -66,14 +66,10 @@ class BibleBrainsProvider extends AbstractServiceProvider implements BootableSer
             );
         });
         $this->container->add(BiblesApi::class, function () {
-            return new BiblesApi(
-                $this->container->get( 'http.bibleBrains' ),
-            );
+            return new BiblesApi();
         });
         $this->container->add(LanguagesApi::class, function () {
-            return new LanguagesApi(
-                $this->container->get( 'http.bibleBrains' ),
-            );
+            return new LanguagesApi();
         });
         $this->container->add(Language::class, function () {
             return new Language(

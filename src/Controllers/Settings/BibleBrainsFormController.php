@@ -2,9 +2,7 @@
 
 namespace CodeZone\Bible\Controllers\Settings;
 
-use CodeZone\Bible\Exceptions\BibleBrainsException;
 use CodeZone\Bible\Services\RequestInterface as Request;
-use CodeZone\Bible\Services\BibleBrains\Api\Bibles;
 use CodeZone\Bible\Services\BibleBrains\BibleBrainsKeys;
 use CodeZone\Bible\Services\BibleBrains\MediaTypes;
 use Exception;
@@ -80,7 +78,7 @@ class BibleBrainsFormController {
 
         $languages = $request->get( 'languages', [] );
         $result = transaction(function () use ( $languages ) {
-            set_plugin_option( 'languages', $languages );
+            return set_plugin_option( 'languages', $languages );
         });
 
         if ( $result !== true ) {
