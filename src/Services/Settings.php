@@ -120,7 +120,13 @@ class Settings {
      */
     protected function handle_response( $response ) {
         if ( is_string( $response ) ) {
-            echo esc_html( $response );
+            // If the response is HTML (contains tags), don't escape
+            if ( str_contains( $response, '<' ) && str_contains( $response, '>' ) ) {
+                //phpcs:ignore
+                echo $response;
+            } else {
+                echo esc_html( $response );
+            }
             return;
         }
 
