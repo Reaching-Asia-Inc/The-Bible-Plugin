@@ -8,7 +8,6 @@ use CodeZone\Bible\CodeZone\WPSupport\Config\ConfigInterface;
 use CodeZone\Bible\CodeZone\WPSupport\Options\OptionsInterface;
 use CodeZone\Bible\League\Plates\Engine;
 use CodeZone\Bible\Psr\Http\Message\ResponseInterface;
-use CodeZone\Bible\CodeZone\WPSupport\Router\ResponseFactory;
 use CodeZone\Bible\Services\Validator;
 use function CodeZone\Bible\transaction;
 use function Patchwork\redefine;
@@ -165,8 +164,10 @@ class HelpersTest extends TestCase
         // Call the plugin_url function
         $result = \CodeZone\Bible\plugin_url( 'test/path' );
 
+        $plugin_handle = basename( dirname( __DIR__ ) );
+
         // Check that the result is the expected URL
-        $this->assertEquals( 'http://example.org/wp-content/plugins/bible-plugin/test/path', $result );
+        $this->assertEquals( "http://example.org/wp-content/plugins/$plugin_handle/test/path", $result );
     }
 
     /**
