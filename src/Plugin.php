@@ -4,10 +4,11 @@ namespace CodeZone\Bible;
 
 use CodeZone\Bible\League\Container\Container;
 use CodeZone\Bible\CodeZone\WPSupport\Config\ConfigInterface as Config;
-use CodeZone\Bible\Services\ErrorHandler;
 
 /**
  * Class Plugin
+ *
+ *CodeZone\Bible\Plugin
  *
  * The Plugin class represents a WordPress plugin. It manages the initialization of the plugin, its activation and deactivation hooks, and other related functionality.
  */

@@ -13,43 +13,38 @@ use CodeZone\Bible\Psr\Http\Message\RequestInterface;
  */
 class GuzzleMiddleware {
 	protected string $base_url = 'https://4.dbt.io/api/';
-	protected string $key;
+    protected ?string $key = null;
+    protected BibleBrainsKeys $keys;
+
+    public function __construct( BibleBrainsKeys $keys ) {
+        $this->keys = $keys;
+    }
+
+    protected function get_key(): string {
+        if ( $this->key === null ) {
+            $this->key = $this->keys->random();
+        }
+        return $this->key;
+    }
 
 
-	/***
-	 * @return void
-	 */
-	public function __construct( BibleBrainsKeys $keys ) {
-		$this->key = $keys->random();
-	}
+    public function __invoke( callable $handler ) {
+        return function ( RequestInterface $request, array $options ) use ( $handler ) {
+            $new_uri = UriResolver::resolve( new Uri( $this->base_url ), $request->getUri() );
 
+            parse_str( $new_uri->getQuery(), $query );
 
-	/**
-	 * Invoke the middleware handler.
-	 *
-	 * @param callable $handler The next middleware handler.
-	 *
-	 * @return callable Returns the modified handler.
-	 */
-	public function __invoke( callable $handler ) {
-		return function ( RequestInterface $request, array $options ) use ( $handler ) {
-			$new_uri = UriResolver::resolve( new Uri( $this->base_url ), $request->getUri() );
+            // Add the 'key' query parameter
+            if ( empty( $query['key'] ) ) {
+                $new_uri = Uri::withQueryValue( $new_uri, 'key', $this->get_key() );
+            }
+            if ( empty( $query['v'] ) ) {
+                $new_uri = Uri::withQueryValue( $new_uri, 'v', '4' );
+            }
 
-			parse_str( $new_uri->getQuery(), $query );
+            $request = $request->withUri( $new_uri );
 
-			// Add the 'key' query parameter
-			if ( empty( $query['key'] ) ) {
-				$new_uri = Uri::withQueryValue( $new_uri, 'key', $this->key );
-			}
-			if ( empty( $query['v'] ) ) {
-				$new_uri = Uri::withQueryValue( $new_uri, 'v', '4' );
-			}
-
-			// Update the request with the modified URI
-			$request = $request->withUri( $new_uri );
-
-			// Call the next middleware handler
-			return $handler( $request, $options );
-		};
-	}
+            return $handler( $request, $options );
+        };
+    }
 }

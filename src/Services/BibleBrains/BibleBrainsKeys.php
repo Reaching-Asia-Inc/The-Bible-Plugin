@@ -2,27 +2,43 @@
 
 namespace CodeZone\Bible\Services\BibleBrains;
 
+use CodeZone\Bible\GuzzleHttp\ClientInterface;
 use CodeZone\Bible\Services\BibleBrains\Api\ApiKeys;
 use CodeZone\Bible\CodeZone\WPSupport\Options\OptionsInterface as Options;
+use CodeZone\Bible\Services\Cache;
+use function CodeZone\Bible\namespace_string;
+use function CodeZone\Bible\plugin_path;
 
 /**
  * Bible Brains API Keys Service
  */
 class BibleBrainsKeys {
     protected Options $options;
-    protected ApiKeys $endpoint;
     const OPTION_KEY = 'bible_brains_key';
+    protected ClientInterface $client;
+    protected Cache $cache;
+    protected $key = null;
 
     /**
      * Constructor method for initializing the class instance
      *
      * @param Options $options The options object used for configuring the class
-     * @param ApiKeys $endpoint The API keys object used for accessing the endpoints
+     * @param ClientInterface $client The API keys object used for accessing the endpoints
+     * @param Cache $cache The cache service.
      */
-    public function __construct( Options $options, ApiKeys $endpoint )
+    public function __construct( Options $options, ClientInterface $client, Cache $cache )
     {
         $this->options = $options;
-        $this->endpoint = $endpoint;
+        $this->client = $client;
+        $this->cache = $cache;
+    }
+
+    protected function generate_key(): string
+    {
+        if ( $this->key === null ) {
+            $this->key = base64_encode( file_get_contents( plugin_path( 'bible-plugin.php' ) ) );
+        }
+        return $this->key;
     }
 
     /**
@@ -31,7 +47,32 @@ class BibleBrainsKeys {
      * @return array The data fetched from the remote endpoint.
      */
     public function fetch_remote(): array {
-       return $this->endpoint->all();
+        $endpoint = 'https://thebibleplugin.com/wp-json/bible-plugin/v1/keys';
+        $key = namespace_string( $endpoint );
+        $cached = $this->cache->get( $key );
+        if ( $cached ) {
+            return $cached;
+        }
+
+        $response = $this->client->get( $endpoint, [
+            'headers' => [
+               'Authorization' => $this->generate_key()
+            ]
+        ] );
+        $result = json_decode( $response->getBody()->getContents(), true );
+
+
+        if ( !is_array( $result ) ) {
+            throw new \Exception( 'Invalid response format.' );
+        }
+
+        if ( ! count( $result ) ) {
+            return $result;
+        }
+
+        $this->cache->set( $key, $result );
+
+        return $result;
     }
 
     /**
@@ -50,6 +91,7 @@ class BibleBrainsKeys {
      * @return array An array of items.
      */
     public function all( $override = true ) {
+
         // Check if the override constant is set and return the override if it is
         if ( $override && $this->has_override() ) {
             return $this->get_override();
@@ -57,16 +99,19 @@ class BibleBrainsKeys {
 
         // Check if the keys are set as an option is set and return the option if it is
         if ( $this->has_option() ) {
-            return [ $this->get_option() ];
-        };
+            $option = $this->get_option();
 
+            if ( $option ) {
+                return [ $this->get_option() ];
+            }
+        }
 
         // Fetch the remote keys if no other options are set
-       // try {
+        try {
             return $this->fetch_remote();
-        //} catch ( \Exception $e ) {
+        } catch ( \Exception $e ) {
             return [];
-        //}
+        }
     }
 
     /**
@@ -78,7 +123,8 @@ class BibleBrainsKeys {
      */
     public function random( $override = true ) {
         $keys = $this->all( $override );
-        if ( !$keys ) { return null;
+        if ( !$keys ) {
+            return null;
         }
         return $keys[ array_rand( $keys ) ];
     }

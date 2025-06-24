@@ -8,7 +8,6 @@ use CodeZone\Bible\Services\BibleBrains\Api\ApiKeys as ApiKeysApi;
 use CodeZone\Bible\Services\BibleBrains\Api\Bibles as BiblesApi;
 use CodeZone\Bible\Services\BibleBrains\Api\Languages as LanguagesApi;
 use CodeZone\Bible\Services\BibleBrains\BibleBrainsKeys;
-use CodeZone\Bible\Services\BibleBrains\BiblePluginSiteGuzzleMiddleware;
 use CodeZone\Bible\Services\BibleBrains\Books;
 use CodeZone\Bible\Services\BibleBrains\FileSets;
 use CodeZone\Bible\Services\BibleBrains\GuzzleMiddleware;
@@ -18,6 +17,7 @@ use CodeZone\Bible\Services\BibleBrains\MediaTypes;
 use CodeZone\Bible\Services\BibleBrains\Reference;
 use CodeZone\Bible\Services\BibleBrains\Scripture;
 use CodeZone\Bible\Services\BibleBrains\Video;
+use CodeZone\Bible\Services\Cache;
 use CodeZone\Bible\Services\Translations;
 use CodeZone\Bible\League\Container\ServiceProvider\AbstractServiceProvider;
 use CodeZone\Bible\League\Container\ServiceProvider\BootableServiceProviderInterface;
@@ -35,7 +35,7 @@ class BibleBrainsProvider extends AbstractServiceProvider implements BootableSer
      */
     public function register(): void
     {
-        $this->container->add('http.bibleBrains', function () {
+        $this->container->addShared('http.bibleBrains', function () {
             $stack = HandlerStack::create();
             $stack->push( container()->get( GuzzleMiddleware::class ) );
 
@@ -43,26 +43,11 @@ class BibleBrainsProvider extends AbstractServiceProvider implements BootableSer
                 'handler' => $stack,
             ]);
         });
-
-        $this->container->add('http.biblePluginSite', function () {
-            $stack = HandlerStack::create();
-            $stack->push( container()->get( BiblePluginSiteGuzzleMiddleware::class ) );
-
-            return new Client([
-                'handler' => $stack,
-                'verify' => false,
-            ]);
-        });
-
-        $this->container->add(ApiKeysApi::class, function () {
-            return new ApiKeysApi(
-                $this->container->get( 'http.biblePluginSite' ),
-            );
-        });
         $this->container->add(BibleBrainsKeys::class, function () {
             return new BibleBrainsKeys(
                 $this->container->get( Options::class ),
-                $this->container->get( ApiKeysApi::class ),
+                new Client(),
+                $this->container->get( Cache::class )
             );
         });
         $this->container->add(BiblesApi::class, function () {
@@ -107,7 +92,6 @@ class BibleBrainsProvider extends AbstractServiceProvider implements BootableSer
     {
         return in_array($id, [
             'http.bibleBrains',
-            'http.biblePluginSite',
             BibleBrainsKeys::class,
             ApiKeysApi::class,
             BiblesApi::class,
