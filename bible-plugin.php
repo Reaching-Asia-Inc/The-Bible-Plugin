@@ -34,6 +34,7 @@ if ( file_exists( plugin_dir_path( __FILE__ ) . '/.env' ) ) {
     $dotenv = Dotenv::createImmutable( __DIR__ );
     $dotenv->load();
 }
+require plugin_dir_path( __FILE__ ) . '/src/Services/ErrorHandler.php';
 
 new ErrorHandler();
 

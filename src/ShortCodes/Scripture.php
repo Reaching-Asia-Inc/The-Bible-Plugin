@@ -7,6 +7,8 @@ use CodeZone\Bible\Services\Assets;
 use CodeZone\Bible\Services\BibleBrains\Language;
 use CodeZone\Bible\Services\BibleBrains\MediaTypes;
 use CodeZone\Bible\Services\BibleBrains\Scripture as ScriptureService;
+use CodeZone\Bible\Services\BibleBrains\Video;
+use function CodeZone\Bible\container;
 use function CodeZone\Bible\view;
 use function CodeZone\Bible\cast_bool_values;
 
@@ -48,6 +50,13 @@ class Scripture {
      */
     protected $languages;
 
+    /**
+     * the Video Services
+     *
+     * @var Video
+     */
+    protected $video;
+
 	/**
 	 * The __construct method is the constructor of a class. It is used to initialize an object when it is created.
 	 * In this case, the constructor registers a shortcode in WordPress using the `add_shortcode` function.
@@ -55,11 +64,18 @@ class Scripture {
 	 *
 	 * @return void
 	 */
-	public function __construct( ScriptureService $scripture, Assets $assets, MediaTypes $media_types, Language $language ) {
+	public function __construct(
+        ScriptureService $scripture,
+        Assets $assets,
+        MediaTypes $media_types,
+        Language $language,
+        Video $video
+    ) {
 		$this->scripture   = $scripture;
 		$this->assets      = $assets;
 		$this->media_types = $media_types;
-        $this->languages    = $language;
+        $this->languages   = $language;
+        $this->video       = $video;
 
         add_action( 'init', [ $this, 'init' ] );
         add_action( 'wp_enqueue_scripts', [ $this, 'enqueue_scripts' ] );
@@ -117,6 +133,9 @@ class Scripture {
 					'language' => $attributes['language'],
 					'bible'    => $attributes['bible'],
 				] ) ?? [];
+                if ($attributes['media'] == 'video') {
+                    $result = $this->video->hydrate_content( $result );
+                }
 			} catch ( \Exception $e ) {
 				$error = $e->getMessage();
 			}
