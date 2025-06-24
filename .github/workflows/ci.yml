@@ -69,7 +69,7 @@ jobs:
       - name: Package release
         run: |
           mkdir bible-plugin
-          cp -r bible-plugin.php dist languages includes resources routes src vendor vendor-scoped composer.json composer.lock composer.scoped.json composer.scoped.lock LICENSE package.json package-lock.json bible-plugin/
+          cp -r bible-plugin.php config dist includes languages resources routes src vendor vendor-scoped composer.json composer.lock composer.scoped.json composer.scoped.lock LICENSE package.json package-lock.json bible-plugin/
           zip -r bible-plugin.zip bible-plugin
 
       - name: Upload release
