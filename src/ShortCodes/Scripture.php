@@ -133,7 +133,7 @@ class Scripture {
 					'language' => $attributes['language'],
 					'bible'    => $attributes['bible'],
 				] ) ?? [];
-                if ($attributes['media'] == 'video') {
+                if ( $attributes['media'] == 'video' ) {
                     $result = $this->video->hydrate_content( $result );
                 }
 			} catch ( \Exception $e ) {
