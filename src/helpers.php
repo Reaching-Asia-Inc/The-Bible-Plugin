@@ -181,7 +181,7 @@ function views_path( string $path = '' ): string {
  * @return ResponseInterface The rendered view if a view name is provided, otherwise the view engine object.
  * @see https://platesphp.com/v3/
  */
-function view( string $view = "", array $args = [] ): mixed {
+function view( string $view = "", array $args = [] ) {
     $engine = container()->get( Engine::class );
 
     // Return engine if no view specified
