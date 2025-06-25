@@ -21,6 +21,7 @@ $this->layout( 'layouts/settings', compact( 'tab' ) );
                       'url'             => esc_url( '/wp-admin/admin.php?page=bible-plugin&tab=advanced' ),
                       'action'          => esc_url( api_url( 'bible-brains/key' ) ),
                       'error'           => $error ?? '',
+                      'refresh'         => true
                   ]
               )
           )
@@ -41,7 +42,6 @@ $this->layout( 'layouts/settings', compact( 'tab' ) );
                         <?php if ($fields['bible_brains_key_readonly']):?> readonly <?php endif;?>
                                   name="bible_brains_key"
                                   :value="dirty_bible_brains_key"
-                                  :invalid="!!dirty_bible_brains_key && !verified"
                                   :valid="verified"
                                   @change="dirty_bible_brains_key = $event.target.value"
                                   placeholder="<?php esc_attr_e( 'Enter key...', 'bible-plugin' ); ?>"
@@ -52,8 +52,8 @@ $this->layout( 'layouts/settings', compact( 'tab' ) );
                         <sp-button
                             x-show="!!dirty_bible_brains_key && !verified"
                             key="bible_brains_button_negative"
-                            variant="negative"
                             label="<?php esc_attr_e( 'Validate', 'bible-plugin' ); ?>"
+                            variant="secondary"
                             @click="submit"
                             size="m">
                             <?php esc_html_e( 'Validate', 'bible-plugin' ); ?>
