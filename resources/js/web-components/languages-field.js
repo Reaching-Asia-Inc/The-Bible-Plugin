@@ -80,7 +80,6 @@ export class LanguagesField extends TBPElement {
                                                 value="${value}"
                                                 @change="${(e) => this.onLanguageChange(e, idx)}"
                                                 optionsUrl="${apiUrl('languages/options')}"
-                                                optionsValueKey="language_code"
                                                 required
                                                 searchable
                             >
@@ -218,9 +217,7 @@ export class LanguagesField extends TBPElement {
         } else {
             mediaTypes.splice(mediaTypes.indexOf(e.target.getAttribute('value')), 1);
         }
-        console.log('mediaTypes', mediaTypes)
         mediaTypes = mediaTypes.filter((value, index, self) => !!value);
-        console.log('mediaTypes', mediaTypes)
         this.value[idx].media_types = mediaTypes.join(',');
     }
 

@@ -110,7 +110,9 @@ abstract class ApiService {
         }
 
         return array_values(array_filter(
-            array_map( [ $this, 'map_option' ], $unique_records ),
+            array_map( function ( $option ) {
+                return $this->map_option( $option );
+            }, $unique_records ),
             fn( $option ) => !empty( $option['value'] ) && !empty( $option['itemText'] )
         ));
     }

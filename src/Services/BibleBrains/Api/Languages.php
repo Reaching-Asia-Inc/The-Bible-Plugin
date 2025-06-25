@@ -30,26 +30,4 @@ class Languages extends ApiService {
             'itemText'      => (string) $record['name'],
         ];
     }
-
-    /**
-     * Retrieves languages as options for a dropdown select field.
-     *
-     * @param iterable $records The languages to process.
-     *
-     * @return array The languages as options, with 'value' and 'label' keys.
-     */
-    public function as_options( iterable $records ): array {
-        $seen = [];
-        $unique = [];
-
-        foreach ( $records as $record ) {
-            $id = $record['id'] ?? null;
-            if ( $id !== null && !isset( $seen[$id] ) ) {
-                $seen[$id] = true;
-                $unique[] = $record;
-            }
-        }
-
-        return parent::as_options( $unique );
-    }
 }
