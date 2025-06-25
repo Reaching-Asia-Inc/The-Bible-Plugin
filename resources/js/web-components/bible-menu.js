@@ -75,7 +75,7 @@ export class BibleMenu extends withStores(TBPElement, [$otBooks, $ntBooks, $hasA
                        vertical
                      ></sp-divider>
                 ` }
-                ${$hasAudio.get() && !$hasVideo.get() ? html`
+                ${$hasAudio.get() ? html`
                   <sp-button
                     variant="accent"
                     label="Icon only"
