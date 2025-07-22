@@ -2,10 +2,10 @@
 
 namespace CodeZone\Bible\Controllers\Settings;
 
-use CodeZone\Bible\Exceptions\BibleBrainsException;
-use CodeZone\Bible\Services\BibleBrains\Api\Bibles;
-use CodeZone\Bible\Services\BibleBrains\BibleBrainsKeys;
-use CodeZone\Bible\Services\RequestInterface as Request;
+use CodeZone\Bible\ApiServices\BibleBrains\BibleBrainsBibles;
+use CodeZone\Bible\Exceptions\BiblePluginException;
+use CodeZone\Bible\Requests\RequestInterface as Request;
+use CodeZone\Bible\Services\BibleBrainsKeys;
 use function CodeZone\Bible\container;
 use function CodeZone\Bible\set_plugin_option;
 use function CodeZone\Bible\transaction;
@@ -62,13 +62,13 @@ class AdvancedController
         }
 
         $bible_brains_key = $request->get( 'bible_brains_key' );
-        $bibles = container()->get( Bibles::class );
+        $bibles = container()->get( BibleBrainsBibles::class );
         $keys = container()->get( BibleBrainsKeys::class );
         $key = $keys->has_override() ? $keys->get_override()[0] : $bible_brains_key;
 
         try {
             $bibles->find( 'ENGESV', [ 'key' => $key, 'cache' => false ] );
-        } catch ( BibleBrainsException $e ) {
+        } catch ( BiblePluginException $e ) {
             return new \WP_Error(
                 'validation_error',
                 __( 'Failed to validate key.', 'bible-plugin' )

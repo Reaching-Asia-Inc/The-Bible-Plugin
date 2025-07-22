@@ -3,8 +3,8 @@
 namespace Tests\Controllers;
 
 use CodeZone\Bible\Controllers\ScriptureController;
+use CodeZone\Bible\Requests\Request;
 use Tests\TestCase;
-use CodeZone\Bible\Services\Request;
 
 /**
  * @group controllers
@@ -69,10 +69,10 @@ class ScriptureControllerTest extends TestCase
         // Call the index method
         $response = $controller->index( $request );
 
-        $this->assertIsArray( $response['media']['video']['content']['data'] );
-        $this->assertGreaterThan( 0, count( $response['media']['video']['content']['data'] ) );
+        $this->assertIsArray( $response['media'] );
+        $this->assertGreaterThan( 0, count( $response['media'] ) );
 
-        foreach ( $response['media']['video']['content']['data'] as $content ) {
+        foreach ( $response['media'] as $content ) {
             $this->assertArrayNotHasKey( 'files', $content, 'Unexpected "files" key found in video content.' );
         }
     }
@@ -104,10 +104,10 @@ class ScriptureControllerTest extends TestCase
         // Call the index method
         $response = $controller->index( $request );
 
-        $this->assertIsArray( $response['media']['video']['content']['data'] );
-        $this->assertGreaterThan( 0, count( $response['media']['video']['content']['data'] ) );
+        $this->assertIsArray( $response['media'] );
+        $this->assertGreaterThan( 0, count( $response['media']) );
 
-        foreach ( $response['media']['video']['content']['data'] as $content ) {
+        foreach ( $response['media']['video']['content'] as $content ) {
             $this->assertArrayHasKey( 'files', $content );
             $this->assertIsArray( $content['files'] );
             $this->assertGreaterThan( 0, count( $content['files'] ) ); // Note: count here, not just the array itself
@@ -136,7 +136,7 @@ class ScriptureControllerTest extends TestCase
     public function it_handles_exceptions_gracefully()
     {
         // Create test data
-        $reference = 'Invalid Reference';
+        $reference = 'Invalid References';
 
         // Create a mock Request object
         $request = $this->getMockBuilder( Request::class )

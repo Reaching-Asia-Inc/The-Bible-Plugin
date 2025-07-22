@@ -8,7 +8,8 @@
     "psr/log": "^1.1",
     "vlucas/phpdotenv": "^5.4.1",
     "whitecube/lingua": "^1.1",
-    "opis/closure": "^3.6"
+    "opis/closure": "^3.6",
+    "league/fractal": "^0"
   },
   "config": {
     "autoloader-suffix": "bible_plugin_scoped",

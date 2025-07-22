@@ -1,0 +1,11 @@
+{
+  "redefinable-internals": [
+    "file_exists",
+    "rename",
+    "scandir",
+    "is_dir",
+    "unlink",
+    "rmdir",
+    "pathinfo"
+  ]
+}

@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<usx version="3.0">
+  <book code="GEN" style="id">Genesis</book>
+  <para style="h">Genesis</para>
+  <para style="toc1">Genesis</para>
+  <para style="toc2">Genesis</para>
+  <para style="toc3">Gen</para>
+  <para style="mt">The First Book of Moses, called Genesis</para>
+  <chapter number="1" style="c" />
+  <para style="p">
+    <verse number="1" style="v">In the beginning God created the heaven and the earth.</verse>
+    <verse number="2" style="v">And the earth was without form, and void; and darkness was upon the face of the deep. And the Spirit of God moved upon the face of the waters.</verse>
+    <verse number="3" style="v">And God said, Let there be light: and there was light.</verse>
+  </para>
+  <chapter number="2" style="c" />
+  <para style="p">
+    <verse number="1" style="v">Thus the heavens and the earth were finished, and all the host of them.</verse>
+    <verse number="2" style="v">And on the seventh day God ended his work which he had made; and he rested on the seventh day from all his work which he had made.</verse>
+    <verse number="3" style="v">And God blessed the seventh day, and sanctified it: because that in it he had rested from all his work which God created and made.</verse>
+  </para>
+</usx>

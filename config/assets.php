@@ -4,9 +4,8 @@
  * @var $config CodeZone\Bible\CodeZone\WPSupport\Config\ConfigInterface
  */
 
-use CodeZone\Bible\Services\BibleBrains\MediaTypes;
+use CodeZone\Bible\Services\MediaTypes;
 use function CodeZone\Bible\api_url;
-use function CodeZone\Bible\config;
 use function CodeZone\Bible\container;
 use function CodeZone\Bible\plugin_path;
 
@@ -29,7 +28,7 @@ $config->merge( [
                    'Copy'                                                                         => _x( 'Copy', 'reader', 'bible-plugin' ),
                    "Copied successfully."                                                         => _x( "Copied successfully.", 'reader', 'bible-plugin' ),
                    'Language'                                                                     => _x( 'Language', 'reader', 'bible-plugin' ),
-                   "Languages"                                                                    => _x( "Languages", 'reader', 'bible-plugin' ),
+                   "Languages"                                                                    => _x( "BibleBrainsLanguages", 'reader', 'bible-plugin' ),
                    'Link'                                                                         => _x( 'Link', 'reader', 'bible-plugin' ),
                    'Old Testament'                                                                => _x( 'Old Testament', 'reader', 'bible-plugin' ),
                    'Media Types'                                                                  => _x( 'Media Types', 'reader', 'bible-plugin' ),

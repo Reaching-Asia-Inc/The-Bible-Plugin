@@ -22,7 +22,7 @@ $_plugin_env = isset( $_ENV['WP_PLUGIN_FILE'] ) ? sanitize_text_field( wp_unslas
 $_plugin_file = $_plugin_env ? $_plugin_env : dirname( __DIR__ ) . '/' . basename( dirname( __DIR__ ) ) . '.php';
 
 if ( !file_exists( $_tests_dir . '/includes/functions.php' ) ) {
-    echo esc_html( "Could not find {$_tests_dir}/includes/functions.php, have you run bin/install-wp-tests.sh ?" ) . PHP_EOL;
+    echo  "Could not find {$_tests_dir}/includes/functions.php, have you run bin/install-wp-tests.sh ?" . PHP_EOL; //phpcs:ignore
     exit( 1 );
 }
 

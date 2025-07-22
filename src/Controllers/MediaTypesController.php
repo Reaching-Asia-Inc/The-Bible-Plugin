@@ -2,9 +2,9 @@
 
 namespace CodeZone\Bible\Controllers;
 
-use CodeZone\Bible\Services\BibleBrains\Api\Bibles;
-use CodeZone\Bible\Services\BibleBrains\MediaTypes;
-use CodeZone\Bible\Services\RequestInterface as Request;
+use CodeZone\Bible\ApiServices\BibleBrains\BibleBrainsBibles;
+use CodeZone\Bible\Requests\RequestInterface as Request;
+use CodeZone\Bible\Services\MediaTypes;
 use function CodeZone\Bible\container;
 
 /**
@@ -12,7 +12,7 @@ use function CodeZone\Bible\container;
  *
  * @param Request $request The HTTP request object.
  * @param Response $response The HTTP response object.
- * @param Bibles $bibles The Bibles service object.
+ * @param BibleBrainsBibles $bibles The BibleBrainsBibles service object.
  *
  * @return Response The HTTP response object.
  */

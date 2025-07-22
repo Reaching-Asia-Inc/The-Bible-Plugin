@@ -11,7 +11,7 @@ use function CodeZone\Bible\set_plugin_option;
 /**
  * Class BibleBrainsSettingsTest
  *
- * This class is responsible for testing the BibleBrains settings page.
+ * This class is responsible for testing the ApiServices settings page.
  *
  * @test
  * @group services

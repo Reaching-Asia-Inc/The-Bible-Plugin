@@ -2,10 +2,10 @@
 
 namespace CodeZone\Bible\Providers;
 
-use CodeZone\Bible\Services\Request;
-use CodeZone\Bible\Services\RequestInterface;
-use CodeZone\Bible\Services\Validator;
 use CodeZone\Bible\League\Container\ServiceProvider\AbstractServiceProvider;
+use CodeZone\Bible\Requests\Request;
+use CodeZone\Bible\Requests\RequestInterface;
+use CodeZone\Bible\Services\Validator;
 
 /**
  * Class RequestServiceProvider

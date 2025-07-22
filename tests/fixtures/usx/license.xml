@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<license>
+  <title>Public Domain</title>
+  <type>Public Domain</type>
+  <url>https://en.wikipedia.org/wiki/Public_domain</url>
+  <statement>
+    The King James Version of the Bible is in the public domain in most countries, including the United States.
+    This means that anyone is free to copy, distribute, display, and perform the work, and to make derivative works based on it.
+  </statement>
+  <permissions>
+    <permission>copy</permission>
+    <permission>distribute</permission>
+    <permission>display</permission>
+    <permission>perform</permission>
+    <permission>modify</permission>
+    <permission>commercial</permission>
+  </permissions>
+  <conditions>
+    <condition>none</condition>
+  </conditions>
+  <limitations>
+    <limitation>none</limitation>
+  </limitations>
+</license>

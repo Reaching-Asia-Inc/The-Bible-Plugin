@@ -2,14 +2,14 @@
 
 namespace Tests\ShortCodes;
 
-use CodeZone\Bible\Services\BibleBrains\Video;
-use Tests\TestCase;
-use CodeZone\Bible\Exceptions\BibleBrainsException;
+use CodeZone\Bible\Exceptions\BiblePluginException;
+use CodeZone\Bible\Resources\Languages;
 use CodeZone\Bible\Services\Assets;
-use CodeZone\Bible\Services\BibleBrains\Language;
-use CodeZone\Bible\Services\BibleBrains\MediaTypes;
-use CodeZone\Bible\Services\BibleBrains\Scripture as ScriptureService;
+use CodeZone\Bible\Services\MediaTypes;
+use CodeZone\Bible\Services\Scripture as ScriptureService;
+use CodeZone\Bible\Services\Video;
 use CodeZone\Bible\ShortCodes\Scripture;
+use Tests\TestCase;
 use function Patchwork\redefine;
 
 /**
@@ -27,7 +27,7 @@ class ScriptureTest extends TestCase
         $scripture_service = $this->createMock( ScriptureService::class );
         $assets = $this->createMock( Assets::class );
         $media_types = $this->createMock( MediaTypes::class );
-        $language = $this->createMock( Language::class );
+        $language = $this->createMock( Languages::class );
         $video = $this->createMock( Video::class );
 
         // Configure the media_types mock
@@ -93,7 +93,7 @@ class ScriptureTest extends TestCase
         $scripture_service = $this->createMock( ScriptureService::class );
         $assets = $this->createMock( Assets::class );
         $media_types = $this->createMock( MediaTypes::class );
-        $language = $this->createMock( Language::class );
+        $language = $this->createMock( Languages::class );
         $video = $this->createMock( Video::class );
 
 
@@ -127,7 +127,7 @@ class ScriptureTest extends TestCase
         $scripture_service = $this->createMock( ScriptureService::class );
         $assets = $this->createMock( Assets::class );
         $media_types = $this->createMock( MediaTypes::class );
-        $language = $this->createMock( Language::class );
+        $language = $this->createMock( Languages::class );
         $video = $this->createMock( Video::class );
 
         // Configure the media_types mock
@@ -137,14 +137,14 @@ class ScriptureTest extends TestCase
 
         // Configure the scripture_service mock to throw an exception
         $scripture_service->method( 'by_reference' )
-            ->willThrowException( new BibleBrainsException( 'Invalid reference' ) );
+            ->willThrowException( new BiblePluginException( 'Invalid reference' ) );
 
         // Create the Scripture shortcode
         $scripture = new Scripture( $scripture_service, $assets, $media_types, $language, $video );
 
         // Call the render method
         $result = $scripture->render([
-            'reference' => 'Invalid Reference'
+            'reference' => 'Invalid References'
         ]);
 
         // Assert that the result is a string
@@ -163,7 +163,7 @@ class ScriptureTest extends TestCase
         $scripture_service = $this->createMock( ScriptureService::class );
         $assets = $this->createMock( Assets::class );
         $media_types = $this->createMock( MediaTypes::class );
-        $language = $this->createMock( Language::class );
+        $language = $this->createMock( Languages::class );
         $video = $this->createMock( Video::class );
 
         // Configure the media_types mock
@@ -201,7 +201,7 @@ class ScriptureTest extends TestCase
         $scripture_service = $this->createMock( ScriptureService::class );
         $assets = $this->createMock( Assets::class );
         $media_types = $this->createMock( MediaTypes::class );
-        $language = $this->createMock( Language::class );
+        $language = $this->createMock( Languages::class );
         $video = $this->createMock( Video::class );
 
         // Configure the assets mock to expect wp_enqueue_scripts call
@@ -234,7 +234,7 @@ class ScriptureTest extends TestCase
         $scripture_service = $this->createMock( ScriptureService::class );
         $assets = $this->createMock( Assets::class );
         $media_types = $this->createMock( MediaTypes::class );
-        $language = $this->createMock( Language::class );
+        $language = $this->createMock( Languages::class );
         $video = $this->createMock( Video::class );
 
         // Configure the assets mock to expect wp_enqueue_scripts NOT to be called
@@ -267,7 +267,7 @@ class ScriptureTest extends TestCase
         $scripture_service = $this->createMock( ScriptureService::class );
         $assets = $this->createMock( Assets::class );
         $media_types = $this->createMock( MediaTypes::class );
-        $language = $this->createMock( Language::class );
+        $language = $this->createMock( Languages::class );
         $video = $this->createMock( Video::class );
 
         // Create the Scripture shortcode

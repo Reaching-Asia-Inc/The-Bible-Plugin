@@ -2,15 +2,14 @@
 
 namespace CodeZone\Bible\ShortCodes;
 
-use CodeZone\Bible\Exceptions\BibleBrainsException;
+use CodeZone\Bible\Exceptions\BiblePluginException;
+use CodeZone\Bible\Resources\Languages;
 use CodeZone\Bible\Services\Assets;
-use CodeZone\Bible\Services\BibleBrains\Language;
-use CodeZone\Bible\Services\BibleBrains\MediaTypes;
-use CodeZone\Bible\Services\BibleBrains\Scripture as ScriptureService;
-use CodeZone\Bible\Services\BibleBrains\Video;
-use function CodeZone\Bible\container;
-use function CodeZone\Bible\view;
+use CodeZone\Bible\Services\MediaTypes;
+use CodeZone\Bible\Services\Scripture as ScriptureService;
+use CodeZone\Bible\Services\Video;
 use function CodeZone\Bible\cast_bool_values;
+use function CodeZone\Bible\view;
 
 /**
  * Class Scripture
@@ -46,7 +45,7 @@ class Scripture {
     /**
      * The languages service.
      *
-     * @var Language
+     * @var Languages
      */
     protected $languages;
 
@@ -68,7 +67,7 @@ class Scripture {
         ScriptureService $scripture,
         Assets $assets,
         MediaTypes $media_types,
-        Language $language,
+        Languages $language,
         Video $video
     ) {
 		$this->scripture   = $scripture;
@@ -106,7 +105,7 @@ class Scripture {
 	 *  - reference (optional) The reference of the scripture.
 	 *  - media_type (optional) The media type of the scripture.
 	 *
-	 * @throws BibleBrainsException
+	 * @throws BiblePluginException
 	 */
 	public function render( $attributes ) {
 		if ( ! $attributes ) {

@@ -3,8 +3,8 @@
 namespace Tests\Controllers;
 
 use CodeZone\Bible\Controllers\MediaTypesController;
-use CodeZone\Bible\Services\BibleBrains\MediaTypes;
-use CodeZone\Bible\Services\Request;
+use CodeZone\Bible\Requests\Request;
+use CodeZone\Bible\Services\MediaTypes;
 use Tests\TestCase;
 use function CodeZone\Bible\container;
 

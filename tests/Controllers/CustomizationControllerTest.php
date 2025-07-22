@@ -3,8 +3,8 @@
 namespace Tests\Controllers;
 
 use CodeZone\Bible\Controllers\Settings\CustomizationFomController;
-use CodeZone\Bible\Services\Request;
-use CodeZone\Bible\Services\RequestInterface;
+use CodeZone\Bible\Requests\Request;
+use CodeZone\Bible\Requests\RequestInterface;
 use Tests\TestCase;
 use function CodeZone\Bible\get_plugin_option;
 

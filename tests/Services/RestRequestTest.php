@@ -2,7 +2,7 @@
 
 namespace Tests\Services;
 
-use CodeZone\Bible\Services\RestRequest;
+use CodeZone\Bible\Requests\RestRequest;
 use Tests\TestCase;
 use WP_REST_Request;
 use function Patchwork\redefine;

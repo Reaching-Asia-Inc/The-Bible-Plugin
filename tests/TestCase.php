@@ -95,7 +95,7 @@ abstract class TestCase extends WP_UnitTestCase {
      * @return void
      */
     public function mock_api_response( $endpoint, Response $response ) {
-        add_filter(namespace_string( 'api_response' ), function ( $client, $requested, $params ) use ( $endpoint, $response ) {
+        add_filter(namespace_string( 'api_client' ), function ( $client, $requested, $params ) use ( $endpoint, $response ) {
             if ( $requested === $endpoint ) {
                 return new Client([
                     'handler' => HandlerStack::create( new MockHandler( [ $response ] ) )

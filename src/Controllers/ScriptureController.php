@@ -2,9 +2,9 @@
 
 namespace CodeZone\Bible\Controllers;
 
-use CodeZone\Bible\Services\BibleBrains\Scripture;
-use CodeZone\Bible\Services\BibleBrains\Video;
-use CodeZone\Bible\Services\RequestInterface as Request;
+use CodeZone\Bible\Requests\RequestInterface as Request;
+use CodeZone\Bible\Services\Scripture;
+use CodeZone\Bible\Services\Video;
 use Exception;
 use function CodeZone\Bible\container;
 use function CodeZone\Bible\validate;
@@ -52,7 +52,6 @@ class ScriptureController
                 $content = $video->hydrate_content( $content );
             }
             return $content;
-
         } catch ( Exception $e ) {
             return [
                 'code' => 500,

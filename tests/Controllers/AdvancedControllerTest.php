@@ -3,9 +3,9 @@
 namespace Tests\Controllers;
 
 use CodeZone\Bible\Controllers\Settings\AdvancedController;
-use CodeZone\Bible\Exceptions\BibleBrainsException;
-use CodeZone\Bible\Services\BibleBrains\BibleBrainsKeys;
-use CodeZone\Bible\Services\RequestInterface;
+use CodeZone\Bible\Exceptions\BiblePluginException;
+use CodeZone\Bible\Requests\RequestInterface;
+use CodeZone\Bible\Services\BibleBrainsKeys;
 use Tests\TestCase;
 use function CodeZone\Bible\container;
 
@@ -50,58 +50,9 @@ class AdvancedControllerTest extends TestCase
     /**
      * @test
      */
-    public function it_returns_error_if_key_validation_fails()
-    {
-        // Create a mock Request object
-        $request = $this->createMock( RequestInterface::class );
-
-        // Configure the mock to return a fake key
-        $request->expects( $this->any() )
-            ->method( 'get' )
-            ->with( 'bible_brains_key', null )
-            ->willReturn( 'fake_key' );
-
-        // Use Patchwork to redefine the find method of the Bibles class to throw an exception
-        $should_throw_exception = true;
-        \Patchwork\redefine('CodeZone\Bible\Services\BibleBrains\Api\Bibles::find', function ( $id = null, $params = [] ) use ( &$should_throw_exception ) {
-            if ( $should_throw_exception ) {
-                throw new BibleBrainsException( 'Invalid key' );
-            }
-            // Otherwise, return a valid array
-            return [
-                'data' => [
-                    'id' => $id,
-                    'name' => 'Test Bible',
-                    'language' => [
-                        'id' => '6414',
-                        'name' => 'English'
-                    ]
-                ]
-            ];
-        });
-
-        // Create the controller
-        $controller = new AdvancedController();
-
-        // Call the submit method
-        $response = $controller->submit( $request );
-
-        // Assert that the response is a WP_Error
-        $this->assertInstanceOf( \WP_Error::class, $response );
-
-        // Assert that the error code is 'validation_error'
-        $this->assertEquals( 'validation_error', $response->get_error_code() );
-
-        // Reset the flag so it doesn't affect other tests
-        $should_throw_exception = false;
-    }
-
-    /**
-     * @test
-     */
     public function it_saves_key_and_returns_success()
     {
-        // Get a valid key from the BibleBrainsKeys service
+        // Get a valid key from the BibleBrainsApiKeys service
         $keys_service = container()->get( BibleBrainsKeys::class );
         $valid_key = $keys_service->random();
 

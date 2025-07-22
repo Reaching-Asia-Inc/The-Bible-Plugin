@@ -2,7 +2,7 @@
 
 namespace Tests\Services;
 
-use CodeZone\Bible\Services\BaseRequest;
+use CodeZone\Bible\Requests\BaseRequest;
 use Tests\TestCase;
 
 /**

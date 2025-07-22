@@ -2,10 +2,10 @@
 
 namespace Tests\ShortCodes;
 
-use Tests\TestCase;
+use CodeZone\Bible\Requests\Request;
 use CodeZone\Bible\Services\Assets;
-use CodeZone\Bible\Services\Request;
 use CodeZone\Bible\ShortCodes\Bible;
+use Tests\TestCase;
 use function Patchwork\redefine;
 
 /**

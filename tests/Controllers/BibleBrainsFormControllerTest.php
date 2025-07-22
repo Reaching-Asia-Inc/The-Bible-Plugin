@@ -3,10 +3,10 @@
 namespace Tests\Controllers;
 
 use CodeZone\Bible\Controllers\Settings\BibleBrainsFormController;
-use CodeZone\Bible\Services\Request;
-use CodeZone\Bible\Services\RequestInterface;
+use CodeZone\Bible\Requests\Request;
+use CodeZone\Bible\Requests\RequestInterface;
 use Tests\TestCase;
-use function CodeZone\Bible\container;
+use function CodeZone\Bible\set_plugin_option;
 
 /**
  * @group controllers

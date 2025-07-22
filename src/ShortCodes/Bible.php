@@ -2,10 +2,10 @@
 
 namespace CodeZone\Bible\ShortCodes;
 
+use CodeZone\Bible\Requests\Request;
 use CodeZone\Bible\Services\Assets;
-use CodeZone\Bible\Services\Request;
-use function CodeZone\Bible\view;
 use function CodeZone\Bible\cast_bool_values;
+use function CodeZone\Bible\view;
 
 /**
  * Class Bible

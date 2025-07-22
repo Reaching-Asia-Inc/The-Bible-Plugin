@@ -2,7 +2,7 @@
 
 namespace Tests\Services;
 
-use CodeZone\Bible\Services\RequestInterface;
+use CodeZone\Bible\Requests\RequestInterface;
 use CodeZone\Bible\Services\Validator;
 use Tests\TestCase;
 

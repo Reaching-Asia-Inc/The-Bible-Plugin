@@ -2,8 +2,8 @@
 
 namespace CodeZone\Bible\Controllers;
 
-use CodeZone\Bible\Services\BibleBrains\Api\Languages;
-use CodeZone\Bible\Services\RequestInterface as Request;
+use CodeZone\Bible\Requests\RequestInterface as Request;
+use CodeZone\Bible\Resources\Languages;
 use function CodeZone\Bible\container;
 
 /**
@@ -22,22 +22,27 @@ class LanguageController
     public function show( Request $request ): array
     {
         $languages = container()->get( Languages::class );
-        return $languages->find( $request->get( 'id' ) );
+        $language = $languages->find( $request->get( 'id' ) );
+        if (!$language) {
+            return [
+                'code' => 404,
+                'error' => 'Language not found.'
+            ];
+        }
+        return $language;
     }
 
     /**
      * Get languages formatted as select options.
      *
      * @param Request $request The request object
-     * @return array Languages as select options
+     * @return array BibleBrainsLanguages as select options
      */
     public function options( Request $request ): array
     {
         $languages = container()->get( Languages::class );
         $response = $this->index( $request );
-        return [
-            'data' => $languages->as_options( $response['data'] ?? [] )
-        ];
+        return $languages->as_options( $response ?? [] );
     }
 
 

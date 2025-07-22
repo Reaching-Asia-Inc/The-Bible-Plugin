@@ -1,0 +1,164 @@
+<?php
+
+namespace CodeZone\Bible\Settings;
+
+use CodeZone\Bible\Exceptions\BiblePluginException;
+use CodeZone\Bible\Requests\Request;
+use CodeZone\Bible\Services\Assets;
+use function CodeZone\Bible\container;
+use function CodeZone\Bible\namespace_string;
+use function CodeZone\Bible\routes_path;
+use function CodeZone\Bible\Services\add_menu_page;
+use function CodeZone\Bible\Services\add_submenu_page;
+
+/**
+ * Class settings
+ *
+ * The Settings class is responsible for adding the
+ * settings page to the WordPress admin area.
+ * @see https://developer.wordpress.org/reference/functions/add_submenu_page/
+ */
+class Settings {
+
+    /**
+     * Register the admin menu.
+     *
+     * @return void
+     */
+    public function __construct()
+    {
+        add_action( 'admin_menu', [ $this, 'register_menu' ], 99 );
+    }
+
+    /**
+     * Register the admin menu
+     *
+     * @return void
+     * @see https://developer.wordpress.org/reference/functions/add_submenu_page/
+     */
+    public function register_menu(): void {
+        $menu = add_menu_page(
+            __( 'Bible', 'bible-plugin' ),
+            __( 'Bible', 'bible-plugin' ),
+            'manage_options',
+            'bible-plugin',
+            '',
+            'dashicons-book-alt'    // Icon
+        );
+
+
+        add_submenu_page(
+            'bible-plugin',
+            __( 'The Bible Plugin', 'bible-plugin' ),
+            __( 'The Bible Plugin', 'bible-plugin' ),
+            'manage_options',
+            'bible-plugin',
+            [ $this, 'dispatch_routes' ]
+        );
+
+        add_filter( namespace_string( 'settings_tabs' ), function ( $menu ) {
+            $menu[] = [
+                'label' => __( 'Biblical Text Setup', 'bible-plugin' ),
+                'tab'   => 'bible'
+            ];
+            $menu[] = [
+                'label' => __( 'Customization', 'bible-plugin' ),
+                'tab'   => 'customization'
+            ];
+            $menu[] = [
+                'label' => __( 'Advanced', 'bible-plugin' ),
+                'tab'   => 'advanced',
+            ];
+            $menu[] = [
+                'label' => __( 'Support', 'bible-plugin' ),
+                'tab'   => 'support',
+            ];
+
+            return $menu;
+        }, 10, 1 );
+
+        add_action( 'load-' . $menu, [ $this, 'load' ] );
+    }
+
+    /**
+     * Loads the necessary scripts and styles for the admin area.
+     *
+     * This method adds an action hook to enqueue the necessary JavaScript when on the admin area.
+     * The JavaScript files are enqueued using the `admin_enqueue_scripts` action hook.
+     *
+     * @return void
+     */
+    public function load(): void
+    {
+        container()->get( Assets::class )->enqueue();
+    }
+
+    /**
+     * Register the admin router.
+     *
+     * @return void
+     */
+    public function dispatch_routes(): void {
+        $tab = sanitize_text_field( wp_unslash( $_GET['tab'] ?? 'general' ) );
+        $routes = include routes_path( 'settings.php' );
+        $handler = $routes[$tab] ?? $routes['general'];
+        $request = container()->get( Request::class );
+        $controller = container()->get( $handler[0] );
+        try {
+            $response = $controller->{$handler[1]}( $request );
+        } catch ( BiblePluginException $e ) {  // catch all exceptions
+            $response = $this->handle_exception( $e );
+        }
+
+        $this->handle_response( $response );
+    }
+
+    /**
+     * Handles the given response by processing and outputting it.
+     *
+     * If the provided response is a string, it will be directly echoed.
+     *
+     * @param mixed $response The response data to be handled. Typically expected to be a string.
+     *
+     * @return void
+     */
+    protected function handle_response( $response ) {
+        if ( is_string( $response ) ) {
+            // If the response is HTML (contains tags), don't escape
+            if ( str_contains( $response, '<' ) && str_contains( $response, '>' ) ) {
+                //phpcs:ignore
+                echo $response;
+            } else {
+                echo esc_html( $response );
+            }
+            return;
+        }
+
+        if ( wp_is_json_request() ) {
+            if ( isset( $response['error'] ) || isset( $response['errors'] ) || isset( $response['code'] ) ) {
+                $code = isset( $response['code'] ) ? $response['code'] : 400;
+                if ( isset( $response['code'] ) ) {
+                    unset( $response['code'] );
+                }
+                wp_send_json_error( $response, $code );
+            } else {
+                wp_send_json_success( $response );
+            }
+        }
+    }
+
+    protected function handle_exception( \Exception $e ) {
+        if ( wp_is_json_request() ) {
+            return [
+                'status' => $e->getCode(),
+                'error' => $e->getMessage(),
+                'code' => $e->getCode()
+            ];
+        }
+
+        wp_die(
+            esc_html( $e->getMessage() ),
+            esc_attr( $e->getCode() )
+        );
+    }
+}

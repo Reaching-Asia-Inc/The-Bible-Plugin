@@ -2,15 +2,15 @@
 
 namespace CodeZone\Bible\Controllers\Settings;
 
-use CodeZone\Bible\Services\RequestInterface as Request;
+use CodeZone\Bible\Requests\RequestInterface as Request;
 use CodeZone\Bible\Services\Translations;
 use function CodeZone\Bible\config;
 use function CodeZone\Bible\container;
+use function CodeZone\Bible\get_plugin_option;
+use function CodeZone\Bible\set_plugin_option;
 use function CodeZone\Bible\transaction;
 use function CodeZone\Bible\validate;
 use function CodeZone\Bible\view;
-use function CodeZone\Bible\get_plugin_option;
-use function CodeZone\Bible\set_plugin_option;
 
 
 /**

@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<stylesheet>
+  <style id="id" name="Book ID" color="#000000" fontsize="12" bold="true" italic="false" underline="false" />
+  <style id="h" name="Header" color="#000000" fontsize="16" bold="true" italic="false" underline="false" />
+  <style id="toc1" name="Long Table of Contents Text" color="#000000" fontsize="12" bold="false" italic="false" underline="false" />
+  <style id="toc2" name="Short Table of Contents Text" color="#000000" fontsize="12" bold="false" italic="false" underline="false" />
+  <style id="toc3" name="Book Abbreviation" color="#000000" fontsize="12" bold="false" italic="false" underline="false" />
+  <style id="mt" name="Major Title" color="#000000" fontsize="14" bold="true" italic="false" underline="false" />
+  <style id="c" name="Chapter Number" color="#000000" fontsize="14" bold="true" italic="false" underline="false" />
+  <style id="p" name="Paragraph" color="#000000" fontsize="12" bold="false" italic="false" underline="false" />
+  <style id="v" name="Verse Number" color="#000000" fontsize="10" bold="true" italic="false" underline="false" />
+  <style id="q1" name="Poetry, Level 1" color="#000000" fontsize="12" bold="false" italic="true" underline="false" />
+  <style id="q2" name="Poetry, Level 2" color="#000000" fontsize="12" bold="false" italic="true" underline="false" />
+  <style id="s1" name="Section Heading, Level 1" color="#000000" fontsize="14" bold="true" italic="false" underline="false" />
+  <style id="s2" name="Section Heading, Level 2" color="#000000" fontsize="13" bold="true" italic="false" underline="false" />
+  <style id="r" name="Parallel References" color="#0000FF" fontsize="10" bold="false" italic="false" underline="true" />
+  <style id="f" name="Footnote" color="#008000" fontsize="10" bold="false" italic="false" underline="false" />
+  <style id="x" name="Cross Reference" color="#0000FF" fontsize="10" bold="false" italic="false" underline="true" />
+  <style id="li1" name="List Item, Level 1" color="#000000" fontsize="12" bold="false" italic="false" underline="false" />
+  <style id="li2" name="List Item, Level 2" color="#000000" fontsize="12" bold="false" italic="false" underline="false" />
+  <style id="d" name="Descriptive Title" color="#000000" fontsize="12" bold="false" italic="true" underline="false" />
+  <style id="sp" name="Speaker" color="#000000" fontsize="12" bold="false" italic="true" underline="false" />
+</stylesheet>

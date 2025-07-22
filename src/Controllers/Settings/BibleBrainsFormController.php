@@ -2,22 +2,22 @@
 
 namespace CodeZone\Bible\Controllers\Settings;
 
-use CodeZone\Bible\Services\RequestInterface as Request;
-use CodeZone\Bible\Services\BibleBrains\BibleBrainsKeys;
-use CodeZone\Bible\Services\BibleBrains\MediaTypes;
+use CodeZone\Bible\Requests\RequestInterface as Request;
+use CodeZone\Bible\Services\BibleBrainsKeys;
+use CodeZone\Bible\Services\MediaTypes;
 use Exception;
 use function CodeZone\Bible\admin_path;
 use function CodeZone\Bible\container;
+use function CodeZone\Bible\get_plugin_option;
+use function CodeZone\Bible\set_plugin_option;
 use function CodeZone\Bible\transaction;
 use function CodeZone\Bible\validate;
 use function CodeZone\Bible\view;
-use function CodeZone\Bible\get_plugin_option;
-use function CodeZone\Bible\set_plugin_option;
 
 /**
  * Class BibleBrainsController
  *
- * This class is responsible for handling the BibleBrains settings and API authorization.
+ * This class is responsible for handling the ApiServices settings and API authorization.
  */
 class BibleBrainsFormController {
     /**

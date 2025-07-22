@@ -4,10 +4,13 @@
  * @var $config CodeZone\Bible\CodeZone\WPSupport\Config\ConfigInterface
  */
 
-use CodeZone\Bible\Providers\AdminProvider;
+use CodeZone\Bible\Providers\SettingsProvider;
 use CodeZone\Bible\Providers\BibleBrainsProvider;
 use CodeZone\Bible\Providers\ConfigProvider;
+use CodeZone\Bible\Providers\FractalProvider;
 use CodeZone\Bible\Providers\OptionsProvider;
+use CodeZone\Bible\Providers\ResourceProvider;
+use CodeZone\Bible\Providers\USXProvider;
 use CodeZone\Bible\Providers\RequestServiceProvider;
 use CodeZone\Bible\Providers\RestApiProvider;
 use CodeZone\Bible\Providers\ShortcodeProvider;
@@ -22,13 +25,16 @@ $config->merge( [
             TranslationsProvider::class,
             OptionsProvider::class,
             ConfigProvider::class,
+            FractalProvider::class,
             BibleBrainsProvider::class,
+            ResourceProvider::class,
+            USXProvider::class,
             AssetProvider::class,
             ShortcodeProvider::class,
             ViewProvider::class,
             RestApiProvider::class,
             RequestServiceProvider::class,
-            AdminProvider::class
+            SettingsProvider::class
         ],
         'tgmpa' => [
             'plugins' => [

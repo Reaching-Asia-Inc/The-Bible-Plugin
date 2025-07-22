@@ -3,7 +3,7 @@
 namespace Tests\Controllers;
 
 use CodeZone\Bible\Controllers\Settings\SupportController;
-use CodeZone\Bible\Services\RequestInterface;
+use CodeZone\Bible\Requests\RequestInterface;
 use Tests\TestCase;
 
 /**

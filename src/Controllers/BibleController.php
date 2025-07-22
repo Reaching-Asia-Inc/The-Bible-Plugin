@@ -2,8 +2,9 @@
 
 namespace CodeZone\Bible\Controllers;
 
-use CodeZone\Bible\Services\RequestInterface as Request;
-use CodeZone\Bible\Services\BibleBrains\Api\Bibles;
+use CodeZone\Bible\ApiServices\BibleBrains\BibleBrainsBibles;
+use CodeZone\Bible\Requests\RequestInterface as Request;
+use CodeZone\Bible\Resources\Bibles;
 use function CodeZone\Bible\container;
 use function CodeZone\Bible\validate;
 
@@ -22,7 +23,7 @@ class BibleController {
      * @return array Bible data
      */
     public function show( Request $request ): array {
-        $bibles = container()->get( Bibles::class );
+        $bibles = container()->get( BibleBrainsBibles::class );
         $errors = validate($request, [
             'id' => 'required'
         ]);
@@ -46,9 +47,7 @@ class BibleController {
     public function options( Request $request ): array {
         $response = $this->index( $request );
         $bibles = container()->get( Bibles::class );
-        return [
-            'data' => $bibles->as_options( $response['data'] ?? [] )
-        ];
+        return $bibles->as_options( $response ?? [] );
     }
 
 
@@ -65,8 +64,8 @@ class BibleController {
             return $bibles;
         }
 
-        $bibles['data'] = array_filter(
-            $bibles['data'] ?? [],
+        $bibles = array_filter(
+            $bibles,
             fn( $bible ) => stripos( $bible['name'] ?? '', $search ) !== false
         );
 
@@ -83,18 +82,12 @@ class BibleController {
     public function index( Request $request ): array
     {
         $bibles = container()->get( Bibles::class );
-        $params = [
-            'page' => $request->get( 'paged', 1 ),
-            'limit' => $request->get( 'limit', 50 )
-        ];
 
-        $language_code = $request->get( 'language_code', '' );
-        if ( $language_code ) {
-            $language_codes = explode( ',', $language_code );
-            $result = $bibles->for_languages( $language_codes, [ 'limit' => 150 ] );
-        } else {
-            $result = $bibles->all( $params );
-        }
+        $result = array_filter($bibles->all( [
+            'page' => $request->get( 'paged', 1 ),
+            'limit' => $request->get( 'limit', 50 ),
+            'language_id' => $request->get( 'language' ),
+        ] ));
 
         return $this->filter( $result, $request->get( 'search', '' ) );
     }

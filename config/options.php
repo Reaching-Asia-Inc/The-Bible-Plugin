@@ -9,15 +9,27 @@ $config->merge( [
         'prefix' => 'bible_plugin',
         'defaults' => [
             'bible_brains_key' => '',
+            'media_types' => 'audio,video,text',
             'languages'        => [
                 [
+                    'source'      => 'bible-brains',
                     'bibles'      => 'ENGESV',
                     'media_types' => 'text,audio-video,video',
+                    'code'        => 'eng',
+                    'id'          => 6414,
                     'itemText'    => 'English',
-                    'value'       => 'eng'
+                    'value'       => 6414
                 ]
             ],
-            'language'         => '6414',
+            'language'         => [
+                'source'      => 'bible-brains',
+                'bibles'      => 'ENGESV',
+                'media_types' => 'text,audio-video,video',
+                'code'        => 'eng',
+                'id'          => 6414,
+                'itemText'    => 'English',
+                'value'       => 6414
+            ],
             'color_scheme'     => 'light',
             'translations'     => [],
             'colors'           => [

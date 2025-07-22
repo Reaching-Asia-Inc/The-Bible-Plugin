@@ -1,11 +1,10 @@
 <?php
 
-use CodeZone\Bible\Services\BibleBrains\BibleBrainsKeys;
+use CodeZone\Bible\Services\BibleBrainsKeys;
 use function CodeZone\Bible\container;
+use function CodeZone\Bible\get_plugin_option;
 use function CodeZone\Bible\namespace_string;
 use function CodeZone\Bible\plugin_url;
-use function CodeZone\Bible\rgb;
-use function CodeZone\Bible\get_plugin_option;
 
 /**
  * @var $tab string

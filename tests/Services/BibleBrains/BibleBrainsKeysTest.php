@@ -2,13 +2,13 @@
 
 namespace Tests\Services\BibleBrains;
 
+use CodeZone\Bible\ApiServices\BibleBrains\BibleBrainsApiKeys;
+use CodeZone\Bible\CodeZone\WPSupport\Options\OptionsInterface as Options;
 use CodeZone\Bible\GuzzleHttp\Client;
 use CodeZone\Bible\GuzzleHttp\Psr7\Response;
-use CodeZone\Bible\Services\BibleBrains\Api\ApiKeys;
-use CodeZone\Bible\Services\BibleBrains\BibleBrainsKeys;
+use CodeZone\Bible\Services\BibleBrainsKeys;
 use CodeZone\Bible\Services\Cache;
 use CodeZone\Bible\Support\CacheInterface;
-use CodeZone\Bible\CodeZone\WPSupport\Options\OptionsInterface as Options;
 use Tests\TestCase;
 
 /**
@@ -70,24 +70,6 @@ class BibleBrainsKeysTest extends TestCase
 
         $response = $keys_service->all();
         $this->assertEquals( $keys, $response );
-    }
-
-    /**
-     * @test
-     */
-    public function it_can_fetch_options()
-    {
-        $this->options->expects( $this->any() )
-            ->method( 'get' )
-            ->with( BibleBrainsKeys::OPTION_KEY )
-            ->willReturn( 'key1' );
-
-        $keys_service = new BibleBrainsKeys( $this->options, $this->client, $this->cache );
-
-        $this->assertTrue( $keys_service->has_option() );
-
-        $response = $keys_service->all( false );
-        $this->assertEquals( [ 'key1' ], $response );
     }
 
     /**

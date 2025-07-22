@@ -2,9 +2,10 @@
 
 namespace CodeZone\Bible\Services;
 
-use CodeZone\Bible\Exceptions\BibleBrainsException;
-use function CodeZone\Bible\routes_path;
+use CodeZone\Bible\Exceptions\BiblePluginException;
+use CodeZone\Bible\Requests\RestRequest;
 use function CodeZone\Bible\container;
+use function CodeZone\Bible\routes_path;
 
 /**
  * Class RestApi
@@ -48,7 +49,7 @@ class RestApi
                         $request = new RestRequest( $request );
                         try {
                             $response = $controller->$method( $request );
-                        } catch ( BibleBrainsException $e ) {
+                        } catch ( BiblePluginException $e ) {
                             $this->handle_exception( $e );
                         }
 

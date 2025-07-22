@@ -7,7 +7,6 @@ use CodeZone\Bible\Services\Translations;
 use CodeZone\Bible\CodeZone\WPSupport\Config\ConfigInterface;
 use CodeZone\Bible\CodeZone\WPSupport\Container\ContainerFactory;
 use CodeZone\Bible\CodeZone\WPSupport\Options\OptionsInterface;
-use CodeZone\Bible\CodeZone\WPSupport\Rewrites\RewritesInterface;
 use CodeZone\Bible\CodeZone\WPSupport\Router\ResponseFactory;
 use CodeZone\Bible\League\Container\Container;
 use CodeZone\Bible\League\Plates\Engine;
@@ -377,4 +376,10 @@ function cast_bool_values( $map ): array {
 function validate( $data_or_request, array $rules ) {
 	$validator = container()->get( Services\Validator::class );
 	return $validator->validate( $data_or_request, $rules );
+}
+
+function transform( League\Fractal\Resource\ResourceAbstract $resource, $includes ) {
+    $manager = \CodeZone\Bible\container()->get( League\Fractal\Manager::class );
+    $manager->parseIncludes( $includes );
+    return $manager->createData( $resource )->toArray();
 }

@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<metadata>
+  <identification>
+    <name>King James Version</name>
+    <nameLocal>King James Version</nameLocal>
+    <abbreviation>KJV</abbreviation>
+    <abbreviationLocal>KJV</abbreviationLocal>
+    <description>The King James Version of the Bible, published in 1611.</description>
+    <descriptionLocal>The King James Version of the Bible, published in 1611.</descriptionLocal>
+    <scope>Bible</scope>
+  </identification>
+  <language>
+    <iso>eng</iso>
+    <name>English</name>
+    <nameLocal>English</nameLocal>
+    <script>Latin</script>
+    <scriptDirection>LTR</scriptDirection>
+  </language>
+  <copyright>
+    <statement>Public Domain</statement>
+  </copyright>
+  <versification>English</versification>
+  <type>Bible</type>
+  <contributor role="translator">
+    <name>King James I of England</name>
+    <organization>Church of England</organization>
+  </contributor>
+  <contributor role="publisher">
+    <name>Robert Barker</name>
+    <date>1611</date>
+  </contributor>
+  <agencies>
+    <agency>Church of England</agency>
+  </agencies>
+</metadata>

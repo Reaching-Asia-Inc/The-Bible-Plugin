@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<usx version="3.0">
+  <book code="JHN" style="id">John</book>
+  <para style="h">John</para>
+  <para style="toc1">The Gospel According to John</para>
+  <para style="toc2">John</para>
+  <para style="toc3">Jhn</para>
+  <para style="mt">The Gospel According to John</para>
+  <chapter number="1" style="c" />
+  <para style="p">
+    <verse number="1" style="v">In the beginning was the Word, and the Word was with God, and the Word was God.</verse>
+    <verse number="2" style="v">The same was in the beginning with God.</verse>
+    <verse number="3" style="v">All things were made by him; and without him was not any thing made that was made.</verse>
+  </para>
+  <chapter number="3" style="c" />
+  <para style="p">
+    <verse number="16" style="v">For God so loved the world, that he gave his only begotten Son, that whosoever believeth in him should not perish, but have everlasting life.</verse>
+    <verse number="17" style="v">For God sent not his Son into the world to condemn the world; but that the world through him might be saved.</verse>
+  </para>
+</usx>

@@ -2,8 +2,6 @@
 
 namespace CodeZone\Bible\Services;
 
-use CodeZone\Bible\Services\BibleBrains\MediaTypes;
-use function CodeZone\Bible\api_url;
 use function CodeZone\Bible\config;
 use function CodeZone\Bible\Kucrut\Vite\enqueue_asset;
 use function CodeZone\Bible\namespace_string;

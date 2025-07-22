@@ -2,12 +2,12 @@
 
 namespace Tests\Controllers;
 
+use CodeZone\Bible\ApiServices\BibleBrains\BibleBrainsBibles;
 use CodeZone\Bible\Controllers\BibleController;
 use CodeZone\Bible\GuzzleHttp\Psr7\Response;
-use CodeZone\Bible\Services\BibleBrains\Api\Bibles;
-use CodeZone\Bible\Services\RequestInterface;
+use CodeZone\Bible\Requests\RequestInterface;
 use Tests\TestCase;
-use function CodeZone\Bible\container;
+use function CodeZone\Bible\set_plugin_option;
 
 /**
  * @group controllers
@@ -37,6 +37,7 @@ class BibleControllerTest extends TestCase
 
         // Call the show method
         $response = $controller->show( $request );
+
 
         // Assert that the response contains error information
         $this->assertArrayHasKey( 'code', $response );
@@ -68,13 +69,13 @@ class BibleControllerTest extends TestCase
                 [ 'id', null, $bible_id ]
             ]);
 
-        // Mock the Bibles service
-        $bibles = $this->createMock( Bibles::class );
+        // Mock the BibleBrainsBibles service
+        $bibles = $this->createMock( BibleBrainsBibles::class );
         $bibles->method( 'find' )
             ->with( $bible_id )
             ->willReturn( $expected_data );
 
-        // Mock the container to return our mock Bibles service
+        // Mock the container to return our mock BibleBrainsBibles service
         $this->mock_api_response('bibles/' . $bible_id, new Response(200, [], json_encode([
             'data' => $expected_data
         ])));
@@ -86,7 +87,7 @@ class BibleControllerTest extends TestCase
         $response = $controller->show( $request );
 
         // Assert that the response contains the expected data
-        $this->assertEquals( $expected_data, $response['data'] );
+        $this->assertEquals( $expected_data, $response );
     }
 
     /**
@@ -96,35 +97,31 @@ class BibleControllerTest extends TestCase
     {
         // Create test data
         $bible_data = [
-            'data' => [
-                [
-                    'abbr' => 'ENGESV',
-                    'name' => 'English Standard Version'
-                ],
-                [
-                    'abbr' => 'ENGKJV',
-                    'name' => 'King James Version'
-                ]
+            [
+                'abbr' => 'ENGESV',
+                'name' => 'English Standard Version'
+            ],
+            [
+                'abbr' => 'ENGKJV',
+                'name' => 'King James Version'
             ]
         ];
 
         $expected_options = [
-            'data' => [
-                [
-                    'value' => 'ENGESV',
-                    'itemText' => 'English Standard Version'
-                ],
-                [
-                    'value' => 'ENGKJV',
-                    'itemText' => 'King James Version'
-                ]
+            [
+                'value' => 'ENGESV',
+                'itemText' => 'English Standard Version'
+            ],
+            [
+                'value' => 'ENGKJV',
+                'itemText' => 'King James Version'
             ]
         ];
 
         // Create a mock Request object
         $request = $this->createMock( RequestInterface::class );
 
-        // Mock the container to return our mock Bibles service
+        // Mock the container to return our mock BibleBrainsBibles service
         $this->mock_api_response( 'bibles', new Response( 200, [], json_encode( $bible_data ) ) );
 
         // Create the controller
@@ -143,17 +140,15 @@ class BibleControllerTest extends TestCase
     public function it_filters_bibles_by_language_code()
     {
         // Create test data
-        $language_code = 'eng';
+        $language_id = '6414';
         $expected_data = [
-            'data' => [
-                [
-                    'abbr' => 'ENGESV',
-                    'name' => 'English Standard Version'
-                ],
-                [
-                    'abbr' => 'ENGKJV',
-                    'name' => 'King James Version'
-                ]
+            [
+                'abbr' => 'ENGESV',
+                'name' => 'English Standard Version'
+            ],
+            [
+                'abbr' => 'ENGKJV',
+                'name' => 'King James Version'
             ]
         ];
 
@@ -164,13 +159,13 @@ class BibleControllerTest extends TestCase
         $request->expects( $this->any() )
             ->method( 'get' )
             ->willReturnMap([
-                [ 'language_code', '', $language_code ],
+                [ 'language', '', $language_id ],
                 [ 'paged', 1, 1 ],
                 [ 'limit', 50, 50 ],
                 [ 'search', '', '' ]
             ]);
 
-        // Mock the container to return our mock Bibles service
+        // Mock the container to return our mock BibleBrainsBibles service
         $this->mock_api_response( 'bibles', new Response( 200, [], json_encode( $expected_data ) ) );
 
         // Create the controller
@@ -179,8 +174,10 @@ class BibleControllerTest extends TestCase
         // Call the index method
         $response = $controller->index( $request );
 
-        // Assert that the response contains the expected data
-        $this->assertEquals( $expected_data, $response );
+        foreach ($expected_data as $i => $bible) {
+            $result_item = $response[$i];
+            $this->assertEquals($bible['abbr'], $result_item['code']);
+        }
     }
 
     /**
@@ -216,7 +213,7 @@ class BibleControllerTest extends TestCase
                 [ 'search', '', $search_term ]
             ]);
 
-        // Mock the container to return our mock Bibles service
+        // Mock the container to return our mock BibleBrainsBibles service
         $this->mock_api_response( 'bibles', new Response( 200, [], json_encode( $all_bibles ) ) );
 
         // Create the controller
@@ -226,7 +223,7 @@ class BibleControllerTest extends TestCase
         $response = $controller->index( $request );
 
         // Assert that the response contains only the filtered data
-        $this->assertCount( 1, $response['data'] );
-        $this->assertEquals( 'ENGESV', $response['data'][0]['abbr'] );
+        $this->assertCount( 1, $response );
+        $this->assertEquals( 'ENGESV', $response[0]['code'] );
     }
 }

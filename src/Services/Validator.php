@@ -2,6 +2,8 @@
 
 namespace CodeZone\Bible\Services;
 
+use CodeZone\Bible\Requests\RequestInterface;
+
 /**
  * Class RequestValidator
  *

@@ -2,13 +2,13 @@
 
 namespace Tests\Controllers;
 
+use CodeZone\Bible\ApiServices\BibleBrains\BibleBrainsLanguages;
 use CodeZone\Bible\Controllers\LanguageController;
 use CodeZone\Bible\GuzzleHttp\Psr7\Response;
-use CodeZone\Bible\Services\BibleBrains\Api\Languages;
-use CodeZone\Bible\Services\Request;
-use CodeZone\Bible\Services\RequestInterface;
+use CodeZone\Bible\Requests\Request;
 use Tests\TestCase;
 use function CodeZone\Bible\container;
+use function CodeZone\Bible\set_plugin_option;
 
 /**
  * @group controllers
@@ -25,7 +25,7 @@ class LanguageControllerTest extends TestCase
         // Create test data
         $language_id = '6414';
 
-        $expected = $this->fixture( 'languages/6414' );
+        $fixture = $this->fixture( 'languages/' . $language_id );
 
         // Create a mock Request object
         $request = $this->getMockBuilder( Request::class )
@@ -46,7 +46,7 @@ class LanguageControllerTest extends TestCase
         $response = $controller->show( $request );
 
         // Assert that the response contains the expected data
-        $this->assertEquals( $expected, $response );
+        $this->assertEquals( $fixture['data'], $response );
     }
 
     /**
@@ -62,12 +62,10 @@ class LanguageControllerTest extends TestCase
 
         // Call the options method
         $response = $controller->options( $request );
-        $this->assertArrayHasKey( 'data', $response );
-        $this->assertIsArray( $response['data'] );
-        $this->assertGreaterThan( 0, count( $response['data'] ) );
-        foreach ( $response['data'] as $option ) {
+        $this->assertIsArray( $response );
+        $this->assertGreaterThan( 0, count( $response) );
+        foreach ( $response as $option ) {
             $this->assertIsString( $option['value'] );
-            $this->assertIsString( $option['language_code'] );
             $this->assertIsString( $option['itemText'] );
         }
     }
@@ -78,7 +76,7 @@ class LanguageControllerTest extends TestCase
     public function it_returns_all_languages()
     {
         // Create test data
-        $expected_data = $this->fixture( 'languages' );
+        $fixture = $this->fixture( 'languages' );
 
         // Create a mock Request object
         $request = $this->getMockBuilder( Request::class )
@@ -100,8 +98,16 @@ class LanguageControllerTest extends TestCase
         // Call the index method
         $response = $controller->index( $request );
 
-        // Assert that the response contains the expected data
-        $this->assertEquals( $expected_data, $response );
+        foreach($fixture['data'] as $expected) {
+            $matches = array_values(array_filter($response, function($item) use ($expected) {
+                return $item['id'] == $expected['id'];
+            }));
+            if (!count($matches)) {
+                $this->fail('Could not find language ' . $expected['id']);
+            }
+            $this->assertEquals($matches[0]['code'], $expected['iso']);
+        }
+
     }
 
     /**
@@ -111,9 +117,9 @@ class LanguageControllerTest extends TestCase
     {
         // Create test data
         $search_term = 'Spanish';
-        $expected_data = $this->fixture( 'languages/search/' . strtolower( $search_term ) );
+        $fixture = $this->fixture( 'languages/search/' . strtolower( $search_term ) );
 ;
-        $this->mock_api_response( 'languages/search/' . $search_term, new Response( 200, [], json_encode( $expected_data ) ) );
+        $this->mock_api_response( 'languages/search/' . $search_term, new Response( 200, [], json_encode( $fixture ) ) );
 
         $request = $this->getMockBuilder( Request::class )
             ->onlyMethods( [ 'all_get' ] ) // or setMethods() for older PHPUnit
@@ -132,8 +138,16 @@ class LanguageControllerTest extends TestCase
         // Call the index method
         $response = $controller->index( $request );
 
-        // Assert that the response contains the expected data
-        $this->assertEquals( $expected_data, $response );
+
+        foreach($fixture['data'] as $expected) {
+            $matches = array_values(array_filter($response, function($item) use ($expected) {
+                return $item['id'] == $expected['id'];
+            }));
+            if (!count($matches)) {
+                $this->fail('Could not find language ' . $expected['id']);
+            }
+            $this->assertEquals($matches[0]['code'], $expected['iso']);
+        }
     }
 
     /**
@@ -158,8 +172,8 @@ class LanguageControllerTest extends TestCase
         $result = $controller->show( $request );
 
         // 6. Assert the response
-        $this->assertEquals( '6414', $result['data']['id'] );
-        $this->assertEquals( 'English', $result['data']['name'] );
+        $this->assertEquals( '6414', $result['id'] );
+        $this->assertEquals( 'English', $result['name'] );
     }
 
 
@@ -189,20 +203,19 @@ class LanguageControllerTest extends TestCase
         $result = $controller->options( $request );
 
         // Assert that the result contains the expected data
-        $this->assertArrayHasKey( 'data', $result );
-        foreach ( $result['data'] as $language ) {
+        foreach ( $result as $language ) {
             $this->assertArrayHasKey( 'value', $language );
             $this->assertArrayHasKey( 'itemText', $language );
         }
     }
 
     /**
-     * Test that the BibleBrains settings page loads.
+     * Test that the ApiServices settings page loads.
      * @test
      */
     public function it_can_search() {
-        $languages = container()->get( Languages::class );
+        $languages = container()->get( BibleBrainsLanguages::class );
         $result    = $languages->search( 'Spanish' );
-        $this->assertGreaterThan( 0, count( $result['data'] ) );
+        $this->assertGreaterThan( 0, count( $result ) );
     }
 }

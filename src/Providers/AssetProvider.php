@@ -2,11 +2,11 @@
 
 namespace CodeZone\Bible\Providers;
 
-use CodeZone\Bible\League\Container\ServiceProvider\AbstractServiceProvider;
 use CodeZone\Bible\CodeZone\WPSupport\Assets\AssetQueue;
 use CodeZone\Bible\CodeZone\WPSupport\Assets\AssetQueueInterface;
+use CodeZone\Bible\League\Container\ServiceProvider\AbstractServiceProvider;
 use CodeZone\Bible\Services\Assets;
-use CodeZone\Bible\Services\BibleBrains\MediaTypes;
+use CodeZone\Bible\Services\MediaTypes;
 use function CodeZone\Bible\config;
 use function CodeZone\Bible\namespace_string;
 
