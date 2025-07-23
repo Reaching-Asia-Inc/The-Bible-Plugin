@@ -6,8 +6,10 @@ use CodeZone\Bible\GuzzleHttp\Client;
 use CodeZone\Bible\GuzzleHttp\Handler\MockHandler;
 use CodeZone\Bible\GuzzleHttp\HandlerStack;
 use CodeZone\Bible\GuzzleHttp\Psr7\Response;
+use CodeZone\Bible\Sources\USX\USXBibles;
 use Faker;
 use WP_UnitTestCase;
+use function CodeZone\Bible\container;
 use function CodeZone\Bible\namespace_string;
 use function Patchwork\restoreAll;
 
@@ -124,5 +126,15 @@ abstract class TestCase extends WP_UnitTestCase {
 
         fwrite( STDERR, "Fixture not found: {$file}" . PHP_EOL );
         exit;
+    }
+
+    public function load_usx_fixture( $bible ) {
+        add_filter(namespace_string( USXBibles::FILTER_HOOK ), function ( $usx_bibles ) use ( $bible ) {
+            $data = container()->get( USXBibles::class )->parse_dir(
+                __DIR__ . '/fixtures/usx/' . $bible
+            );
+            $usx_bibles[$data['id']] = $data;
+            return $usx_bibles;
+        }, 10, 1);
     }
 }

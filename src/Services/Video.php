@@ -2,9 +2,9 @@
 
 namespace CodeZone\Bible\Services;
 
-use CodeZone\Bible\ApiServices\BibleBrains\BibleBrainsBibles;
 use CodeZone\Bible\GuzzleHttp\Client;
-use CodeZone\Bible\Normalizers\BibleBrains\BibleBrainsVideoNormalizer;
+use CodeZone\Bible\Sources\BibleBrains\BibleBrainsBibles;
+use CodeZone\Bible\Sources\BibleBrains\Normalizers\BibleBrainsVideoNormalizer;
 
 /**
  * Class Video
@@ -23,10 +23,13 @@ class Video {
      * Guzzle client
      */
     protected $http;
+
     /**
-     * Constructor.
+     * Constructor method for initializing the class with required dependencies.
      *
-     * @param BibleBrainsBibles $bibles Bible API service instance
+     * @param BibleBrainsVideoNormalizer $normalizer Instance of the video normalizer
+     * @param Client|null $http Optional HTTP client instance for making requests
+     * @return void
      */
     public function __construct( BibleBrainsVideoNormalizer $normalizer, ?Client $http = null )
     {
@@ -72,7 +75,7 @@ class Video {
      * @param array $video Video array to hydrate
      * @return array Hydrated video array with updated content
      */
-    public function hydrate_video(array $video )
+    public function hydrate_video( array $video )
     {
         if ( !isset( $video['content'] ) ) {
             return $video;

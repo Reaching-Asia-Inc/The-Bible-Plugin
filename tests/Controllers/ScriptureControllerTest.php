@@ -105,7 +105,7 @@ class ScriptureControllerTest extends TestCase
         $response = $controller->index( $request );
 
         $this->assertIsArray( $response['media'] );
-        $this->assertGreaterThan( 0, count( $response['media']) );
+        $this->assertGreaterThan( 0, count( $response['media'] ) );
 
         foreach ( $response['media']['video']['content'] as $content ) {
             $this->assertArrayHasKey( 'files', $content );

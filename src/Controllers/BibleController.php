@@ -2,9 +2,9 @@
 
 namespace CodeZone\Bible\Controllers;
 
-use CodeZone\Bible\ApiServices\BibleBrains\BibleBrainsBibles;
 use CodeZone\Bible\Requests\RequestInterface as Request;
-use CodeZone\Bible\Resources\Bibles;
+use CodeZone\Bible\Resources\Bible;
+use CodeZone\Bible\Sources\BibleBrains\BibleBrainsBibles;
 use function CodeZone\Bible\container;
 use function CodeZone\Bible\validate;
 
@@ -46,7 +46,7 @@ class BibleController {
      */
     public function options( Request $request ): array {
         $response = $this->index( $request );
-        $bibles = container()->get( Bibles::class );
+        $bibles = container()->get( Bible::class );
         return $bibles->as_options( $response ?? [] );
     }
 
@@ -81,7 +81,7 @@ class BibleController {
      */
     public function index( Request $request ): array
     {
-        $bibles = container()->get( Bibles::class );
+        $bibles = container()->get( Bible::class );
 
         $result = array_filter($bibles->all( [
             'page' => $request->get( 'paged', 1 ),

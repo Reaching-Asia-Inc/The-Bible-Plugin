@@ -35,9 +35,7 @@ class RestApi
      */
     public function register_routes(): void
     {
-        $routes = include routes_path( 'api.php' );
-
-        foreach ( $routes as $route ) {
+        foreach ( $this->routes() as $route ) {
             register_rest_route(
                 self::PATH,
                 $route['route'],
@@ -83,12 +81,24 @@ class RestApi
             wp_send_json([
                 'message' => $e->getMessage(),
             ], $e->getCode());
-            exit;
+           $this->die();
         }
 
         wp_die(
             esc_html( $e->getMessage() ),
             esc_attr( $e->getCode() )
         );
+    }
+
+    /**
+     * @return mixed
+     */
+    public function routes()
+    {
+        return include routes_path( 'api.php' );
+    }
+
+    public function die() {
+        exit;
     }
 }

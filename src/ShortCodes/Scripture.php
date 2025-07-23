@@ -3,7 +3,7 @@
 namespace CodeZone\Bible\ShortCodes;
 
 use CodeZone\Bible\Exceptions\BiblePluginException;
-use CodeZone\Bible\Resources\Languages;
+use CodeZone\Bible\Resources\Language;
 use CodeZone\Bible\Services\Assets;
 use CodeZone\Bible\Services\MediaTypes;
 use CodeZone\Bible\Services\Scripture as ScriptureService;
@@ -45,7 +45,7 @@ class Scripture {
     /**
      * The languages service.
      *
-     * @var Languages
+     * @var Language
      */
     protected $languages;
 
@@ -67,7 +67,7 @@ class Scripture {
         ScriptureService $scripture,
         Assets $assets,
         MediaTypes $media_types,
-        Languages $language,
+        Language $language,
         Video $video
     ) {
 		$this->scripture   = $scripture;

@@ -2,9 +2,6 @@
 
 namespace CodeZone\Bible\Providers;
 
-use CodeZone\Bible\ApiServices\BibleBrains\BibleBrainsBibles as BiblesApi;
-use CodeZone\Bible\ApiServices\BibleBrains\BibleBrainsApiKeys as ApiKeysApi;
-use CodeZone\Bible\ApiServices\BibleBrains\BibleBrainsLanguages as LanguagesApi;
 use CodeZone\Bible\CodeZone\WPSupport\Options\OptionsInterface as Options;
 use CodeZone\Bible\Guzzle\BibleBrainsMiddleware;
 use CodeZone\Bible\GuzzleHttp\Client;
@@ -12,10 +9,13 @@ use CodeZone\Bible\GuzzleHttp\HandlerStack;
 use CodeZone\Bible\Illuminate\Http\Client\Factory;
 use CodeZone\Bible\League\Container\ServiceProvider\AbstractServiceProvider;
 use CodeZone\Bible\League\Container\ServiceProvider\BootableServiceProviderInterface;
-use CodeZone\Bible\Normalizers\BibleBrains\BibleBrainsVideoNormalizer;
 use CodeZone\Bible\Services\BibleBrainsKeys;
 use CodeZone\Bible\Services\Cache;
 use CodeZone\Bible\Services\Video;
+use CodeZone\Bible\Sources\BibleBrains\BibleBrainsApiKeys as ApiKeysApi;
+use CodeZone\Bible\Sources\BibleBrains\BibleBrainsBibles as BiblesApi;
+use CodeZone\Bible\Sources\BibleBrains\BibleBrainsLanguages as LanguagesApi;
+use CodeZone\Bible\Sources\BibleBrains\Normalizers\BibleBrainsVideoNormalizer;
 use function CodeZone\Bible\container;
 
 class BibleBrainsProvider extends AbstractServiceProvider implements BootableServiceProviderInterface

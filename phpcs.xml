@@ -28,6 +28,13 @@
     <exclude-pattern>node_modules/*</exclude-pattern>
     <exclude-pattern>includes/*</exclude-pattern>
     <exclude-pattern>resources/*</exclude-pattern>
+    <exclude-pattern>.github/*</exclude-pattern>
+    <exclude-pattern>bin/*</exclude-pattern>
+    <exclude-pattern>dist/*</exclude-pattern>
+    <exclude-pattern>languages/*</exclude-pattern>
+    <exclude-pattern>resources/css/*</exclude-pattern>
+    <exclude-pattern>resources/img/*</exclude-pattern>
+    <exclude-pattern>resources/js/*</exclude-pattern>
 
     <arg name="extensions" value="php,inc,lib"/>
     <arg value="n"/>

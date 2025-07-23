@@ -2,25 +2,34 @@
 
 namespace CodeZone\Bible\Services;
 
-use CodeZone\Bible\ApiServices\BibleBrains\BibleBrainsLanguages;
 use CodeZone\Bible\CodeZone\WPSupport\Options\OptionsInterface as Options;
+use CodeZone\Bible\Sources\BibleBrains\BibleBrainsLanguages;
 use CodeZone\Bible\WhiteCube\Lingua\Service as Lingua;
 
+/**
+ * Represents a locale and provides various utility methods for working with language-specific data,
+ * such as translations, language codes, and text direction determination.
+ */
 class Locale
 {
     protected Translations $translations;
 
     /**
-     * Constructor.
+     * Constructor method for initializing the object with translations.
      *
-     * @param Options $options The options object.
-     * @param BibleBrainsLanguages $languages The languages object.
-     * @param Translations $translations The translations object.
+     * @param Translations $translations An instance of the Translations class.
+     * @return void
      */
     public function __construct( Translations $translations ) {
         $this->translations = $translations;
     }
 
+    /**
+     * Creates and returns an instance of the Lingua class using the current locale.
+     *
+     * @return Lingua An instance of the Lingua class initialized with the current locale.
+     * @throws \Exception
+     */
     public function lingua() {
         return Lingua::create( $this->locale() );
     }
@@ -35,17 +44,27 @@ class Locale
     }
 
     /**
-     * Get the ISO 639-3 code for the current locale.
+     * Converts the current language setting to its ISO 639-3 code representation.
      *
-     * @return string The ISO 639-3 code.
+     * @return string Returns the ISO 639-3 language code corresponding to the current language.
+     * @throws \Exception
      */
     public function iso() {
         return $this->lingua()->toISO_639_3();
     }
 
+    /**
+     * Determines the text direction of the given input (Right-To-Left, Left-To-Right, or Auto).
+     *
+     * @param mixed $text The input text to analyze. It can be a string, an array of strings,
+     *                or an array of associative arrays with a 'verse_text' key.
+     *
+     * @return string Returns 'rtl' if the majority of detected characters belong to Right-To-Left scripts,
+     *                'ltr' if the majority belongs to Left-To-Right scripts,
+     *                or 'auto' if no clear direction can be determined.
+     */
     public function guess_text_direction( $text )
     {
-
         if ( is_array( $text ) ) {
             if ( !count( $text ) ) {
                 return 'auto';
@@ -61,17 +80,21 @@ class Locale
             }
         }
 
-        // Regular expression to match RTL Unicode characters.
-        $rtl_chars = '/[\x{0600}-\x{06FF}\x{0750}-\x{077F}\x{0590}-\x{05FF}\x{08A0}-\x{08FF}\x{FB50}-\x{FDCF}\x{FDF0}-\x{FDFF}\x{FE70}-\x{FEFF}]/u';
+        // Remove spaces and common punctuation to focus on actual text
+        $text = preg_replace( '/[\s\p{P}]/u', '', $text );
 
-        // Regular expression to match LTR Unicode characters (excluding RTL ranges).
-        $ltr_chars = '/[\x{0000}-\x{058F}\x{0700}-\x{074F}\x{0780}-\x{089F}\x{0900}-\x{FBFF}\x{FE00}-\x{FE6F}]/u';
+        // Arabic, Hebrew, and other RTL scripts
+        $rtl_chars = '/[\x{0600}-\x{06FF}\x{0750}-\x{077F}\x{08A0}-\x{08FF}\x{FB50}-\x{FDFF}\x{FE70}-\x{FEFF}\x{0590}-\x{05FF}]/u';
 
-        // Count the number of RTL and LTR characters in the text.
-        $rtl_count = preg_match_all( $rtl_chars, $text );
-        $ltr_count = preg_match_all( $ltr_chars, $text );
+        // Basic Latin and common LTR scripts, excluding spaces and punctuation
+        $ltr_chars = '/[\x{0041}-\x{005A}\x{0061}-\x{007A}\x{00C0}-\x{024F}]/u';
 
-        // Return the text direction based on the character count.
+        preg_match_all( $rtl_chars, $text, $rtl_matches );
+        preg_match_all( $ltr_chars, $text, $ltr_matches );
+
+        $rtl_count = count( $rtl_matches[0] );
+        $ltr_count = count( $ltr_matches[0] );
+
         if ( $rtl_count > $ltr_count ) {
             return 'rtl';
         } elseif ( $ltr_count >= $rtl_count ) {

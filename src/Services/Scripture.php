@@ -5,9 +5,9 @@ namespace CodeZone\Bible\Services;
 use CodeZone\Bible\CodeZone\WPSupport\Options\OptionsInterface as Options;
 use CodeZone\Bible\Exceptions\BiblePluginException;
 use CodeZone\Bible\League\Fractal\Resource\Item;
-use CodeZone\Bible\Resources\Bibles;
-use CodeZone\Bible\Resources\Books;
-use CodeZone\Bible\Resources\Languages;
+use CodeZone\Bible\Resources\Bible;
+use CodeZone\Bible\Resources\Book;
+use CodeZone\Bible\Resources\Language;
 use CodeZone\Bible\Settings\LanguagesSetting;
 
 ;
@@ -21,14 +21,14 @@ class Scripture {
 	/**
 	 * The BibleBrainsBibles service.
 	 *
-	 * @var Bibles
+	 * @var Bible
 	 */
 	private $bibles;
 
 	/**
-	 * The Books service.
+	 * The Book service.
 	 *
-	 * @var Books
+	 * @var Book
 	 */
 	private $books;
 
@@ -56,7 +56,7 @@ class Scripture {
 	/**
 	 * The Language service.
 	 *
-	 * @var Languages
+	 * @var Language
 	 */
 	private $language;
 
@@ -72,20 +72,20 @@ class Scripture {
 	/**
 	 * Constructs a new instance of the class.
 	 *
-	 * @param Bibles $bibles The BibleBrainsBibles service.
-	 * @param Books $books The Books service.
+	 * @param Bible $bibles The BibleBrainsBibles service.
+	 * @param Book $books The Book service.
 	 * @param FileSets $file_sets The FileSets service.
 	 * @param References $reference The References service.
 	 * @param MediaTypes $media_types The MediaTypes service.
-	 * @param Languages $language The Language service.
+	 * @param Language $language The Language service.
 	 */
 	public function __construct(
-        Bibles $bibles,
-        Books $books,
+        Bible $bibles,
+        Book $books,
         FileSets $file_sets,
         References $reference,
         MediaTypes $media_types,
-        Languages $language,
+        Language $language,
         LanguagesSetting $languages_setting,
         Options $options
 	) {
@@ -250,11 +250,11 @@ class Scripture {
      */
     private function resolve_book( array $parameters, array $bible ): array
     {
-        $filtered_books = array_filter($bible['books'], function($book) use ($parameters) {
-            return strtolower($book['id']) == strtolower($parameters['book'])
-                || strtolower($book['name']) == strtolower($parameters['book']);
+        $filtered_books = array_filter($bible['books'], function ( $book ) use ( $parameters ) {
+            return strtolower( $book['id'] ) == strtolower( $parameters['book'] )
+                || strtolower( $book['name'] ) == strtolower( $parameters['book'] );
         });
-        $book = !empty($filtered_books) ? reset($filtered_books) : null;
+        $book = !empty( $filtered_books ) ? reset( $filtered_books ) : null;
 
         if ( !$book ) {
             throw new BiblePluginException(

@@ -3,8 +3,6 @@
 namespace CodeZone\Bible\Providers;
 
 use CodeZone\Bible\League\Container\ServiceProvider\AbstractServiceProvider;
-use CodeZone\Bible\Normalizers\BibleBrains\BibleBrainsVideoNormalizer;
-use CodeZone\Bible\Services\Scripture;
 use CodeZone\Bible\Services\Video;
 
 class ResourceProvider extends AbstractServiceProvider
@@ -17,6 +15,5 @@ class ResourceProvider extends AbstractServiceProvider
 
     public function register(): void
     {
-
     }
 }

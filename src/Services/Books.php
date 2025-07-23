@@ -106,7 +106,7 @@ class Books
      */
     public function guess_testament( $code ): string
     {
-        if($this->is_nt($code)) {
+        if ( $this->is_nt( $code ) ) {
             return 'NT';
         }
 
@@ -143,11 +143,11 @@ class Books
     public function to_code( $name ): ?string {
         $all = $this->all();
         //Check if it's already a code
-        if (isset($all[strtoupper($name)])) {
+        if ( isset( $all[strtoupper( $name )] ) ) {
             return $name;
         }
         $all = array_flip( $all );
-        return $all[ucwords($name)] ?? $name;
+        return $all[ucwords( $name )] ?? $name;
     }
 
     /**
@@ -158,13 +158,13 @@ class Books
      */
     public function to_name( $code ): ?string {
         $all = $this->all();
-        if (isset($all[strtoupper($code)])) {
-            return $all[strtoupper($code)];
+        if ( isset( $all[strtoupper( $code )] ) ) {
+            return $all[strtoupper( $code )];
         }
         //Check if it's already a name
         $all = array_flip( $all );
-        if (isset($all[ucwords($code)])) {
-            return ucwords($code);
+        if ( isset( $all[ucwords( $code )] ) ) {
+            return ucwords( $code );
         }
         return $code;
     }

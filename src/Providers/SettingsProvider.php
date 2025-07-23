@@ -58,7 +58,7 @@ class SettingsProvider extends AbstractServiceProvider implements BootableServic
      */
     public function register(): void
     {
-        $this->getContainer()->add( LanguagesSetting::class, function() {
+        $this->getContainer()->add( LanguagesSetting::class, function () {
             return new LanguagesSetting(
                 $this->getContainer()->get( Locale::class ),
                 $this->getContainer()->get( Options::class ),

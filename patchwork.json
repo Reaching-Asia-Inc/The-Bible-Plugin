@@ -6,6 +6,9 @@
     "is_dir",
     "unlink",
     "rmdir",
-    "pathinfo"
+    "pathinfo",
+    "file_get_contents",
+    "defined",
+    "constant"
   ]
 }

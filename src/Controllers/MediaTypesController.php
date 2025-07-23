@@ -2,9 +2,9 @@
 
 namespace CodeZone\Bible\Controllers;
 
-use CodeZone\Bible\ApiServices\BibleBrains\BibleBrainsBibles;
 use CodeZone\Bible\Requests\RequestInterface as Request;
 use CodeZone\Bible\Services\MediaTypes;
+use CodeZone\Bible\Sources\BibleBrains\BibleBrainsBibles;
 use function CodeZone\Bible\container;
 
 /**

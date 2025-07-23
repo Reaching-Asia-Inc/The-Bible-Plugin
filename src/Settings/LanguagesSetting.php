@@ -33,8 +33,8 @@ class LanguagesSetting
             if ( ! is_array( $languages ) ) {
                 return null;
             }
-            return array_map(function($language) {
-                return $this->format($language);
+            return array_map(function ( $language ) {
+                return $this->format( $language );
             }, $languages);
         } catch ( BiblePluginException $e ) {
             return null;
@@ -42,11 +42,11 @@ class LanguagesSetting
     }
 
     /**
-     * Attempts to determine the appropriate configuration based on a provided or default locale code.
+     * Attempts to guess the configuration based on the provided ISO code or falls back to the default configuration.
      *
-     * @param string|null $code The locale code to use for guessing. If null, the default locale code is derived from the current locale.
+     * @param string|null $iso Optional ISO code to determine the configuration. Defaults to the current locale's ISO code if not provided.
      *
-     * @return mixed Returns the configuration matching the locale code if supported, or the default configuration if no match is found.
+     * @return mixed Returns the configuration matching the ISO code if supported, otherwise returns the default configuration.
      */
     public function guess( $iso = null ) {
         $iso = $iso ?? $this->locale->iso();
@@ -59,11 +59,11 @@ class LanguagesSetting
     }
 
     /**
-     * Attempts to find a language configuration based on the given value, or guesses a default configuration if no match is found.
+     * Searches for a language configuration based on a given value, or guesses one if no match is found.
      *
-     * @param string|null $value The value to search for, which can match the 'value', 'id', or 'code' of a language configuration.
+     * @param mixed $value The value to search for, which can be used to identify a language configuration.
      *
-     * @return mixed Returns the matching language configuration if found, the guessed configuration if no match is found, or null if no configuration is available.
+     * @return array|null Returns the matching language configuration as an array if found, the guessed configuration if no match is found, or null if no configuration is determined.
      */
     public function search_or_guess( $value ) {
         $language = $value ? $this->search( $value ) : null;
@@ -75,11 +75,11 @@ class LanguagesSetting
     }
 
     /**
-     * Retrieves a language by its code or returns the default language if not found.
+     * Searches for a language configuration based on the given value. If no match is found, returns the default language configuration.
      *
-     * @param string|null $code The code of the language to find. If null, the default language will be returned.
+     * @param mixed $value The value to search for, which may match specific properties of a language configuration.
      *
-     * @return array|null Returns the language array if found, the default language array if not found, or null on failure.
+     * @return array|null Returns the matching language configuration as an array if found, or the default configuration if no match is found. Null is returned if an error or exception occurs.
      */
     public function search_or_default( $value ) {
         $language = $this->search( $value );
@@ -103,7 +103,7 @@ class LanguagesSetting
      * @return bool Returns true if the value is supported, false otherwise or if an exception occurs.
      */
     public function supported( $value ) {
-        return !!$this->find($value);
+        return (bool) $this->find( $value );
     }
 
     /**
@@ -143,15 +143,13 @@ class LanguagesSetting
             }
 
             foreach ( $languages as $config ) {
-                foreach($config as $property) {
-                    if (is_string($property) && is_string($value)) {
-                        if (strtolower($value) === strtolower($property)) {
+                foreach ( $config as $property ) {
+                    if ( is_string( $property ) && is_string( $value ) ) {
+                        if ( strtolower( $value ) === strtolower( $property ) ) {
                             return $config;
                         }
-                    } else {
-                        if ($property === $value) {
+                    } elseif ( $property === $value ) {
                             return $config;
-                        }
                     }
                 }
             }
@@ -176,9 +174,9 @@ class LanguagesSetting
             }
 
             foreach ( $languages as $config ) {
-                if ( strtolower($config['value'] ?? '') === strtolower($value)
-                    || ($config['id'] ?? null) === $value ) {
-                    return $this->format($config);
+                if ( strtolower( $config['value'] ?? '' ) === strtolower( $value )
+                    || ( $config['id'] ?? null ) === $value ) {
+                    return $this->format( $config );
                 }
             }
             return null;
@@ -195,10 +193,10 @@ class LanguagesSetting
      * @return array Returns the formatted language configuration with 'id' and 'code' keys set, using 'value' if necessary.
      */
     public function format( $language ) {
-        if (!isset($language['id'])) {
+        if ( !isset( $language['id'] ) ) {
             $language['id'] = $language['value'];
         }
-        if (!isset($language['code'])) {
+        if ( !isset( $language['code'] ) ) {
             $language['code'] = $language['value'];
         }
         return $language;

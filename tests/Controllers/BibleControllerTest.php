@@ -2,12 +2,11 @@
 
 namespace Tests\Controllers;
 
-use CodeZone\Bible\ApiServices\BibleBrains\BibleBrainsBibles;
 use CodeZone\Bible\Controllers\BibleController;
 use CodeZone\Bible\GuzzleHttp\Psr7\Response;
 use CodeZone\Bible\Requests\RequestInterface;
+use CodeZone\Bible\Sources\BibleBrains\BibleBrainsBibles;
 use Tests\TestCase;
-use function CodeZone\Bible\set_plugin_option;
 
 /**
  * @group controllers
@@ -174,9 +173,9 @@ class BibleControllerTest extends TestCase
         // Call the index method
         $response = $controller->index( $request );
 
-        foreach ($expected_data as $i => $bible) {
+        foreach ( $expected_data as $i => $bible ) {
             $result_item = $response[$i];
-            $this->assertEquals($bible['abbr'], $result_item['code']);
+            $this->assertEquals( $bible['abbr'], $result_item['code'] );
         }
     }
 

@@ -92,7 +92,7 @@ class LanguageTest extends TestCase
             ->willReturn( $language_config );
 
         // Create the Language service
-        $language = new LanguagesSetting( container()->get(Locale::class), $options );
+        $language = new LanguagesSetting( container()->get( Locale::class ), $options );
 
         // Test resolving language
         $result = $language->guess();
@@ -186,7 +186,7 @@ class LanguageTest extends TestCase
             ->willReturn( $language_config );
 
         // Create the Language service
-        $language = new LanguagesSetting( container()->get(Locale::class), $options );
+        $language = new LanguagesSetting( container()->get( Locale::class ), $options );
 
         // Test finding a language by code
         $result = $language->find( 'spa' );
@@ -219,7 +219,7 @@ class LanguageTest extends TestCase
             ->willReturn( $language_config );
 
         // Create the Language service
-        $language = new LanguagesSetting( container()->get(Locale::class), $options );
+        $language = new LanguagesSetting( container()->get( Locale::class ), $options );
         // Test finding a non-existent language
         $result = $language->find( 'fra' );
 
@@ -241,7 +241,7 @@ class LanguageTest extends TestCase
             ->willThrowException( new BiblePluginException( 'Options error' ) );
 
         // Create the Language service
-        $language = new LanguagesSetting( container()->get(Locale::class), $options );
+        $language = new LanguagesSetting( container()->get( Locale::class ), $options );
 
         // Test finding a language when options throw an exception
         $result = $language->find( 'eng' );
@@ -281,7 +281,7 @@ class LanguageTest extends TestCase
             ->willReturn( $language_config );
 
         // Create the Language service
-        $language = new LanguagesSetting( container()->get(Locale::class), $options );
+        $language = new LanguagesSetting( container()->get( Locale::class ), $options );
 
         // Test supported languages
         $this->assertTrue( $language->supported( 'eng' ) );
@@ -323,7 +323,7 @@ class LanguageTest extends TestCase
             ->willReturn( $language_config );
 
         // Create the Language service
-        $language = new LanguagesSetting( container()->get(Locale::class), $options );
+        $language = new LanguagesSetting( container()->get( Locale::class ), $options );
 
         // Test getting default language
         $result = $language->default();
@@ -363,7 +363,7 @@ class LanguageTest extends TestCase
             ->willReturn( $language_config );
 
         // Create the Language service
-        $language = new LanguagesSetting( container()->get(Locale::class), $options );
+        $language = new LanguagesSetting( container()->get( Locale::class ), $options );
 
         // Test getting default language when none is marked as default
         $result = $language->default();
@@ -386,13 +386,13 @@ class LanguageTest extends TestCase
             ->willReturn( null );
 
         // Create the Language service
-        $language = new LanguagesSetting( container()->get(Locale::class), $options );
+        $language = new LanguagesSetting( container()->get( Locale::class ), $options );
 
         // Test getting default language when no languages are configured
         $result = $language->default();
 
         // Assert that the result is the default from config
-        $this->assertEquals( config('options.defaults.language'), $result );
+        $this->assertEquals( config( 'options.defaults.language' ), $result );
     }
 
     /**
@@ -427,7 +427,7 @@ class LanguageTest extends TestCase
             ->willReturn( $language_config );
 
         // Create the Language service
-        $language = new LanguagesSetting( container()->get(Locale::class), $options );
+        $language = new LanguagesSetting( container()->get( Locale::class ), $options );
 
         // Test finding an existing language
         $result = $language->search_or_default( 'spa' );
@@ -448,7 +448,7 @@ class LanguageTest extends TestCase
     public function it_determines_text_direction()
     {
         // Create the Language service
-        $locale = new Locale( container()->get(Translations::class) );
+        $locale = new Locale( container()->get( Translations::class ) );
 
         // Test LTR text
         $ltr_text = 'This is English text';

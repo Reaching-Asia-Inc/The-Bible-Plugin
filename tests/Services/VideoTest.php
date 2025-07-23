@@ -4,8 +4,8 @@ namespace Services;
 
 use CodeZone\Bible\GuzzleHttp\Client;
 use CodeZone\Bible\GuzzleHttp\Psr7\Response;
-use CodeZone\Bible\Normalizers\BibleBrains\BibleBrainsVideoNormalizer;
 use CodeZone\Bible\Services\Video;
+use CodeZone\Bible\Sources\BibleBrains\Normalizers\BibleBrainsVideoNormalizer;
 use Tests\TestCase;
 use function CodeZone\Bible\container;
 
@@ -21,7 +21,7 @@ class VideoTest extends TestCase
     public function it_hydrates_content_with_video_information()
     {
         $http = $this->createMock( Client::class );
-        $video = new Video( container()->get(BibleBrainsVideoNormalizer::class), $http );
+        $video = new Video( container()->get( BibleBrainsVideoNormalizer::class ), $http );
 
         // Create test content
         $content = [
@@ -75,7 +75,7 @@ class VideoTest extends TestCase
     public function it_returns_original_content_when_no_media_key()
     {
         $http = $this->createMock( Client::class );
-        $video = new Video( container()->get(BibleBrainsVideoNormalizer::class), $http );
+        $video = new Video( container()->get( BibleBrainsVideoNormalizer::class ), $http );
 
         // Create test content without media key
         $content = [
@@ -95,7 +95,7 @@ class VideoTest extends TestCase
     public function it_returns_original_media_when_no_video_key()
     {
         $http = $this->createMock( Client::class );
-        $video = new Video( container()->get(BibleBrainsVideoNormalizer::class), $http );
+        $video = new Video( container()->get( BibleBrainsVideoNormalizer::class ), $http );
 
         // Create test content with media but no video
         $content = [
@@ -120,7 +120,7 @@ class VideoTest extends TestCase
     public function it_returns_original_video_when_no_content_key()
     {
         $http = $this->createMock( Client::class );
-        $video = new Video( container()->get(BibleBrainsVideoNormalizer::class), $http );
+        $video = new Video( container()->get( BibleBrainsVideoNormalizer::class ), $http );
 
         // Create test content with video but no content
         $content = [
@@ -145,7 +145,7 @@ class VideoTest extends TestCase
     public function it_returns_original_content_when_http_request_fails()
     {
         $http = $this->createMock( Client::class );
-        $video = new Video( container()->get(BibleBrainsVideoNormalizer::class), $http );
+        $video = new Video( container()->get( BibleBrainsVideoNormalizer::class ), $http );
 
         // Create test content
         $content = [
@@ -184,7 +184,7 @@ class VideoTest extends TestCase
     public function it_can_parse_m3u8_playlist()
     {
         $http = $this->createMock( Client::class );
-        $video = new Video( container()->get(BibleBrainsVideoNormalizer::class), $http );
+        $video = new Video( container()->get( BibleBrainsVideoNormalizer::class ), $http );
 
         // Create test m3u8 content
         $m3u8_content = <<<EOT
@@ -229,7 +229,7 @@ EOT;
     public function it_handles_empty_m3u8_playlist()
     {
         $http = $this->createMock( Client::class );
-        $video = new Video( container()->get(BibleBrainsVideoNormalizer::class), $http );
+        $video = new Video( container()->get( BibleBrainsVideoNormalizer::class ), $http );
 
         // Parse an empty m3u8 content
         $result = $video->parse_m3u8( '', 'https://example.com/video/playlist.m3u8' );
@@ -245,7 +245,7 @@ EOT;
     public function it_handles_invalid_m3u8_playlist()
     {
         $http = $this->createMock( Client::class );
-        $video = new Video( container()->get(BibleBrainsVideoNormalizer::class), $http );
+        $video = new Video( container()->get( BibleBrainsVideoNormalizer::class ), $http );
 
         // Create test invalid m3u8 content
         $m3u8_content = <<<EOT

@@ -3,7 +3,7 @@
 namespace CodeZone\Bible\Controllers;
 
 use CodeZone\Bible\Requests\RequestInterface as Request;
-use CodeZone\Bible\Resources\Languages;
+use CodeZone\Bible\Resources\Language;
 use function CodeZone\Bible\container;
 
 /**
@@ -21,9 +21,9 @@ class LanguageController
      */
     public function show( Request $request ): array
     {
-        $languages = container()->get( Languages::class );
+        $languages = container()->get( Language::class );
         $language = $languages->find( $request->get( 'id' ) );
-        if (!$language) {
+        if ( !$language ) {
             return [
                 'code' => 404,
                 'error' => 'Language not found.'
@@ -40,7 +40,7 @@ class LanguageController
      */
     public function options( Request $request ): array
     {
-        $languages = container()->get( Languages::class );
+        $languages = container()->get( Language::class );
         $response = $this->index( $request );
         return $languages->as_options( $response ?? [] );
     }
@@ -54,7 +54,7 @@ class LanguageController
      */
     public function index( Request $request ): array
     {
-        $languages = container()->get( Languages::class );
+        $languages = container()->get( Language::class );
 
         $search = $request->get( 'search' );
         if ( $search ) {

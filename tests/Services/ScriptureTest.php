@@ -17,7 +17,7 @@ class ScriptureTest extends TestCase {
 	public function it_can_query_by_reference() {
 		$scripture = container()->get( Scripture::class );
 		$result    = $scripture->by_reference( "John 3:16" );
-		$this->assertEquals( 1, count( $result['media']['text']['content']) );
+		$this->assertEquals( 1, count( $result['media']['text']['content'] ) );
 		foreach ( $result['media']['text']['content'] as $verse ) {
 			$this->assertEquals( $verse['book_id'], 'JHN' );
 		}

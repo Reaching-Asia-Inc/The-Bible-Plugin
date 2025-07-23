@@ -8,8 +8,8 @@ use CodeZone\Bible\Services\Assets;
 use function CodeZone\Bible\container;
 use function CodeZone\Bible\namespace_string;
 use function CodeZone\Bible\routes_path;
-use function CodeZone\Bible\Services\add_menu_page;
-use function CodeZone\Bible\Services\add_submenu_page;
+use function add_menu_page;
+use function add_submenu_page;
 
 /**
  * Class settings

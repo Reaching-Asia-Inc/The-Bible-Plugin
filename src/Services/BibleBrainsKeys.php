@@ -163,7 +163,7 @@ class BibleBrainsKeys {
     public function get_override() {
         return array_filter( explode(
             ',',
-            defined( 'TBP_BIBLE_BRAINS_KEYS' ) ? TBP_BIBLE_BRAINS_KEYS : ''
+            defined( 'TBP_BIBLE_BRAINS_KEYS' ) ? constant( 'TBP_BIBLE_BRAINS_KEYS' ) : ''
         ) );
     }
 

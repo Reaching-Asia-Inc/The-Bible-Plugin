@@ -2,10 +2,10 @@
 
 namespace CodeZone\Bible\Controllers\Settings;
 
-use CodeZone\Bible\ApiServices\BibleBrains\BibleBrainsBibles;
 use CodeZone\Bible\Exceptions\BiblePluginException;
 use CodeZone\Bible\Requests\RequestInterface as Request;
 use CodeZone\Bible\Services\BibleBrainsKeys;
+use CodeZone\Bible\Sources\BibleBrains\BibleBrainsBibles;
 use function CodeZone\Bible\container;
 use function CodeZone\Bible\set_plugin_option;
 use function CodeZone\Bible\transaction;

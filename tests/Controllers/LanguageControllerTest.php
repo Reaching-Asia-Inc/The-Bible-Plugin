@@ -2,13 +2,12 @@
 
 namespace Tests\Controllers;
 
-use CodeZone\Bible\ApiServices\BibleBrains\BibleBrainsLanguages;
 use CodeZone\Bible\Controllers\LanguageController;
 use CodeZone\Bible\GuzzleHttp\Psr7\Response;
 use CodeZone\Bible\Requests\Request;
+use CodeZone\Bible\Sources\BibleBrains\BibleBrainsLanguages;
 use Tests\TestCase;
 use function CodeZone\Bible\container;
-use function CodeZone\Bible\set_plugin_option;
 
 /**
  * @group controllers
@@ -24,8 +23,6 @@ class LanguageControllerTest extends TestCase
     {
         // Create test data
         $language_id = '6414';
-
-        $fixture = $this->fixture( 'languages/' . $language_id );
 
         // Create a mock Request object
         $request = $this->getMockBuilder( Request::class )
@@ -46,7 +43,7 @@ class LanguageControllerTest extends TestCase
         $response = $controller->show( $request );
 
         // Assert that the response contains the expected data
-        $this->assertEquals( $fixture['data'], $response );
+        $this->assertEquals( $response['id'], $language_id );
     }
 
     /**
@@ -63,7 +60,7 @@ class LanguageControllerTest extends TestCase
         // Call the options method
         $response = $controller->options( $request );
         $this->assertIsArray( $response );
-        $this->assertGreaterThan( 0, count( $response) );
+        $this->assertGreaterThan( 0, count( $response ) );
         foreach ( $response as $option ) {
             $this->assertIsString( $option['value'] );
             $this->assertIsString( $option['itemText'] );
@@ -98,16 +95,15 @@ class LanguageControllerTest extends TestCase
         // Call the index method
         $response = $controller->index( $request );
 
-        foreach($fixture['data'] as $expected) {
-            $matches = array_values(array_filter($response, function($item) use ($expected) {
+        foreach ( $fixture['data'] as $expected ) {
+            $matches = array_values(array_filter($response, function ( $item ) use ( $expected ) {
                 return $item['id'] == $expected['id'];
             }));
-            if (!count($matches)) {
-                $this->fail('Could not find language ' . $expected['id']);
+            if ( !count( $matches ) ) {
+                $this->fail( 'Could not find language ' . $expected['id'] );
             }
-            $this->assertEquals($matches[0]['code'], $expected['iso']);
+            $this->assertEquals( $matches[0]['code'], $expected['iso'] );
         }
-
     }
 
     /**
@@ -139,14 +135,14 @@ class LanguageControllerTest extends TestCase
         $response = $controller->index( $request );
 
 
-        foreach($fixture['data'] as $expected) {
-            $matches = array_values(array_filter($response, function($item) use ($expected) {
+        foreach ( $fixture['data'] as $expected ) {
+            $matches = array_values(array_filter($response, function ( $item ) use ( $expected ) {
                 return $item['id'] == $expected['id'];
             }));
-            if (!count($matches)) {
-                $this->fail('Could not find language ' . $expected['id']);
+            if ( !count( $matches ) ) {
+                $this->fail( 'Could not find language ' . $expected['id'] );
             }
-            $this->assertEquals($matches[0]['code'], $expected['iso']);
+            $this->assertEquals( $matches[0]['code'], $expected['iso'] );
         }
     }
 

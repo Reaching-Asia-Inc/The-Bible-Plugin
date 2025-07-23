@@ -5,7 +5,7 @@ namespace CodeZone\Bible\Providers;
 use CodeZone\Bible\League\Container\ServiceProvider\AbstractServiceProvider;
 use CodeZone\Bible\League\Container\ServiceProvider\BootableServiceProviderInterface;
 use CodeZone\Bible\Requests\Request;
-use CodeZone\Bible\Resources\Languages;
+use CodeZone\Bible\Resources\Language;
 use CodeZone\Bible\Services\Assets;
 use CodeZone\Bible\Services\MediaTypes;
 use CodeZone\Bible\Services\Video;
@@ -45,7 +45,7 @@ class ShortcodeProvider extends AbstractServiceProvider implements BootableServi
                 $this->container->get( \CodeZone\Bible\Services\Scripture::class ),
                 $this->container->get( Assets::class ),
                 $this->container->get( MediaTypes::class ),
-                $this->container->get( Languages::class ),
+                $this->container->get( Language::class ),
                 $this->container->get( Video::class )
             );
         });

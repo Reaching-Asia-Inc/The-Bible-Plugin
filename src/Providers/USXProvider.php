@@ -4,8 +4,8 @@ namespace CodeZone\Bible\Providers;
 
 use CodeZone\Bible\League\Container\ServiceProvider\AbstractServiceProvider;
 use CodeZone\Bible\League\Container\ServiceProvider\BootableServiceProviderInterface;
-use CodeZone\Bible\Services\USX;
-use CodeZone\Bible\Services\USXBibles;
+use CodeZone\Bible\Sources\USX\USX;
+use CodeZone\Bible\Sources\USX\USXBibles;
 
 /**
  * Provider for USX services.
