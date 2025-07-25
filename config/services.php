@@ -38,7 +38,7 @@ $config->merge( [
         ],
         'usx' => [
             'dirs' => [
-               dirname( __DIR__ ) . '/tests/fixtures/usx/KJV'
+               //dirname( __DIR__ ) . '/tests/fixtures/usx/KJV'
             ]
         ],
         'tgmpa' => [
