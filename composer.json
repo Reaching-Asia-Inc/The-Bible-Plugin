@@ -21,12 +21,6 @@
   "scripts": {
     "pre-install-cmd": [
       "./bin/setup-scoper.sh"
-    ],
-    "test": [
-      "./vendor/bin/phpunit"
-    ],
-    "tests:install": [
-      "./bin/install-wp-tests.sh testing db db db:3306"
     ]
   },
   "require": {
