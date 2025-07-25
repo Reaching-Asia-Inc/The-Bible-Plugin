@@ -13,6 +13,7 @@ use function CodeZone\Bible\container;
 class ScriptureTest extends TestCase {
 	/**
 	 * @test
+     * @group debug
 	 */
 	public function it_can_query_by_reference() {
 		$scripture = container()->get( Scripture::class );

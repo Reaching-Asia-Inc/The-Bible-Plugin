@@ -55,7 +55,7 @@ class Bible
      * @return array
      * @throws BiblePluginException
      */
-    public function resolve( array $query = [] ): ?array {
+    public function find_or_default( array $query = [] ): ?array {
         $code = $query['code'] ?? null;
         $language_id = $query['language_id'] ?? null;
 

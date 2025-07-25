@@ -31,7 +31,7 @@ export class Reader extends withStores(TBPElement, [$referenceData, $media, $dir
     }
 
     render() {
-        if (!$hasText.get()) {
+      if (!$hasText.get()) {
             return nothing;
         }
 

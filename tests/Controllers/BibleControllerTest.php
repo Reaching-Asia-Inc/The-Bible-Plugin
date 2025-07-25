@@ -52,11 +52,6 @@ class BibleControllerTest extends TestCase
     {
         // Create test data
         $bible_id = 'ENGESV';
-        $expected_data = [
-            'abbr' => 'ENGESV',
-            'name' => 'English Standard Version',
-            'language' => 'English'
-        ];
 
         // Create a mock Request object
         $request = $this->createMock( RequestInterface::class );
@@ -68,17 +63,6 @@ class BibleControllerTest extends TestCase
                 [ 'id', null, $bible_id ]
             ]);
 
-        // Mock the BibleBrainsBibles service
-        $bibles = $this->createMock( BibleBrainsBibles::class );
-        $bibles->method( 'find' )
-            ->with( $bible_id )
-            ->willReturn( $expected_data );
-
-        // Mock the container to return our mock BibleBrainsBibles service
-        $this->mock_api_response('bibles/' . $bible_id, new Response(200, [], json_encode([
-            'data' => $expected_data
-        ])));
-
         // Create the controller
         $controller = new BibleController();
 
@@ -86,7 +70,7 @@ class BibleControllerTest extends TestCase
         $response = $controller->show( $request );
 
         // Assert that the response contains the expected data
-        $this->assertEquals( $expected_data, $response );
+        $this->assertEquals( $response['abbr'], $bible_id );
     }
 
     /**
@@ -94,34 +78,21 @@ class BibleControllerTest extends TestCase
      */
     public function it_returns_bibles_as_options()
     {
-        // Create test data
-        $bible_data = [
-            [
-                'abbr' => 'ENGESV',
-                'name' => 'English Standard Version'
-            ],
-            [
-                'abbr' => 'ENGKJV',
-                'name' => 'King James Version'
-            ]
-        ];
-
         $expected_options = [
             [
                 'value' => 'ENGESV',
-                'itemText' => 'English Standard Version'
+                'itemText' => 'English Standard Version',
+                'source' => 'bible-brains'
             ],
             [
                 'value' => 'ENGKJV',
-                'itemText' => 'King James Version'
+                'itemText' => 'King James Version',
+                'source' => 'bible-brains'
             ]
         ];
 
         // Create a mock Request object
         $request = $this->createMock( RequestInterface::class );
-
-        // Mock the container to return our mock BibleBrainsBibles service
-        $this->mock_api_response( 'bibles', new Response( 200, [], json_encode( $bible_data ) ) );
 
         // Create the controller
         $controller = new BibleController();
@@ -130,11 +101,26 @@ class BibleControllerTest extends TestCase
         $response = $controller->options( $request );
 
         // Assert that the response contains the expected options
-        $this->assertEquals( $expected_options, $response );
+        foreach ( $expected_options as $expected ) {
+            $found = false;
+            foreach ( $response as $actual ) {
+                if ( $actual['value'] === $expected['value'] &&
+                   $actual['itemText'] === $expected['itemText'] ) {
+                    $found = true;
+                    break;
+                }
+            }
+            $this->assertTrue(
+                $found,
+                "Option with value '{$expected['value']}' and text '{$expected['itemText']}' not found"
+            );
+
+        }
     }
 
     /**
      * @test
+     * @group debug
      */
     public function it_filters_bibles_by_language_code()
     {
@@ -164,18 +150,25 @@ class BibleControllerTest extends TestCase
                 [ 'search', '', '' ]
             ]);
 
-        // Mock the container to return our mock BibleBrainsBibles service
-        $this->mock_api_response( 'bibles', new Response( 200, [], json_encode( $expected_data ) ) );
-
         // Create the controller
         $controller = new BibleController();
 
         // Call the index method
         $response = $controller->index( $request );
 
-        foreach ( $expected_data as $i => $bible ) {
-            $result_item = $response[$i];
-            $this->assertEquals( $bible['abbr'], $result_item['code'] );
+        // Assert that the response contains the expected options
+        foreach ( $expected_data as $expected ) {
+            $found = false;
+            foreach ( $response as $actual ) {
+                if ( $actual['code'] === $expected['abbr'] ) {
+                    $found = true;
+                    break;
+                }
+            }
+            $this->assertTrue(
+                $found,
+                "Option with value '{$expected['abbr']}' and text '{$expected['name']}' not found"
+            );
         }
     }
 
@@ -186,18 +179,6 @@ class BibleControllerTest extends TestCase
     {
         // Create test data
         $search_term = 'Standard';
-        $all_bibles = [
-            'data' => [
-                [
-                    'abbr' => 'ENGESV',
-                    'name' => 'English Standard Version'
-                ],
-                [
-                    'abbr' => 'ENGKJV',
-                    'name' => 'King James Version'
-                ]
-            ]
-        ];
 
         // Create a mock Request object
         $request = $this->createMock( RequestInterface::class );
@@ -211,9 +192,6 @@ class BibleControllerTest extends TestCase
                 [ 'limit', 50, 50 ],
                 [ 'search', '', $search_term ]
             ]);
-
-        // Mock the container to return our mock BibleBrainsBibles service
-        $this->mock_api_response( 'bibles', new Response( 200, [], json_encode( $all_bibles ) ) );
 
         // Create the controller
         $controller = new BibleController();

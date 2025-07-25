@@ -11,6 +11,8 @@ use CodeZone\Bible\Sources\USX\USXBibles;
 
 class BookAggregator extends Aggregator
 {
+    const COMPARE_KEY = "id";
+
     public function __construct(
         BibleBrainsBibles $bb_bibles,
         USXBibles $usx_bibles,

@@ -18,7 +18,7 @@ use CodeZone\Bible\Sources\USX\USXBibles;
  */
 class BibleAggregator extends Aggregator
 {
-    const COMPARE_KEY = "code";
+    const COMPARE_KEY = "name";
     private BibleBrainsBibles $bb_bibles;
     private USXBibles $usx_bibles;
     protected Normalizer $bb_normalizer;
@@ -59,9 +59,14 @@ class BibleAggregator extends Aggregator
      */
     public function for_language( $language_id, $params = [] ): array
     {
+        $bible_brains_bibles = $this->bb_bibles->for_language( $language_id, $params );
+        $language_code = null;
+        if ( count( $bible_brains_bibles ) && is_numeric( $language_id ) ) {
+           $language_code = $bible_brains_bibles[0]['iso'] ?? null;
+        }
         return $this->aggregate(
-            $this->usx_bibles->for_language( $language_id ),
-            $this->bb_bibles->for_language( $language_id, $params )
+            $this->usx_bibles->for_language( $language_code ?? $language_id ),
+            $bible_brains_bibles
         );
     }
 
@@ -101,10 +106,14 @@ class BibleAggregator extends Aggregator
      * @param int $language_id The ID of the language for which the default data is requested.
      * @return array An array containing the data with source information.
      */
-    public function language_default( $language_id ): array {
-        $usx_bibles = $this->usx_bibles->for_language( $language_id );
-        $bb_bibles = $this->bb_bibles->language_defualt( $language_id );
+    public function language_default( $language_id ): ?array {
+        $bb_bible = $this->bb_bibles->language_defualt( $language_id );
+        $language_code = null;
+        if ( $bb_bible && is_numeric( $language_id ) ) {
+            $language_code = $bb_bible['iso'] ?? null;
+        }
+        $usx_bibles = array_values( $this->usx_bibles->for_language( $language_code ?? $language_id ) );
 
-        return $this->aggregate_item( $usx_bibles[0] ?? null, $bb_bibles );
+        return $this->aggregate_item( $usx_bibles[0] ?? null, $bb_bible );
     }
 }

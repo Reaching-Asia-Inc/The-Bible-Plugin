@@ -13,8 +13,8 @@ use function CodeZone\Bible\namespace_string;
  * @group books
  */
 class BookAggregatorTest extends TestCase {
-    protected function setup(): void {
-        parent::setup();
+    protected function setUp(): void {
+        parent::setUp();
         $this->load_usx_fixture( 'KJV' );
     }
 
@@ -92,6 +92,7 @@ class BookAggregatorTest extends TestCase {
 
     /**
      * @test
+     * @group debug
      */
     public function it_can_return_data_with_usx_source() {
         $aggregator = container()->get( BookAggregator::class );

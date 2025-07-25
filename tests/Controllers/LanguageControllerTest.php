@@ -115,8 +115,6 @@ class LanguageControllerTest extends TestCase
         $search_term = 'Spanish';
         $fixture = $this->fixture( 'languages/search/' . strtolower( $search_term ) );
 ;
-        $this->mock_api_response( 'languages/search/' . $search_term, new Response( 200, [], json_encode( $fixture ) ) );
-
         $request = $this->getMockBuilder( Request::class )
             ->onlyMethods( [ 'all_get' ] ) // or setMethods() for older PHPUnit
             ->getMock();

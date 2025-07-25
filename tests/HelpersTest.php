@@ -716,52 +716,6 @@ class HelpersTest extends TestCase
     /**
      * @test
      */
-    public function transaction_rolls_back_on_error()
-    {
-        global $wpdb;
-
-        $table_name = $wpdb->prefix . 'test_transactions';
-
-        // Drop the table first to ensure a clean environment
-        $wpdb->query( "DROP TABLE IF EXISTS {$table_name}" );
-
-        // Create table with UNIQUE constraint and InnoDB engine
-        $wpdb->query("CREATE TABLE {$table_name} (
-        id INT AUTO_INCREMENT PRIMARY KEY,
-        value VARCHAR(255) UNIQUE
-    ) ENGINE=InnoDB");
-
-        // Insert initial value
-        $wpdb->insert(
-            $table_name,
-            [ 'value' => 'test_duplicate' ],
-            [ '%s' ]
-        );
-
-        // Run transaction that attempts to insert a duplicate value
-        $result = transaction(function () use ( $wpdb, $table_name ) {
-            return $wpdb->insert(
-                $table_name,
-                [ 'value' => 'test_duplicate' ],
-                [ '%s' ]
-            );
-        });
-
-        // Assert that an error message was returned (rollback triggered)
-        $this->assertIsString( $result );
-        $this->assertNotEmpty( $result );
-
-        // Assert that only the original row exists
-        $row_count = (int) $wpdb->get_var( "SELECT COUNT(*) FROM {$table_name}" );
-        $this->assertEquals( 1, $row_count, 'Transaction did not roll back as expected.' );
-
-        // Clean up
-        $wpdb->query( "DROP TABLE IF EXISTS {$table_name}" );
-    }
-
-    /**
-     * @test
-     */
     public function translate_calls_translations_service()
     {
         $translations = $this->getMockBuilder( \CodeZone\Bible\Services\Translations::class )

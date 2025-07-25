@@ -160,7 +160,7 @@ export class SelectionManager extends TBPElement {
   }
 
   disconnectedCallback() {
-    this.forEach((selectable) => {
+    this.selectables.forEach((selectable) => {
       selectable.removeEventListener('click', this.onSelectableClick);
     });
     super.disconnectedCallback();

@@ -1,4 +1,5 @@
 // store/posts.ts
+import {__} from "../helpers.js";
 import {fetchState} from '../nanostore/fetch-state.js';
 import {$bible, $bibleAbbr} from "./bible.js";
 import {$book, $bookId} from "./book.js";
@@ -18,7 +19,8 @@ if (!endpoint.includes('?')) {
 
 export const $query = fetchState([endpoint, 'reference=', $reference, '&video=', true]);
 $query.listen((response) => {
-    const {loading, data, error} = response;
+    const {loading, data: body, error} = response;
+    const data = body?.data ?? body;
 
     if (loading) {
         return;
@@ -37,7 +39,7 @@ $query.listen((response) => {
     $bible.set(data.bible ?? {});
     $bibleAbbr.set(data.bible.abbr ?? '');
     $book.set(data.book ?? {});
-    $bookId.set(data.book.book_id ?? '');
+    $bookId.set(data.book.id ?? '');
     $chapter.set(data.chapter ?? '');
     $language.set(data.language);
     $languageId.set(data.language.id);

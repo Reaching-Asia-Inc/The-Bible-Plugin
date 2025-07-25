@@ -7,5 +7,5 @@ export const findMedia = (type) => {
 }
 
 export const findContent = (type) => {
-    return findMedia(type)?.content?.data ?? null
+    return findMedia(type)?.content ?? null
 }

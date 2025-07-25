@@ -20,11 +20,12 @@ export const $hasNextChapter = computed([$chapter, $chapters], (chapter) => {
 
 export const $visitChapter = (chapter) => {
     if ($hasChapter(chapter)) {
-        $visitReference(`${$book.get().book_id} ${chapter}`)
+        $visitReference(`${$book.get().id} ${chapter}`)
     }
 }
 
 export const $visitNextChapter = () => {
+  console.log($chapter.get())
     $visitChapter(parseInt($chapter.get()) + 1)
 }
 

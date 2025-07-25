@@ -3,6 +3,8 @@
 namespace CodeZone\Bible\Sources\USX;
 
 use CodeZone\Bible\Exceptions\BiblePluginException;
+use function CodeZone\Bible\config;
+use function CodeZone\Bible\container;
 use function CodeZone\Bible\get_plugin_option;
 use function CodeZone\Bible\namespace_string;
 use function CodeZone\Bible\set_plugin_option;
@@ -34,8 +36,29 @@ class USXBibles
     public function __construct( USX $usx )
     {
         $this->usx = $usx;
+        add_filter( namespace_string( self::FILTER_HOOK ), [ $this, 'register' ], 10, 1 );
     }
 
+    /**
+     * Register USX Bibles from config
+     *
+     * @param array $usx_bibles The collection of USX Bibles to be updated.
+     * @return array Updated collection of USX Bibles with parsed data.
+     */
+    public function register( $usx_bibles ) {
+        $dirs = config( 'services.usx.dirs', [] );
+        $bibles = $this->parse_dirs( $dirs );
+        foreach ( $bibles as $bible ) {
+            $usx_bibles[ $bible['id'] ] = $bible;
+        }
+        return $usx_bibles;
+    }
+
+    /**
+     * Retrieve the custom Bibles option.
+     *
+     * @return array|null The custom Bibles data as an array, or null if not available.
+     */
     public function custom(): ?array {
         return get_plugin_option( self::CUSTOM_BIBLES_OPTION, [] );
     }
@@ -62,7 +85,7 @@ class USXBibles
     public function find( string $key )
     {
         $bibles = $this->all();
-        return $bibles[$key] ?? null;
+        return $bibles[ $key ] ?? null;
     }
 
     /**
@@ -232,6 +255,19 @@ class USXBibles
         ];
     }
 
+    /**
+     * Parse the provided directories and process their contents.
+     *
+     * @param array $paths List of directory paths to be parsed.
+     * @param USX|null $usx Optional USX instance for parsing.
+     * @return array Results of parsing each directory.
+     */
+    public function parse_dirs( array $paths, ?USX $usx = null ): array {
+        return array_map( function ( $path ) use ( $usx ) {
+            return $this->parse_dir( $path, $usx );
+        }, $paths);
+    }
+
 
     /**
      * Search for Bible by name using fuzzy matching.
@@ -263,7 +299,7 @@ class USXBibles
      */
     public function for_language( string $language_code ): array
     {
-        return $this->where( 'language', $language_code );
+        return $this->where( 'iso', $language_code );
     }
 
     /**

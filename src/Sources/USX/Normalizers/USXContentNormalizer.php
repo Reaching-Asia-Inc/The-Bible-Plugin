@@ -12,6 +12,7 @@ class USXContentNormalizer implements Normalizer
         return [
             'source'       => 'usx',
             'book_id'      => $data['book_id'],
+            'book_name'    => $data['book_name'],
             'chapter'      => $data['chapter'],
             'verse_start'  => $data['verse_start'],
             'verse_end'    => $data['verse_end'],

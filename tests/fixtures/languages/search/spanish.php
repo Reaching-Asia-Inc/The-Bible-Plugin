@@ -13,6 +13,7 @@ return [
                     'bibles' => 26,
                     'rolv_code' => null,
                     'deleted_at' => null,
+                    'media_types' => 'audio,video,text'
                 ],
         ],
     'meta' =>

@@ -36,7 +36,6 @@ class MediaTypesTest extends TestCase
         $this->assertArrayHasKey( 'key', $audio );
         $this->assertArrayHasKey( 'label', $audio );
         $this->assertArrayHasKey( 'fileset_types', $audio );
-        $this->assertArrayHasKey( 'group', $audio );
 
         // Check values
         $this->assertEquals( 'audio', $audio['key'] );
@@ -155,22 +154,5 @@ class MediaTypesTest extends TestCase
         // Check text fileset types
         $this->assertContains( 'text_format', $all_types['text']['fileset_types'] );
         $this->assertContains( 'text_plain', $all_types['text']['fileset_types'] );
-    }
-
-    /**
-     * @test
-     */
-    public function it_has_correct_groups_for_each_media_type()
-    {
-        // Create the MediaTypes service
-        $media_types = new MediaTypes();
-
-        // Get all media types
-        $all_types = $media_types->all();
-
-        // Check groups
-        $this->assertEquals( 'dbp-prod', $all_types['audio']['group'] );
-        $this->assertEquals( 'dbp-vid', $all_types['video']['group'] );
-        $this->assertEquals( 'dbp-prod', $all_types['text']['group'] );
     }
 }

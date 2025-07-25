@@ -548,15 +548,15 @@ class USX
      * Retrieves specific content from a book based on the provided book ID, chapter, and verse range.
      *
      * @param string $book_id The unique identifier for the book to retrieve content from.
-     * @param int $chapter The chapter number to retrieve content from.
-     * @param int $verse_start The starting verse within the specified chapter. Default is 1.
-     * @param int|null $verse_end The ending verse within the specified chapter. If null, only the starting verse is retrieved.
+     * @param string|int $chapter The chapter number to retrieve content from.
+     * @param string|int|null The starting verse within the specified chapter. Default is 1.
+     * @param string|int|null The ending verse within the specified chapter. If null, only the starting verse is retrieved.
      *
      * @return array An associative array containing the retrieved content data, including book ID, chapter, verse range, and the corresponding content.
      *
      * @throws BiblePluginException If the specified book ID is not found.
      */
-    public function content( string $book_id, int $chapter, int $verse_start = 1, int $verse_end = null ): array
+    public function content( string $book_id, $chapter, $verse_start = 1, $verse_end = null ): array
     {
         $files = $this->files();
         $book_file = null;
@@ -575,12 +575,13 @@ class USX
 
         $book_content = $this->parse( $book_file );
 
-        $passage = $this->passage( $book_content, $chapter, $verse_start, $verse_end );
+        $passage = $this->passage( $book_content, $chapter, $verse_start ?: 1, $verse_end ?: null );
 
         $result = [];
         foreach ( $passage as $key => $text ) {
             $result[] = [
                 'book_id' => $book_id,
+                'book_name' => $this->parse_book_name( $book_id ),
                 'chapter' => $chapter,
                 'verse_start' => $key,
                 'verse_end' => $key,
@@ -735,13 +736,14 @@ class USX
      * @throws BiblePluginException If the specified chapter is not found in the book content.
      * @throws BiblePluginException If the specified verses are not found in the chapter.
      */
-    private function passage( array $book_content, int $chapter, int $verse_start, ?int $verse_end = null ): array
+    private function passage( array $book_content, $chapter, int $verse_start = 1, int $verse_end = null ): array
     {
         if ( !isset( $book_content['chapters'][$chapter] ) ) {
             throw new BiblePluginException( sprintf( 'Chapter %d not found', esc_attr( $chapter ) ) );
         }
 
         $chapter_content = $book_content['chapters'][$chapter];
+        $verse_end = $verse_end ?: array_key_last( $chapter_content );
         $passage = [];
 
         $verse_end = $verse_end ?? $verse_start;

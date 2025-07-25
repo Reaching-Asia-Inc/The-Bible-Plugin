@@ -54,6 +54,14 @@ class USXProvider extends AbstractServiceProvider implements BootableServiceProv
      */
     public function boot(): void
     {
-        // No boot actions needed for now
+        // Register the USX service as a shared service (not directly exposed)
+        $this->container->addShared(USX::class, function () {
+            return new USX();
+        });
+
+        // Register the USXBibles service which is the main entry point for USX functionality
+        $this->container->add(USXBibles::class, function () {
+            return new USXBibles( $this->container->get( USX::class ) );
+        });
     }
 }

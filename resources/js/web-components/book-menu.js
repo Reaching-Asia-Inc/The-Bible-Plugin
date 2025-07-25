@@ -4,9 +4,10 @@ import {TBPElement} from "./base.js";
 import {css, html, nothing} from "@spectrum-web-components/base";
 import {$visitBook} from "../stores/book.js"
 import {property, state, query} from "lit/decorators.js";
+import {$book} from "../stores/book.js";
 
 @customElement('tbp-book-menu')
-export class BookMenu extends withStores(TBPElement, []) {
+export class BookMenu extends withStores(TBPElement, [$book]) {
 
     @property({type: String}) label = "Books";
     @property({type: Array}) books = [];
@@ -74,7 +75,7 @@ export class BookMenu extends withStores(TBPElement, []) {
         return html`
             <div class="book-menu__item">
                 <sp-action-button
-                        ?selected="${this.isBookSelected(book)}"
+                        ?selected="${this.isBookSelected(book) || this.isBookCurrent(book) }"
                         @click=${(e) => this.handleBookClick(e, book)}
                 >${book.name}
                 </sp-action-button>
@@ -125,7 +126,11 @@ export class BookMenu extends withStores(TBPElement, []) {
         this.selectedBook = null;
     }
 
+    isBookCurrent(book) {
+        return $book.get().id === book.id;
+    }
+
     isBookSelected(book) {
-        return this.selectedBook && this.selectedBook.book_id === book.book_id;
+        return this.selectedBook && this.selectedBook.id === book.id;
     }
 }

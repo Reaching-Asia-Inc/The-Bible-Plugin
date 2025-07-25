@@ -12,7 +12,8 @@ class BibleBrainsContentNormalizer implements Normalizer
        return [
            'source'       => 'bible-brains',
            'book_id'      => $data['book_id'],
-           'chapter'      => $data['chapter'] ?? null,
+           'book_name'    => $data['book_name'],
+           'chapter'      => $data['chapter'] ?? $data['chapter_start'] ?? null,
            'chater_start' => $data['chater_start'] ?? null,
            'chater_end'   => $data['chater_end'] ?? null,
            'verse_start'  => $data['verse_start'],

@@ -13,8 +13,8 @@ use function CodeZone\Bible\namespace_string;
  * @group content
  */
 class ContentAggregatorTest extends TestCase {
-    protected function setup(): void {
-        parent::setup();
+    protected function setUp(): void {
+        parent::setUp();
         $this->load_usx_fixture( 'KJV' );
     }
 

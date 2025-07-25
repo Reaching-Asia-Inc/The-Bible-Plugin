@@ -21,7 +21,7 @@ class SettingsRoutesTest extends TestCase
         // Define the controllers we expect to have routes
         $expected_controllers = [
             'CodeZone\Bible\Controllers\Settings\AdvancedController',
-            'CodeZone\Bible\Controllers\Settings\BibleBrainsFormController',
+            'CodeZone\Bible\Controllers\Settings\BibleFormController',
             'CodeZone\Bible\Controllers\Settings\CustomizationFomController',
             'CodeZone\Bible\Controllers\Settings\SupportController'
         ];
@@ -52,11 +52,11 @@ class SettingsRoutesTest extends TestCase
         // Load the routes file
         $routes = include __DIR__ . '/../../routes/settings.php';
 
-        // Define the expected routes for BibleBrainsFormController
+        // Define the expected routes for BibleFormController
         $expected_routes = [
-            'general' => [ 'CodeZone\Bible\Controllers\Settings\BibleBrainsFormController', 'show' ],
-            'bible' => [ 'CodeZone\Bible\Controllers\Settings\BibleBrainsFormController', 'show' ],
-            'bible_brains_key' => [ 'CodeZone\Bible\Controllers\Settings\BibleBrainsFormController', 'add_key' ]
+            'general' => [ 'CodeZone\Bible\Controllers\Settings\BibleFormController', 'show' ],
+            'bible' => [ 'CodeZone\Bible\Controllers\Settings\BibleFormController', 'show' ],
+            'bible_brains_key' => [ 'CodeZone\Bible\Controllers\Settings\BibleFormController', 'add_key' ]
         ];
 
         // Check each expected route

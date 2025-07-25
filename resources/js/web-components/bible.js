@@ -1,7 +1,7 @@
 import {customElement, property} from "lit/decorators.js";
 import {TBPElement} from "./base.js";
 import {withStores} from "@nanostores/lit";
-import {css, html, nothing} from "@spectrum-web-components/base";
+import {css, html} from "@spectrum-web-components/base";
 import {$query} from "../stores/query.js"
 import {$bookName} from "../stores/book.js"
 import {$fullScreen} from "../stores/full-screen.js";
@@ -113,6 +113,7 @@ export class Bible extends withStores(TBPElement, [$query, $bookName, $chapter, 
     renderStructure() {
         const {loading} = $query.get();
 
+
         return html`
             <tbp-header></tbp-header>
             ${loading ? this.renderLoader() : html`
@@ -122,10 +123,6 @@ export class Bible extends withStores(TBPElement, [$query, $bookName, $chapter, 
             `}
             <tbp-footer></tbp-footer>
         `
-    }
-
-    renderContent() {
-      return
     }
 
     renderLoader() {

@@ -52,10 +52,6 @@ class References {
 	 * @return array The parsed array.
 	 */
 	public static function factory( array $references ): array {
-        // Add source field if not present
-        if ( !isset( $references['source'] ) ) {
-            $references['source'] = 'bible-brains';
-        }
         $books = container()->get( Books::class );
         $references['book'] = $books->to_code( $references['book'] );
 

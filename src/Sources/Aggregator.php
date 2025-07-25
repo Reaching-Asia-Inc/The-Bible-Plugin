@@ -7,7 +7,7 @@ abstract class Aggregator
     protected Normalizer $bb_normalizer;
     protected Normalizer $usx_normalizer;
 
-    const COMPARE_KEY = "id";
+    const COMPARE_KEY = "code";
 
     /**
      * Aggregates and merges two arrays of data by normalizing their structure and removing duplicates
@@ -20,12 +20,34 @@ abstract class Aggregator
      */
     public function aggregate( array $usx_data, array $bb_data, string $compare = null ): array
     {
-        $compare = $compare ?? static::COMPARE_KEY;
         $usx_data = $this->normalize_usx_items( $usx_data );
         $bb_data = $this->normalize_bb_items( $bb_data );
-        $usx_ids = array_column( $usx_data, $compare );
-        $filtered_bb_data = array_filter( $bb_data, fn( $bible ) => !empty( $bible[$compare] ) && !in_array( $bible[$compare], $usx_ids ) );
-        return array_merge( $usx_data, $filtered_bb_data );
+        return $this->merge( $bb_data, $usx_data, $compare );
+    }
+
+    public function merge( array $secondary, array $primary, string $compare = null ): array
+    {
+        $compare = $compare ?? static::COMPARE_KEY;
+
+        $primary_ids = array_map(function ( $id ) {
+            if ( is_string( $id ) ) {
+                return strtolower( $id );
+            }
+            return $id;
+        }, array_column( $primary, $compare ));
+
+        $secondary = array_filter( $secondary, function ( $bible ) use ( $compare, $primary_ids ) {
+            if ( empty( $bible[$compare] ) ) {
+                return false;
+            }
+            $value = $bible[$compare];
+            if ( is_string( $value ) ) {
+                $value = strtolower( $value );
+            }
+            return !in_array( $value, $primary_ids );
+        });
+
+        return array_merge( array_values( $secondary ), array_values( $primary ) );
     }
 
     /**

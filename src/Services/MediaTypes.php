@@ -20,19 +20,16 @@ class MediaTypes {
 			'key'           => 'audio',
 			'label'         => 'Audio',
 			'fileset_types' => [ 'audio', 'audio_drama' ],
-			'group'         => 'dbp-prod'
 		],
-      'video'       => [
+        'video'       => [
           'key'           => 'video',
           'label'         => 'Video',
           'fileset_types' => [ 'video_stream' ],
-          'group'         => 'dbp-vid'
-      ],
+        ],
 		'text'  => [
 			'key'           => 'text',
 			'label'         => 'Text',
 			'fileset_types' => [ "text_format", "text_plain" ],
-			'group'         => 'dbp-prod'
 		]
 	];
 

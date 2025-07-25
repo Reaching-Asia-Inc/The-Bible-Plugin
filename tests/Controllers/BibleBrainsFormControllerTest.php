@@ -2,7 +2,7 @@
 
 namespace Tests\Controllers;
 
-use CodeZone\Bible\Controllers\Settings\BibleBrainsFormController;
+use CodeZone\Bible\Controllers\Settings\BibleFormController;
 use CodeZone\Bible\Requests\Request;
 use CodeZone\Bible\Requests\RequestInterface;
 use Tests\TestCase;
@@ -31,7 +31,7 @@ class BibleBrainsFormControllerTest extends TestCase
             ]);
 
         // Create the controller
-        $controller = new BibleBrainsFormController();
+        $controller = new BibleFormController();
 
         // Call the submit method
         $response = $controller->submit( $request );
@@ -75,7 +75,7 @@ class BibleBrainsFormControllerTest extends TestCase
             ]);
 
         // Create the controller
-        $controller = new BibleBrainsFormController();
+        $controller = new BibleFormController();
 
         // Call the submit method
         $response = $controller->submit( $request );

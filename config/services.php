@@ -36,6 +36,11 @@ $config->merge( [
             RequestServiceProvider::class,
             SettingsProvider::class
         ],
+        'usx' => [
+            'dirs' => [
+               dirname( __DIR__ ) . '/tests/fixtures/usx/KJV'
+            ]
+        ],
         'tgmpa' => [
             'plugins' => [
                 [

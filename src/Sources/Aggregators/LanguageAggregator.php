@@ -39,6 +39,21 @@ class LanguageAggregator extends Aggregator
     }
 
     /**
+     * Aggregates and normalizes data from usx_data and bb_data sources and optionally merges them based on a comparison key.
+     *
+     * @param array $usx_data The data set from the usx_data source to be aggregated.
+     * @param array $bb_data The data set from the bb_data source to be aggregated.
+     * @param string|null $compare Optional comparison key used for merging the data sets.
+     * @return array The aggregated and merged result from both data sources.
+     */
+    public function aggregate( array $usx_data, array $bb_data, string $compare = null ): array
+    {
+        $usx_data = $this->normalize_usx_items( $usx_data );
+        $bb_data = $this->normalize_bb_items( $bb_data );
+        return $this->merge( $usx_data, $bb_data, $compare );
+    }
+
+    /**
      * Retrieves and aggregates all language data from different sources.
      *
      * @param array $params Optional parameters to filter or modify the retrieved data.

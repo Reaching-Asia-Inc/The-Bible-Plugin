@@ -152,7 +152,7 @@ class Scripture {
 		}
 
 		$media   = $result['media'][ $attributes['media'] ] ?? [];
-		$content = $media['content']['data'] ?? [];
+		$content = $media['content'] ?? [];
 		$fileset = $media['fileset'] ?? [];
 
 		return view( 'shortcodes/scripture', [

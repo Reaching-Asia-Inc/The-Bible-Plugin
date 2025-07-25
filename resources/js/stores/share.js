@@ -58,6 +58,6 @@ export const $share = async () => {
       text: $shareText.get()
     })
   } catch (error) {
-    $displayMessage("An error occurred while sharing.")
+    //do nothing
   }
 }

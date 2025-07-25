@@ -4,6 +4,16 @@
  * @var $config CodeZone\Bible\CodeZone\WPSupport\Config\ConfigInterface
  */
 
+$default_language = [
+    'source'      => 'bible-brains',
+    'bibles'      => 'ENGESV',
+    'media_types' => 'text,audio-video,video',
+    'code'        => 'eng',
+    'id'          => 6414,
+    'itemText'    => 'English: USA',
+    'value'       => 6414
+];
+
 $config->merge( [
     'options' => [
         'prefix' => 'bible_plugin',
@@ -11,25 +21,9 @@ $config->merge( [
             'bible_brains_key' => '',
             'media_types' => 'audio,video,text',
             'languages'        => [
-                [
-                    'source'      => 'bible-brains',
-                    'bibles'      => 'ENGESV',
-                    'media_types' => 'text,audio-video,video',
-                    'code'        => 'eng',
-                    'id'          => 6414,
-                    'itemText'    => 'English',
-                    'value'       => 6414
-                ]
+                $default_language
             ],
-            'language'         => [
-                'source'      => 'bible-brains',
-                'bibles'      => 'ENGESV',
-                'media_types' => 'text,audio-video,video',
-                'code'        => 'eng',
-                'id'          => 6414,
-                'itemText'    => 'English',
-                'value'       => 6414
-            ],
+            'language'         => $default_language,
             'color_scheme'     => 'light',
             'translations'     => [],
             'colors'           => [

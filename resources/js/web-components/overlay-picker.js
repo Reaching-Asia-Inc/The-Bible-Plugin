@@ -10,11 +10,11 @@ export class OverlayPicker extends LitElement {
     @property({type: String}) optionsValueKey = 'value'
     @property({type: String}) optionsLabelKey = 'itemText'
     @property({type: String, reflect: true, attribute: true}) label = ''
-    @property({type: Boolean}) prefetch = false
+    @property({type: Boolean}) prefetch = true
     @property({type: Boolean}) searchFetch = true
     @property({type: String}) value = ''
     @property({type: String}) searchLabel = 'Search'
-    @property({type: Boolean, attribute: true}) searchable = false
+    @property({type: Boolean, attribute: true}) searchable = true
     @property({type: String, attribute: true}) selects = "single"
 
     @query('sp-dialog-wrapper') dialogWrapper
@@ -220,7 +220,7 @@ export class OverlayPicker extends LitElement {
         }
         try {
             const result = await this.fetchOptions(e.target.value)
-            const {data: options} = await result.json()
+            const options = await result.json()
             if (options) {
                 this.options = options
             }
@@ -242,7 +242,7 @@ export class OverlayPicker extends LitElement {
     async refreshOptions() {
         try {
             const result = await this.fetchOptions()
-            const {data: options} = await result.json()
+            const options = await result.json()
             if (options) {
                 this.options = options
             }

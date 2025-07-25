@@ -7,6 +7,7 @@ use CodeZone\Bible\Exceptions\BiblePluginException;
 use CodeZone\Bible\Services\Locale;
 use CodeZone\Bible\Services\Translations;
 use CodeZone\Bible\Settings\LanguagesSetting;
+use CodeZone\Bible\Sources\Aggregators\LanguageAggregator;
 use Tests\TestCase;
 use function CodeZone\Bible\config;
 use function CodeZone\Bible\container;
@@ -83,7 +84,9 @@ class LanguageTest extends TestCase
                 'itemText' => 'English',
                 'bibles' => 'ENGESV',
                 'is_default' => true,
-                'id' => 5414
+                'id' => 5414,
+                'media_types' => 'text,audio-video,video',
+                'source' => 'bible-brains'
             ]
         ];
 
@@ -92,7 +95,7 @@ class LanguageTest extends TestCase
             ->willReturn( $language_config );
 
         // Create the Language service
-        $language = new LanguagesSetting( container()->get( Locale::class ), $options );
+        $language = new LanguagesSetting( container()->get( Locale::class ), $options, container()->get( LanguageAggregator::class ) );
 
         // Test resolving language
         $result = $language->guess();
@@ -122,7 +125,9 @@ class LanguageTest extends TestCase
                 'itemText' => 'English',
                 'bibles' => 'ENGESV',
                 'is_default' => true,
-                'id' => 5414
+                'id' => 5414,
+                'media_types' => 'text,audio-video,video',
+                'source' => 'bible-brains'
             ]
         ];
 
@@ -137,7 +142,7 @@ class LanguageTest extends TestCase
 
         // Mock the supported method to return false for 'fra'
         $language_mock = $this->getMockBuilder( LanguagesSetting::class )
-            ->setConstructorArgs( [ $locale_mock, $options ] )
+            ->setConstructorArgs( [ $locale_mock, $options, container()->get( LanguageAggregator::class ) ] )
             ->onlyMethods( [ 'supported' ] )
             ->getMock();
 
@@ -170,14 +175,18 @@ class LanguageTest extends TestCase
                 'value' => 'eng',
                 'itemText' => 'English',
                 'bibles' => 'ENGESV',
-                'code' => 'eng'
+                'code' => 'eng',
+                'media_types' => 'text,audio-video,video',
+                'source' => 'bible-brains'
             ],
             [
                 'id' => 'spa',
                 'value' => 'spa',
                 'itemText' => 'Spanish',
                 'bibles' => 'SPASBA',
-                'code' => 'spa'
+                'code' => 'spa',
+                'media_types' => 'text,audio-video,video',
+                'source' => 'bible-brains'
             ]
         ];
 
@@ -186,13 +195,13 @@ class LanguageTest extends TestCase
             ->willReturn( $language_config );
 
         // Create the Language service
-        $language = new LanguagesSetting( container()->get( Locale::class ), $options );
+        $language = new LanguagesSetting( container()->get( Locale::class ), $options, container()->get( LanguageAggregator::class ) );
 
         // Test finding a language by code
         $result = $language->find( 'spa' );
 
         // Assert that the result is the expected language config
-        $this->assertEquals( $language_config[1], $result );
+        $this->assertEquals( $result, $language_config[1] );
     }
 
     /**
@@ -210,6 +219,7 @@ class LanguageTest extends TestCase
                 'code' => 'eng',
                 'value' => 'eng',
                 'itemText' => 'English',
+                'media_types' => 'text,audio-video,video',
                 'bibles' => 'ENGESV'
             ]
         ];
@@ -219,7 +229,7 @@ class LanguageTest extends TestCase
             ->willReturn( $language_config );
 
         // Create the Language service
-        $language = new LanguagesSetting( container()->get( Locale::class ), $options );
+        $language = new LanguagesSetting( container()->get( Locale::class ), $options, container()->get( LanguageAggregator::class ) );
         // Test finding a non-existent language
         $result = $language->find( 'fra' );
 
@@ -241,7 +251,7 @@ class LanguageTest extends TestCase
             ->willThrowException( new BiblePluginException( 'Options error' ) );
 
         // Create the Language service
-        $language = new LanguagesSetting( container()->get( Locale::class ), $options );
+        $language = new LanguagesSetting( container()->get( Locale::class ), $options, container()->get( LanguageAggregator::class ) );
 
         // Test finding a language when options throw an exception
         $result = $language->find( 'eng' );
@@ -266,13 +276,17 @@ class LanguageTest extends TestCase
                 'bibles' => 'ENGESV',
                 'id' => 5414,
                 'code' => 'eng',
+                'media_types' => 'text,audio-video,video',
+                'source' => 'bible-brains'
             ],
             [
                 'value' => 'spa',
                 'itemText' => 'Spanish',
                 'bibles' => 'SPASBA',
                 'id' => 'spa',
+                'media_types' => 'text,audio-video,video',
                 'code' => 'spa',
+                'source' => 'bible-brains'
             ]
         ];
 
@@ -281,7 +295,7 @@ class LanguageTest extends TestCase
             ->willReturn( $language_config );
 
         // Create the Language service
-        $language = new LanguagesSetting( container()->get( Locale::class ), $options );
+        $language = new LanguagesSetting( container()->get( Locale::class ), $options, container()->get( LanguageAggregator::class ) );
 
         // Test supported languages
         $this->assertTrue( $language->supported( 'eng' ) );
@@ -306,7 +320,9 @@ class LanguageTest extends TestCase
                 'itemText' => 'English',
                 'bibles' => 'ENGESV',
                 'id' => 5414,
+                'media_types' => 'text,audio-video,video',
                 'code' => 'eng',
+                'source' => 'bible-brains'
             ],
             [
                 'value' => 'spa',
@@ -314,7 +330,9 @@ class LanguageTest extends TestCase
                 'bibles' => 'SPASBA',
                 'is_default' => true,
                 'id' => 'spa',
+                'media_types' => 'text,audio-video,video',
                 'code' => 'spa',
+                'source' => 'bible-brains'
             ]
         ];
 
@@ -323,13 +341,13 @@ class LanguageTest extends TestCase
             ->willReturn( $language_config );
 
         // Create the Language service
-        $language = new LanguagesSetting( container()->get( Locale::class ), $options );
+        $language = new LanguagesSetting( container()->get( Locale::class ), $options, container()->get( LanguageAggregator::class ) );
 
         // Test getting default language
         $result = $language->default();
 
         // Assert that the result is the language marked as default
-        $this->assertEquals( $language_config[1], $result );
+        $this->assertEquals( $result, $language_config[1] );
     }
 
     /**
@@ -348,6 +366,8 @@ class LanguageTest extends TestCase
                 'bibles' => 'ENGESV',
                 'id' => 5414,
                 'code' => 'eng',
+                'media_types' => 'text,audio-video,video',
+                'source' => 'bible-brains'
             ],
             [
                 'value' => 'spa',
@@ -355,6 +375,8 @@ class LanguageTest extends TestCase
                 'bibles' => 'SPASBA',
                 'id' => 'spa',
                 'code' => 'spa',
+                'media_types' => 'text,audio-video,video',
+                'source' => 'bible-brains'
             ]
         ];
 
@@ -363,13 +385,13 @@ class LanguageTest extends TestCase
             ->willReturn( $language_config );
 
         // Create the Language service
-        $language = new LanguagesSetting( container()->get( Locale::class ), $options );
+        $language = new LanguagesSetting( container()->get( Locale::class ), $options, container()->get( LanguageAggregator::class ) );
 
         // Test getting default language when none is marked as default
         $result = $language->default();
 
         // Assert that the result is the first language in the config
-        $this->assertEquals( $language_config[0], $result );
+        $this->assertEquals( $result, $language_config[0] );
     }
 
     /**
@@ -386,7 +408,7 @@ class LanguageTest extends TestCase
             ->willReturn( null );
 
         // Create the Language service
-        $language = new LanguagesSetting( container()->get( Locale::class ), $options );
+        $language = new LanguagesSetting( container()->get( Locale::class ), $options, container()->get( LanguageAggregator::class ) );
 
         // Test getting default language when no languages are configured
         $result = $language->default();
@@ -412,6 +434,8 @@ class LanguageTest extends TestCase
                 'is_default' => true,
                 'id' => 5414,
                 'code' => 'eng',
+                'media_types' => 'text,audio-video,video',
+                'source' => 'bible-brains'
             ],
             [
                 'value' => 'spa',
@@ -419,6 +443,8 @@ class LanguageTest extends TestCase
                 'bibles' => 'SPASBA',
                 'id' => 'spa',
                 'code' => 'spa',
+                'media_types' => 'text,audio-video,video',
+                'source' => 'bible-brains'
             ]
         ];
 
@@ -427,7 +453,7 @@ class LanguageTest extends TestCase
             ->willReturn( $language_config );
 
         // Create the Language service
-        $language = new LanguagesSetting( container()->get( Locale::class ), $options );
+        $language = new LanguagesSetting( container()->get( Locale::class ), $options, container()->get( LanguageAggregator::class ) );
 
         // Test finding an existing language
         $result = $language->search_or_default( 'spa' );
@@ -439,7 +465,7 @@ class LanguageTest extends TestCase
         $result = $language->search_or_default( 'fra' );
 
         // Assert that the result is the default language
-        $this->assertEquals( $language_config[0], $result );
+        $this->assertEquals( $result, $language_config[0] );
     }
 
     /**

@@ -13,6 +13,15 @@ import {css} from "@spectrum-web-components/base";
 @customElement('tbp-content')
 export class Content extends withStores(TBPElement, [$selection, $selectionOpen]) {
 
+    /**
+     * Retrieves the styles for the component.
+     * The defined styles include custom properties that allow for theming and adaptation
+     * of elements such as `.verse`, `.verse__reference`, and state-based styles like
+     * `.verse--selected`.
+     *
+     * @return {Array} An array of CSS styles to be applied to the component, combining
+     * inherited styles with component-specific styles.
+     */
     static get styles() {
         return [
             super.styles,
@@ -254,14 +263,33 @@ export class Content extends withStores(TBPElement, [$selection, $selectionOpen]
     }
 
 
+    /**
+     * Handles the selection event, processes the selected items, and updates the selection state.
+     *
+     * @param {Event} e - The event object containing the selection details. The `e.detail.selected` should provide an array of selectable items.
+     * @return {void} This method does not return a value as it updates the selection state directly.
+     */
     handleSelection(e) {
         $selection.set(e.detail.selected.map((selectable) => this.mapSelectable(selectable)))
     }
 
+    /**
+     * Handles the context menu event and performs necessary operations.
+     *
+     * @param {Event} e - The event object representing the context menu event.
+     * @return {void} Does not return a value.
+     */
     handleContextMenu(e) {
         $selectionOpen.set(true)
     }
 
+    /**
+     * Maps selectable elements and converts their properties into a standardized object format.
+     *
+     * @param {Element} selectable - The DOM element containing the data to be mapped.
+     * @return {Object} An object containing the mapped properties, including 'selectable', 'text',
+     *                  'book', 'chapter', 'verse_start', and 'verse_end'.
+     */
     mapSelectable(selectable) {
         return {
             selectable: selectable,

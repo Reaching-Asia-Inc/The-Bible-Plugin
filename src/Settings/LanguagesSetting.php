@@ -5,7 +5,10 @@ namespace CodeZone\Bible\Settings;
 use CodeZone\Bible\CodeZone\WPSupport\Options\OptionsInterface;
 use CodeZone\Bible\Exceptions\BiblePluginException;
 use CodeZone\Bible\Services\Locale;
+use CodeZone\Bible\Sources\Aggregators\LanguageAggregator;
 use function CodeZone\Bible\config;
+use function CodeZone\Bible\set_plugin_option;
+use function CodeZone\Bible\transaction;
 
 /**
  * Class LanguagesSetting provides functionality to manage language configurations, including guessing,
@@ -15,11 +18,13 @@ class LanguagesSetting
 {
     private Locale $locale;
     private OptionsInterface $options;
+    private LanguageAggregator $aggregator;
 
-    public function __construct( Locale $locale, OptionsInterface $options )
+    public function __construct( Locale $locale, OptionsInterface $options, LanguageAggregator $language_aggregator )
     {
         $this->locale = $locale;
         $this->options = $options;
+        $this->aggregator = $language_aggregator;
     }
 
     /**
@@ -30,15 +35,29 @@ class LanguagesSetting
     public function all(): ?array {
         try {
             $languages = $this->options->get( 'languages', null, true );
-            if ( ! is_array( $languages ) ) {
+
+            if ( !is_array( $languages ) ) {
                 return null;
             }
-            return array_map(function ( $language ) {
-                return $this->format( $language );
-            }, $languages);
+
+            $hydrated = $this->hydrate( $languages );
+
+            if ( $hydrated !== $languages ) {
+                $this->save( $hydrated );
+            }
+
+            return $hydrated;
+
         } catch ( BiblePluginException $e ) {
+
             return null;
         }
+    }
+
+    public function save( $languages ) {
+        return transaction(function () use ( $languages ) {
+            return set_plugin_option( 'languages', $languages );
+        });
     }
 
     /**
@@ -49,7 +68,7 @@ class LanguagesSetting
      * @return mixed Returns the configuration matching the ISO code if supported, otherwise returns the default configuration.
      */
     public function guess( $iso = null ) {
-        $iso = $iso ?? $this->locale->iso();
+        $iso = $iso ?: $this->locale->iso();
 
         if ( $this->supported( $iso ) ) {
             return $this->search_or_default( $iso );
@@ -176,7 +195,7 @@ class LanguagesSetting
             foreach ( $languages as $config ) {
                 if ( strtolower( $config['value'] ?? '' ) === strtolower( $value )
                     || ( $config['id'] ?? null ) === $value ) {
-                    return $this->format( $config );
+                    return $config;
                 }
             }
             return null;
@@ -188,17 +207,24 @@ class LanguagesSetting
     /**
      * Formats a language configuration by ensuring it contains 'id' and 'code' keys.
      *
-     * @param array $language The language configuration to format. It can include 'id', 'code', or 'value' keys.
+     * @param array $items The language configuration to format. It can include 'id', 'code', or 'value' keys.
      *
      * @return array Returns the formatted language configuration with 'id' and 'code' keys set, using 'value' if necessary.
      */
-    public function format( $language ) {
-        if ( !isset( $language['id'] ) ) {
-            $language['id'] = $language['value'];
+    public function hydrate( $items ) {
+        foreach ( $items as $idx => $item ) {
+            if ( empty( $item['id'] )
+                || empty( $item['code'] )
+                || empty( $item['source'] ) ) {
+                $language = $this->aggregator->find( $item['value'] );
+                if ( $language ) {
+                    $item['id'] = $language['id'];
+                    $item['code'] = $language['code'];
+                    $item['source'] = $language['source'];
+                    $items[$idx] = $item;
+                }
+            }
         }
-        if ( !isset( $language['code'] ) ) {
-            $language['code'] = $language['value'];
-        }
-        return $language;
+        return $items;
     }
 }

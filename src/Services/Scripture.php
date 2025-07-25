@@ -19,7 +19,7 @@ use CodeZone\Bible\Settings\LanguagesSetting;
  */
 class Scripture {
 	/**
-	 * The BibleBrainsBibles service.
+	 * The Bibles service.
 	 *
 	 * @var Bible
 	 */
@@ -150,15 +150,28 @@ class Scripture {
 	}
 
     /**
-     * Determine the appropriate fileset to search in based on the given parameters.
+     * Executes a query using the provided parameters and processes the results.
      *
-     * @param array $parameters Search parameters
-     * @return array The fileset as an array.
-     * @throws BiblePluginException If an invalid media type is specified or if there are any other errors.
+     * @param array $params An associative array of query parameters.
+     *                      - language: The language to search in. Defaults to null.
+     *                      - fileset: The fileset to use for the query. Defaults to null.
+     *                      - bible: The specific Bible version to query. Defaults to null.
+     *                      - book: The specific book of the Bible to query. Defaults to null.
+     *                      - chapter: The chapter to query. Defaults to null.
+     *                      - media_type: The media type to filter by. Defaults to 'text'.
+     *                      - verse_start: The starting verse range. Defaults to null.
+     *                      - verse_end: The ending verse range. Defaults to null.
+     *
+     * @return array An associative array containing the resolved and processed query result.
+     *               - source: The source of the Bible data, e.g., 'bible-brains'.
+     *               - media: The processed media types matching the criteria.
+     *               - language: The resolved language information.
+     *               - bible: Data for the resolved Bible version.
+     *               - book: Data for the resolved book, or null if not applicable.
      */
-    private function query( array $parameters ): array
+    private function query( array $params ): array
     {
-        $parameters = $this->normalize_query( $parameters );
+        $parameters = $this->normalize_query( $params );
 
         // Get language and bible data
         $language = $this->resolve_language( $parameters );
@@ -170,9 +183,11 @@ class Scripture {
             $parameters['book'] = $book['id'];
         }
 
-
         // Process media types
         $media = $this->process_media_types( $parameters, $language, $bible, $book );
+        if ( !count( $media ) ) {
+            dd( $params, $this->resolve_language( $parameters ) );
+        }
 
         // Determine the source based on the bible data
         $source = isset( $bible['source'] ) ? $bible['source'] : 'bible-brains';
@@ -197,19 +212,7 @@ class Scripture {
      */
     private function resolve_language( array $parameters ): array
     {
-        $language = $this->languages_setting->search_or_guess( $parameters['language'] ?? null );
-
-        // If language is a Fractal Item, convert it to an array
-        if ( $language instanceof Item ) {
-            $language = $language->getData();
-        }
-
-        // Add source field if not present
-        if ( !isset( $language['source'] ) ) {
-            $language['source'] = 'bible-brains';
-        }
-
-        return $language;
+        return $this->languages_setting->search_or_guess( $parameters['language'] ?? null );
     }
 
     /**
@@ -226,15 +229,10 @@ class Scripture {
             : null;
 
         if ( !$bible ) {
-            $bible = $this->bibles->resolve( [
+            $bible = $this->bibles->find_or_default( [
                 'code' => $parameters['bible'],
                 'language_id' => $language['id']
             ] );
-        }
-
-        // If bible is a Fractal Item, convert it to an array
-        if ( $bible instanceof Item ) {
-            $bible = $bible->getData();
         }
 
         return $bible;
@@ -284,7 +282,7 @@ class Scripture {
      */
     private function get_media_types( array $language ): array
     {
-        $media_types = $language['media_types'];
+        $media_types = $language['media_types'] ?? [];
         if ( is_string( $media_types ) ) {
             return explode( ',', $media_types );
         }
@@ -303,6 +301,7 @@ class Scripture {
     private function process_media_types( array $parameters, array $language, array $bible, array $book ): array
     {
         $media = [];
+
         $media_types = $this->get_media_types( $language );
 
         foreach ( $media_types as $media_type_key ) {
@@ -338,7 +337,6 @@ class Scripture {
         try {
             $media_type = $this->media_types->find( $media_type_key );
             $fileset = $this->file_sets->pluck( $bible, $book, $media_type['fileset_types'] );
-
             if ( !$fileset ) {
                 return null;
             }
@@ -381,7 +379,6 @@ class Scripture {
 	public function by_reference( string $reference = "", array $parameters = [] ): array {
 		$reference  = $this->reference->parse( $reference );
 		$parameters = $this->normalize_query( array_merge( $reference, $parameters ) );
-
 		return $this->query( $parameters );
 	}
 

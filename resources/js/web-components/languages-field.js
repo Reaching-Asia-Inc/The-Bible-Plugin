@@ -75,13 +75,12 @@ export class LanguagesField extends TBPElement {
                     ${(!value) ? html`
                         <sp-field-group>
                             <tbp-overlay-picker placeholder="${__('Search') + '...'}"
-                                                label="${__('BibleBrainsLanguages')}"
+                                                label="${__('Languages')}"
                                                 searchLabel="${__('Search')}"
                                                 value="${value}"
                                                 @change="${(e) => this.onLanguageChange(e, idx)}"
                                                 optionsUrl="${apiUrl('languages/options')}"
-                                                required
-                                                searchable
+                                                ?prefetch
                             >
                             </tbp-overlay-picker>
 
@@ -106,9 +105,9 @@ export class LanguagesField extends TBPElement {
                                                 value="${bibles}"
                                                 @change="${(e) => this.value[idx].bibles = e.target.value}"
                                                 optionsUrl="${apiUrl('bibles/options', {language: value})}"
-                                                required
-                                                searchable
-                                                prefetch
+                                                ?required
+                                                ?searchable
+                                                ?prefetch
                             >
                             </tbp-overlay-picker>
 

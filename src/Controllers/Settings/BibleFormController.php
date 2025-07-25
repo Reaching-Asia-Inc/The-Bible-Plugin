@@ -19,7 +19,7 @@ use function CodeZone\Bible\view;
  *
  * This class is responsible for handling the ApiServices settings and API authorization.
  */
-class BibleBrainsFormController {
+class BibleFormController {
     /**
      * Show the settings page.
      *

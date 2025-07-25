@@ -38,6 +38,7 @@ trait Optionable
         return [
             'value'    => (string) ( $record['id'] ?? $record['code'] ?? '' ),
             'itemText' => (string) ( $record['name'] ?? '' ),
+            'source'   => (string) ( $record['source'] ?? '' ),
         ];
     }
 }

@@ -23,7 +23,6 @@ export const $referenceData = computed([
 });
 
 export const $referenceLabel = computed([$referenceData, $book], (data, book) => {
-  console.log(data)
     let label = null;
     if (!data.book) {
        return label;

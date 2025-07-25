@@ -1,7 +1,7 @@
 <?php
 
 use CodeZone\Bible\Controllers\Settings\AdvancedController;
-use CodeZone\Bible\Controllers\Settings\BibleBrainsFormController;
+use CodeZone\Bible\Controllers\Settings\BibleFormController;
 use CodeZone\Bible\Controllers\Settings\CustomizationFomController;
 use CodeZone\Bible\Controllers\ScriptureController;
 use CodeZone\Bible\Controllers\LanguageController;
@@ -75,7 +75,7 @@ return [
     [
         'method'  => 'POST',
         'route'   => '/bible-brains',
-        'callback' => [ BibleBrainsFormController::class, 'submit' ],
+        'callback' => [ BibleFormController::class, 'submit' ],
         'permission_callback' => function () {
             return current_user_can( 'manage_options' );
         },

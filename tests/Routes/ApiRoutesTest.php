@@ -25,7 +25,7 @@ class ApiRoutesTest extends TestCase
             'CodeZone\Bible\Controllers\MediaTypesController',
             'CodeZone\Bible\Controllers\ScriptureController',
             'CodeZone\Bible\Controllers\Settings\AdvancedController',
-            'CodeZone\Bible\Controllers\Settings\BibleBrainsFormController',
+            'CodeZone\Bible\Controllers\Settings\BibleFormController',
             'CodeZone\Bible\Controllers\Settings\CustomizationFomController'
         ];
 
@@ -242,7 +242,7 @@ class ApiRoutesTest extends TestCase
             [
                 'method' => 'POST',
                 'route' => '/bible-brains',
-                'callback' => [ 'CodeZone\Bible\Controllers\Settings\BibleBrainsFormController', 'submit' ]
+                'callback' => [ 'CodeZone\Bible\Controllers\Settings\BibleFormController', 'submit' ]
             ],
             [
                 'method' => 'POST',

@@ -43,7 +43,7 @@ class BibleTest extends TestCase {
      */
     public function it_can_resolve_a_bible_by_code() {
         $bibles = container()->get(Bible::class);
-        $result = $bibles->resolve(['code' => 'ENGESV']);
+        $result = $bibles->find_or_default(['code' => 'ENGESV']);
 
         // Verify we get a bible
         $this->assertIsArray($result);
@@ -60,7 +60,7 @@ class BibleTest extends TestCase {
      */
     public function it_can_resolve_a_bible_by_language_id() {
         $bibles = container()->get(Bible::class);
-        $result = $bibles->resolve(['language_id' => 6414]); // English
+        $result = $bibles->find_or_default(['language_id' => 6414]); // English
 
         // Verify we get a bible
         $this->assertIsArray($result);

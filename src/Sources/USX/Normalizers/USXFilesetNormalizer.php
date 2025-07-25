@@ -11,7 +11,8 @@ class USXFilesetNormalizer implements Normalizer
         return [
             'source' => 'usx',
             'id'     => $bible['id'],
-            'type'   => 'text_plain'
+            'type'   => 'text_plain',
+            'size'   => 'C'
         ];
     }
 }
