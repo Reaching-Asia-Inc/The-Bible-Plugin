@@ -153,7 +153,7 @@ webimage_extra_packages: [subversion]
 
 # omit_containers: [db, ddev-ssh-agent]
 # Currently only these containers are supported. Some containers can also be
-# omitted globally in the ~/.ddev/global_config.yaml. Note that if you omit
+# omitted globally in the ~/ddev/global_config.yaml. Note that if you omit
 # the "db" container, several standard features of DDEV that access the
 # database container will be unusable. In the global configuration it is also
 # possible to omit ddev-router, but not here.
@@ -262,7 +262,7 @@ webimage_extra_packages: [subversion]
 # The port behavior on the ddev-webserver must be arranged separately, for example
 # using web_extra_daemons.
 # For example, with a web app on port 3000 inside the container, this config would
-# expose that web app on https://<project>.ddev.site:9999 and http://<project>.ddev.site:9998
+# expose that web app on https://<project>ddev.site:9999 and http://<project>ddev.site:9998
 # web_extra_exposed_ports:
 #  - name: myapp
 #    container_port: 3000

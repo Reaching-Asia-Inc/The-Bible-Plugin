@@ -10,6 +10,8 @@ use CodeZone\Bible\Psr\Container\ContainerExceptionInterface;
 use CodeZone\Bible\Services\Locale;
 use CodeZone\Bible\Settings\LanguagesSetting;
 use CodeZone\Bible\Settings\Settings;
+use CodeZone\Bible\Settings\USXBiblesSetting;
+use CodeZone\Bible\Sources\Aggregators\LanguageAggregator;
 use function CodeZone\Bible\config;
 
 /**
@@ -58,12 +60,6 @@ class SettingsProvider extends AbstractServiceProvider implements BootableServic
      */
     public function register(): void
     {
-        $this->getContainer()->add( LanguagesSetting::class, function () {
-            return new LanguagesSetting(
-                $this->getContainer()->get( Locale::class ),
-                $this->getContainer()->get( Options::class ),
-            );
-        });
     }
 
     /**

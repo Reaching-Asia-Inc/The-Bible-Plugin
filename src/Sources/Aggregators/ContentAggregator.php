@@ -13,7 +13,7 @@ use CodeZone\Bible\Sources\USX\USXBibles;
  * Class ContentAggregator
  *
  * Aggregates content from multiple Bible sources.
- * It interacts with BibleBrainsBibles and USXBibles to fetch content
+ * It interacts with BibleBrainsBibles and USXBiblesSetting to fetch content
  * while utilizing normalizers for standardizing content before aggregation.
  */
 class ContentAggregator extends Aggregator
@@ -27,7 +27,7 @@ class ContentAggregator extends Aggregator
      * Constructor method to initialize dependencies.
      *
      * @param BibleBrainsBibles $bibles Instance of the BibleBrainsBibles class for managing Bible-related operations.
-     * @param USXBibles $usx_bibles Instance of the USXBibles class for handling USX Bible data.
+     * @param USXBibles $usx_bibles Instance of the USXBiblesSetting class for handling USX Bible data.
      * @param BibleBrainsContentNormalizer $bb_normalizer Instance of the BibleBrainsContentNormalizer class for normalizing content for BibleBrains resources.
      * @param USXContentNormalizer $usx_normalizer Instance of the USXBibleNormalizer class for normalizing USX Bible content.
      *

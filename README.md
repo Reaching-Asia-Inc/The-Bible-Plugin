@@ -60,7 +60,7 @@ npm install
 Copy the example DDEV configuration to your WordPress root:
 
 ```bash
-cp -r .ddev/* /path/to/wordpress/.ddev/
+cp -r ddev/* /path/to/wordpress/ddev/
 ```
 
 Start DDEV:

@@ -35,6 +35,7 @@
     <exclude-pattern>resources/css/*</exclude-pattern>
     <exclude-pattern>resources/img/*</exclude-pattern>
     <exclude-pattern>resources/js/*</exclude-pattern>
+    <exclude-pattern>ddev/*</exclude-pattern>
 
     <arg name="extensions" value="php,inc,lib"/>
     <arg value="n"/>

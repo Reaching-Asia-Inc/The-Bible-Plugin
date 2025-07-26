@@ -4,12 +4,12 @@
  * @var $config CodeZone\Bible\CodeZone\WPSupport\Config\ConfigInterface
  */
 
+use CodeZone\Bible\Providers\BibleProvider;
 use CodeZone\Bible\Providers\SettingsProvider;
 use CodeZone\Bible\Providers\BibleBrainsProvider;
 use CodeZone\Bible\Providers\ConfigProvider;
 use CodeZone\Bible\Providers\FractalProvider;
 use CodeZone\Bible\Providers\OptionsProvider;
-use CodeZone\Bible\Providers\ResourceProvider;
 use CodeZone\Bible\Providers\USXProvider;
 use CodeZone\Bible\Providers\RequestServiceProvider;
 use CodeZone\Bible\Providers\RestApiProvider;
@@ -27,7 +27,6 @@ $config->merge( [
             ConfigProvider::class,
             FractalProvider::class,
             BibleBrainsProvider::class,
-            ResourceProvider::class,
             USXProvider::class,
             AssetProvider::class,
             ShortcodeProvider::class,

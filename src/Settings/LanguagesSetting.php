@@ -20,6 +20,8 @@ class LanguagesSetting
     private OptionsInterface $options;
     private LanguageAggregator $aggregator;
 
+    const OPTION_KEY = 'languages';
+
     public function __construct( Locale $locale, OptionsInterface $options, LanguageAggregator $language_aggregator )
     {
         $this->locale = $locale;
@@ -34,7 +36,7 @@ class LanguagesSetting
      */
     public function all(): ?array {
         try {
-            $languages = $this->options->get( 'languages', null, true );
+            $languages = $this->options->get( self::OPTION_KEY, null, true );
 
             if ( !is_array( $languages ) ) {
                 return null;
@@ -54,10 +56,15 @@ class LanguagesSetting
         }
     }
 
+    /**
+     * Saves the provided languages configuration to the plugin options.
+     *
+     * @param mixed $languages The languages configuration to be saved.
+     *
+     * @return bool Indicates whether the languages configuration was successfully saved.
+     */
     public function save( $languages ) {
-        return transaction(function () use ( $languages ) {
-            return set_plugin_option( 'languages', $languages );
-        });
+        return set_plugin_option( self::OPTION_KEY, $languages );
     }
 
     /**

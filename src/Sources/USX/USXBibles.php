@@ -3,6 +3,7 @@
 namespace CodeZone\Bible\Sources\USX;
 
 use CodeZone\Bible\Exceptions\BiblePluginException;
+use CodeZone\Bible\Settings\USXBiblesSetting;
 use function CodeZone\Bible\config;
 use function CodeZone\Bible\container;
 use function CodeZone\Bible\get_plugin_option;
@@ -10,7 +11,7 @@ use function CodeZone\Bible\namespace_string;
 use function CodeZone\Bible\set_plugin_option;
 
 /**
- * Class USXBibles
+ * Class USXBiblesSetting
  *
  * Manages USX Bible translations stored in the plugin options.
  * This class is responsible for keeping state on a usx_bibles option,
@@ -18,24 +19,18 @@ use function CodeZone\Bible\set_plugin_option;
  */
 class USXBibles
 {
-    const CUSTOM_BIBLES_OPTION = 'usx_bibles';
     const FILTER_HOOK = "usx_bibles";
-
-    /**
-     * The USX service instance.
-     *
-     * @var USX
-     */
     protected $usx;
-
+    protected $setting;
     /**
      * Constructor.
      *
      * @param USX $usx The USX service instance.
      */
-    public function __construct( USX $usx )
+    public function __construct( USX $usx, USXBiblesSetting $usx_bibles_setting )
     {
         $this->usx = $usx;
+        $this->setting = $usx_bibles_setting;
         add_filter( namespace_string( self::FILTER_HOOK ), [ $this, 'register' ], 10, 1 );
     }
 
@@ -55,15 +50,6 @@ class USXBibles
     }
 
     /**
-     * Retrieve the custom Bibles option.
-     *
-     * @return array|null The custom Bibles data as an array, or null if not available.
-     */
-    public function custom(): ?array {
-        return get_plugin_option( self::CUSTOM_BIBLES_OPTION, [] );
-    }
-
-    /**
      * Get all available USX Bible.
      *
      * @return array List of all available USX Bible.
@@ -72,7 +58,7 @@ class USXBibles
     {
         return apply_filters(
             namespace_string( self::FILTER_HOOK ),
-            $this->custom()
+            $this->setting->all()
         );
     }
 
@@ -121,74 +107,6 @@ class USXBibles
     }
 
     /**
-     * Add a new USX Bible.
-     *
-     * @param string $key The Bible key.
-     * @param array $data The Bible data.
-     * @return bool True on success, false on failure.
-     */
-    public function add( $key, array $data ): bool
-    {
-        $bibles = $this->all();
-
-        // Check if the Bible already exists
-        if ( isset( $bibles[$key] ) ) {
-            return false;
-        }
-
-        // Add the Bible
-        $bibles[$key] = $data;
-
-        // Save the updated list
-        return set_plugin_option( self::CUSTOM_BIBLES_OPTION, $bibles );
-    }
-
-    /**
-     * Update an existing USX Bible.
-     *
-     * @param string $key The Bible key.
-     * @param array $data The updated Bible data.
-     * @return bool True on success, false on failure.
-     */
-    public function update( string $key, array $data ): bool
-    {
-        $bibles = $this->all();
-
-        // Check if the Bible exists
-        if ( !isset( $bibles[$key] ) ) {
-            return false;
-        }
-
-        // Update the Bible
-        $bibles[$key] = array_merge( $bibles[$key], $data );
-
-        // Save the updated list
-        return set_plugin_option( self::CUSTOM_BIBLES_OPTION, $bibles );
-    }
-
-    /**
-     * Delete a USX Bible.
-     *
-     * @param string $key The Bible key.
-     * @return bool True on success, false on failure.
-     */
-    public function delete( string $key ): bool
-    {
-        $bibles = $this->all();
-
-        // Check if the Bible exists
-        if ( !isset( $bibles[$key] ) ) {
-            return false;
-        }
-
-        // Remove the Bible
-        unset( $bibles[$key] );
-
-        // Save the updated list
-        return set_plugin_option( self::CUSTOM_BIBLES_OPTION, $bibles );
-    }
-
-    /**
      * Represents the name of a folder as a string.
      *
      * This string variable is intended to store the name of a specific folder.
@@ -222,7 +140,7 @@ class USXBibles
      */
     public function add_dir( string $key, string $path, ?USX $usx = null ) {
         $data = $this->parse_dir( $path, $usx );
-        if ( $this->add( $key, $data ) ) {
+        if ( $this->setting->add( $key, $data ) ) {
             return $key;
         };
         return false;

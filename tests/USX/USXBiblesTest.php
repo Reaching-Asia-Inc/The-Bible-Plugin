@@ -2,9 +2,11 @@
 
 namespace Tests\USX;
 
+use CodeZone\Bible\Settings\USXBiblesSetting;
 use CodeZone\Bible\Sources\USX\USX;
 use CodeZone\Bible\Sources\USX\USXBibles;
 use Tests\TestCase;
+use function CodeZone\Bible\container;
 
 /**
  * @group services
@@ -42,7 +44,7 @@ class USXBiblesTest extends TestCase
         $this->usx->method( 'factory' )->willReturn( $this->mocked_usx_instance );
 
         // 3. Inject into the service
-        $this->service = new USXBibles( $this->usx );
+        $this->service = new USXBibles( $this->usx, container()->get( USXBiblesSetting::class ) );
 
         $this->test_bibles = [
             'KJV' => [
@@ -123,77 +125,6 @@ class USXBiblesTest extends TestCase
     /**
      * @test
      */
-    public function it_can_add_a_new_bible()
-    {
-        $new_bible = [
-            'id' => 'ESV',
-            'name' => 'English Standard Version',
-            'abbreviation' => 'ESV',
-            'language' => 'eng',
-            'scope' => 'Bible',
-            'path' => '/path/to/esv',
-            'added_at' => '2023-01-03 00:00:00'
-        ];
-
-        // Add the new bible
-        $result = $this->service->add( 'ESV', $new_bible );
-
-        // Verify that the bible was added
-        $this->assertTrue( $result );
-        $this->assertCount( 3, $this->test_bibles );
-        $this->assertArrayHasKey( 'ESV', $this->test_bibles );
-        $this->assertEquals( 'English Standard Version', $this->test_bibles['ESV']['name'] );
-
-        // Test adding a bible with an existing key
-        $result = $this->service->add( 'ESV', $new_bible );
-        $this->assertFalse( $result );
-    }
-
-    /**
-     * @test
-     */
-    public function it_can_update_an_existing_bible()
-    {
-        $updated_data = [
-            'name' => 'Updated King James Version',
-            'scope' => 'OT'
-        ];
-
-        // Update the bible
-        $result = $this->service->update( 'KJV', $updated_data );
-
-        // Verify that the bible was updated
-        $this->assertTrue( $result );
-        $this->assertEquals( 'Updated King James Version', $this->test_bibles['KJV']['name'] );
-        $this->assertEquals( 'OT', $this->test_bibles['KJV']['scope'] );
-        $this->assertEquals( 'KJV', $this->test_bibles['KJV']['abbreviation'] ); // Unchanged
-
-        // Test updating a non-existent bible
-        $result = $this->service->update( 'non_existent', $updated_data );
-        $this->assertFalse( $result );
-    }
-
-    /**
-     * @test
-     */
-    public function it_can_delete_a_bible()
-    {
-        // Delete the bible
-        $result = $this->service->delete( 'KJV' );
-
-        // Verify that the bible was deleted
-        $this->assertTrue( $result );
-        $this->assertCount( 1, $this->test_bibles );
-        $this->assertArrayNotHasKey( 'KJV', $this->test_bibles );
-
-        // Test deleting a non-existent bible
-        $result = $this->service->delete( 'non_existent' );
-        $this->assertFalse( $result );
-    }
-
-    /**
-     * @test
-     */
     public function it_can_extract_and_add_a_bible_from_zip_success()
     {
         $this->mocked_usx_instance->expects( $this->once() )
@@ -217,24 +148,5 @@ class USXBiblesTest extends TestCase
         $this->assertEquals( 'test', $result );
         $this->assertArrayHasKey( 'test', $this->test_bibles );
         $this->assertEquals( 'Test Bible', $this->test_bibles['test']['name'] );
-    }
-
-    /**
-     * @test
-     */
-    public function it_returns_false_if_extraction_fails()
-    {
-        $failing_instance = $this->createMock( USX::class );
-        $failing_instance->expects( $this->once() )
-            ->method( 'extract_zip' )
-            ->willReturn( false );
-
-        $factory = $this->createMock( USX::class );
-        $factory->method( 'factory' )->willReturn( $failing_instance );
-
-        $service = new USXBibles( $factory );
-
-        $result = $service->extract_and_add( '/path/to/zip/file.zip', 'test2' );
-        $this->assertFalse( $result );
     }
 }

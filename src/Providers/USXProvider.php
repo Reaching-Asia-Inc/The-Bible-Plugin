@@ -4,6 +4,7 @@ namespace CodeZone\Bible\Providers;
 
 use CodeZone\Bible\League\Container\ServiceProvider\AbstractServiceProvider;
 use CodeZone\Bible\League\Container\ServiceProvider\BootableServiceProviderInterface;
+use CodeZone\Bible\Settings\USXBiblesSetting;
 use CodeZone\Bible\Sources\USX\USX;
 use CodeZone\Bible\Sources\USX\USXBibles;
 
@@ -11,7 +12,7 @@ use CodeZone\Bible\Sources\USX\USXBibles;
  * Provider for USX services.
  *
  * This provider registers services related to parsing and retrieving data from USX files.
- * It bootstraps the USXBibles class which is responsible for managing USX Bible translations.
+ * It bootstraps the USXBiblesSetting class which is responsible for managing USX Bible translations.
  */
 class USXProvider extends AbstractServiceProvider implements BootableServiceProviderInterface
 {
@@ -22,15 +23,6 @@ class USXProvider extends AbstractServiceProvider implements BootableServiceProv
      */
     public function register(): void
     {
-        // Register the USX service as a shared service (not directly exposed)
-        $this->container->addShared(USX::class, function () {
-            return new USX();
-        });
-
-        // Register the USXBibles service which is the main entry point for USX functionality
-        $this->container->add(USXBibles::class, function () {
-            return new USXBibles( $this->container->get( USX::class ) );
-        });
     }
 
     /**
@@ -59,9 +51,12 @@ class USXProvider extends AbstractServiceProvider implements BootableServiceProv
             return new USX();
         });
 
-        // Register the USXBibles service which is the main entry point for USX functionality
+        // Register the USXBiblesSetting service which is the main entry point for USX functionality
         $this->container->add(USXBibles::class, function () {
-            return new USXBibles( $this->container->get( USX::class ) );
+            return new USXBibles(
+                $this->container->get( USX::class ),
+                $this->container->get( USXBiblesSetting::class )
+            );
         });
     }
 }

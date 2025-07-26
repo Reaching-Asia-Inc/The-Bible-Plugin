@@ -13,7 +13,7 @@ use CodeZone\Bible\Sources\USX\USXBibles;
  * Class BibleAggregator
  *
  * This class is responsible for aggregating Bible data from two different sources:
- * `BibleBrainsBibles` and `USXBibles`. The aggregated data is normalized using
+ * `BibleBrainsBibles` and `USXBiblesSetting`. The aggregated data is normalized using
  * the respective normalizer for each source.
  */
 class BibleAggregator extends Aggregator
