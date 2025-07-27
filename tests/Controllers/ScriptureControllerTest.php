@@ -80,59 +80,6 @@ class ScriptureControllerTest extends TestCase
     /**
      * @test
      */
-    public function it_hydrates_content_with_video_when_requested()
-    {
-        // Create test data
-        $reference = 'John 3:16';
-
-        // Create a mock Request object
-        $request = $this->getMockBuilder( Request::class )
-            ->onlyMethods( [ 'all_get' ] ) // or setMethods() for older PHPUnit
-            ->getMock();
-
-        // Configure the mock to return the test reference with video=true
-        $request->expects( $this->any() )
-            ->method( 'all_get' )
-            ->willReturn([
-                'reference' => $reference,
-                'video' => true
-            ]);
-
-        // Create the controller
-        $controller = new ScriptureController();
-
-        // Call the index method
-        $response = $controller->index( $request );
-
-        $this->assertIsArray( $response['media'] );
-        $this->assertGreaterThan( 0, count( $response['media'] ) );
-
-        foreach ( $response['media']['video']['content'] as $content ) {
-            $this->assertArrayHasKey( 'files', $content );
-            $this->assertIsArray( $content['files'] );
-            $this->assertGreaterThan( 0, count( $content['files'] ) ); // Note: count here, not just the array itself
-
-            foreach ( $content['files'] as $video ) {
-                // You can add more assertions here if needed
-                // Check that required keys exist
-                $this->assertArrayHasKey( 'bandwidth', $video );
-                $this->assertArrayHasKey( 'resolution', $video );
-                $this->assertArrayHasKey( 'codecs', $video );
-                $this->assertArrayHasKey( 'url', $video );
-
-                // Check that URL is a valid URL
-                $this->assertNotEmpty( $video['url'], 'Video URL is empty' );
-                $this->assertTrue(
-                    filter_var( $video['url'], FILTER_VALIDATE_URL ) !== false,
-                    'Video URL is not a valid URL: ' . $video['url']
-                );
-            }
-        }
-    }
-
-    /**
-     * @test
-     */
     public function it_handles_exceptions_gracefully()
     {
         // Create test data

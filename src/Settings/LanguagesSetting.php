@@ -8,7 +8,6 @@ use CodeZone\Bible\Services\Locale;
 use CodeZone\Bible\Sources\Aggregators\LanguageAggregator;
 use function CodeZone\Bible\config;
 use function CodeZone\Bible\set_plugin_option;
-use function CodeZone\Bible\transaction;
 
 /**
  * Class LanguagesSetting provides functionality to manage language configurations, including guessing,
@@ -42,7 +41,7 @@ class LanguagesSetting
                 return null;
             }
 
-            $hydrated = $this->hydrate( $languages );
+            $hydrated = $this->format( $languages );
 
             if ( $hydrated !== $languages ) {
                 $this->save( $hydrated );
@@ -218,20 +217,44 @@ class LanguagesSetting
      *
      * @return array Returns the formatted language configuration with 'id' and 'code' keys set, using 'value' if necessary.
      */
-    public function hydrate( $items ) {
+    public function format( array $items ) {
         foreach ( $items as $idx => $item ) {
-            if ( empty( $item['id'] )
-                || empty( $item['code'] )
-                || empty( $item['source'] ) ) {
-                $language = $this->aggregator->find( $item['value'] );
-                if ( $language ) {
-                    $item['id'] = $language['id'];
-                    $item['code'] = $language['code'];
-                    $item['source'] = $language['source'];
-                    $items[$idx] = $item;
-                }
-            }
+            $items[$idx] = $this->format_language(
+                $this->hydrate_language( $item )
+            );
         }
         return $items;
+    }
+
+    /**
+     * Formats a language item configuration.
+     *
+     * @param array $item The language item to be formatted.
+     *
+     * @return array Returns the formatted language item as an array.
+     */
+    private function format_language( array $item ): array {
+       return $item;
+    }
+
+    /**
+     * Populates a language array with missing properties by retrieving data from an external source.
+     *
+     * @param array $item The language array, which may contain incomplete data. Expected keys are 'id', 'code', 'source', and 'value'.
+     *
+     * @return array Returns the updated language array with the 'id', 'code', and 'source' properties populated if they were initially missing and found in the external source.
+     */
+    private function hydrate_language( array $item ): array {
+        if ( empty( $item['id'] )
+            || empty( $item['code'] )
+            || empty( $item['source'] ) ) {
+            $language = $this->aggregator->find( $item['value'] );
+            if ( $language ) {
+                $item['id'] = $language['id'];
+                $item['code'] = $language['code'];
+                $item['source'] = $language['source'];
+            }
+        }
+        return $item;
     }
 }
