@@ -2,6 +2,7 @@
 
 use CodeZone\Bible\Controllers\Settings\AdvancedController;
 use CodeZone\Bible\Controllers\Settings\BibleFormController;
+use CodeZone\Bible\Controllers\Settings\CustomBiblesController;
 use CodeZone\Bible\Controllers\Settings\CustomizationFomController;
 use CodeZone\Bible\Controllers\ScriptureController;
 use CodeZone\Bible\Controllers\LanguageController;
@@ -88,4 +89,37 @@ return [
             return current_user_can( 'manage_options' );
         },
     ],
+    [
+        'method' => 'POST',
+        'route' => '/local-bibles/upload',
+        'callback' => [ CustomBiblesController::class, 'upload' ],
+        'permission_callback' => function () {
+            return current_user_can( 'manage_options' );
+        },
+    ],
+    [
+        'method' => 'POST',
+        'route' => '/local-bibles/delete',
+        'callback' => [ CustomBiblesController::class, 'delete' ],
+        'permission_callback' => function () {
+            return current_user_can( 'manage_options' );
+        },
+    ],
+    [
+        'method' => 'POST',
+        'route' => '/local-bibles/update',
+        'callback' => [ CustomBiblesController::class, 'update' ],
+        'permission_callback' => function () {
+            return current_user_can( 'manage_options' );
+        },
+    ],
+    [
+        'method' => 'POST',
+        'route' => '/local-bibles/search',
+        'callback' => [ CustomBiblesController::class, 'language_search' ],
+        'permission_callback' => function () {
+            return current_user_can( 'manage_options' );
+        },
+    ],
+
 ];

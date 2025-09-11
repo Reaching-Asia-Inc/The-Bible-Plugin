@@ -24,11 +24,5 @@ return [
     'bible_brains_key' => [ BibleFormController::class, 'add_key' ],
     'bible'          => [ BibleFormController::class, 'show' ],
     'customization'  => [ CustomizationFomController::class, 'show' ],
-
-    // Custom Bibles settings tab and ajax-like handlers
     'local_bibles'        => [ CustomBiblesController::class, 'show' ],
-    'local_bibles_upload' => [ CustomBiblesController::class, 'upload' ],
-    'local_bibles_delete' => [ CustomBiblesController::class, 'delete' ],
-    'local_bibles_update' => [ CustomBiblesController::class, 'update' ],
-    'custom_language_search' => [ CustomBiblesController::class, 'language_search' ],
 ];

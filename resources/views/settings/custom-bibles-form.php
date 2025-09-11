@@ -24,7 +24,7 @@ $action_base = admin_url( 'admin.php?page=bible-plugin' );
 
 $this->layout( 'layouts/settings', compact( 'tab' ) );
 ?>
-<div class="wrap" x-data="customBiblesFormHandler(<?php echo esc_attr( wp_json_encode( [
+<div class="wrap" x-data="br_custom_bibles_form(<?php echo esc_attr( wp_json_encode( [
         'bibles'     => $local_bibles ?? [],
         'nonce'      => $nonce,
         'actionBase' => $action_base,
@@ -57,7 +57,7 @@ $this->layout( 'layouts/settings', compact( 'tab' ) );
     <hr />
 
     <h2><?php echo esc_html__( 'Add Paratext Bible', 'bible-plugin' ); ?></h2>
-    <form id="local-bible-upload-form" x-ref="uploadForm" @submit.prevent="uploadBible" enctype="multipart/form-data" method="post" action="<?php echo esc_url( $action_base . '&tab=local_bibles_upload' ); ?>">
+    <form id="local-bible-upload-form" x-ref="uploadForm" @submit.prevent="uploadBible" enctype="multipart/form-data" method="post" action="<?php echo esc_url( \CodeZone\Bible\api_url( 'local-bibles/upload' ) ); ?>">
         <input type="hidden" name="_wpnonce" value="<?php echo esc_attr( $nonce ); ?>" />
         <table class="form-table" role="presentation">
             <tbody>

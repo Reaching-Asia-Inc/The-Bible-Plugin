@@ -4,12 +4,13 @@
  */
 import form from "./form.js";
 
-window.customBiblesFormHandler = function(initial = {}) {
+window.br_custom_bibles_form = function(initial = {}) {
     return {
         ...form,
         bibles: initial.bibles || {},
         nonce: initial.nonce || '',
-        actionBase: initial.actionBase || '',
+        actionBase: initial.actionBase || '', // legacy; no longer used for REST
+        restBase: initial.restBase || (window.$tbp && $tbp.apiUrl ? $tbp.apiUrl : ''),
         notice: { message: '', type: 'info' },
         messages: {
             upload_success: 'Upload successful.',
@@ -62,7 +63,8 @@ window.customBiblesFormHandler = function(initial = {}) {
                 credentials: 'same-origin',
                 headers: {
                     'Accept': 'application/json, text/plain, */*',
-                    'X-Requested-With': 'XMLHttpRequest'
+                    'X-Requested-With': 'XMLHttpRequest',
+                    'X-WP-Nonce': (window.$tbp && $tbp.nonce) ? $tbp.nonce : (this.nonce || '')
                 }
             });
             const ct = res.headers.get('content-type') || '';
@@ -84,15 +86,15 @@ window.customBiblesFormHandler = function(initial = {}) {
         },
 
         async postJSON(url, payload) {
-            const params = new URLSearchParams({ ...(payload || {}), _wpnonce: this.nonce });
             const res = await fetch(url, {
                 method: 'POST',
                 headers: {
-                    'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8',
+                    'Content-Type': 'application/json',
                     'Accept': 'application/json, text/plain, */*',
-                    'X-Requested-With': 'XMLHttpRequest'
+                    'X-Requested-With': 'XMLHttpRequest',
+                    'X-WP-Nonce': (window.$tbp && $tbp.nonce) ? $tbp.nonce : (this.nonce || '')
                 },
-                body: params.toString(),
+                body: JSON.stringify(payload || {}),
                 credentials: 'same-origin'
             });
             const ct = res.headers.get('content-type') || '';
@@ -119,7 +121,8 @@ window.customBiblesFormHandler = function(initial = {}) {
 
         async uploadBible(e) {
             const formEl = this.$refs.uploadForm;
-            const url = formEl.getAttribute('action');
+            const base = (this.restBase || '').replace(/\/$/, '');
+            const url = base ? (base + '/local-bibles/upload') : formEl.getAttribute('action');
             const formData = new FormData(formEl);
 
             try {
@@ -134,7 +137,8 @@ window.customBiblesFormHandler = function(initial = {}) {
         },
 
         async saveBible(id) {
-            const url = this.actionBase + '&tab=local_bibles_update';
+            const base = (this.restBase || '').replace(/\/$/, '');
+            const url = base + '/local-bibles/update';
             try {
                 const data = await this.postJSON(url, { id, language_id: (this.bibles[id]?.language_id || '') });
                 this.refreshTable(data.bibles);
@@ -153,7 +157,8 @@ window.customBiblesFormHandler = function(initial = {}) {
             if (!confirm(this.messages.delete_confirm)) {
                 return;
             }
-            const url = this.actionBase + '&tab=local_bibles_delete';
+            const base = (this.restBase || '').replace(/\/$/, '');
+            const url = base + '/local-bibles/delete';
             try {
                 const data = await this.postJSON(url, { id });
                 this.refreshTable(data.bibles);
