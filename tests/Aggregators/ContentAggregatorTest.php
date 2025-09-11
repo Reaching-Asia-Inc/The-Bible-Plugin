@@ -3,10 +3,8 @@
 namespace Tests\Aggregators;
 
 use CodeZone\Bible\Sources\Aggregators\ContentAggregator;
-use CodeZone\Bible\Sources\USX\USXBibles;
 use Tests\TestCase;
 use function CodeZone\Bible\container;
-use function CodeZone\Bible\namespace_string;
 
 /**
  * @group aggregators
@@ -15,7 +13,7 @@ use function CodeZone\Bible\namespace_string;
 class ContentAggregatorTest extends TestCase {
     protected function setUp(): void {
         parent::setUp();
-        $this->load_usx_fixture( 'KJV' );
+        $this->load_paratext_fixture( 'KJV' );
     }
 
     /**
@@ -45,7 +43,7 @@ class ContentAggregatorTest extends TestCase {
             $this->assertArrayHasKey( 'source', $verse );
 
             // Verify source field is set
-            $this->assertContains( $verse['source'], [ 'bible-brains', 'usx' ] );
+            $this->assertContains( $verse['source'], [ 'bible-brains', 'paratext' ] );
         }
     }
 
@@ -78,7 +76,7 @@ class ContentAggregatorTest extends TestCase {
                 $this->assertArrayHasKey( 'source', $verse );
 
                 // Verify source field is set
-                $this->assertContains( $verse['source'], [ 'bible-brains', 'usx' ] );
+                $this->assertContains( $verse['source'], [ 'bible-brains', 'paratext' ] );
             }
         }
     }
@@ -103,26 +101,26 @@ class ContentAggregatorTest extends TestCase {
     /**
      * @test
      */
-    public function it_can_return_data_with_usx_source() {
+    public function it_can_return_data_with_paratext_source() {
         $aggregator = container()->get( ContentAggregator::class );
 
-        // Get content from a USX Bible (using a Bible ID that exists in the USX fixtures)
-        // Note: This test assumes that the USX fixtures contain a Bible with content
+        // Get content from a Paratext Bible (using a Bible ID that exists in the Paratext fixtures)
+        // Note: This test assumes that the Paratext fixtures contain a Bible with content
         $result = $aggregator->content( 'KJV', 'GEN', 1, 1, 3 );
 
         // Verify we get an array of content
         $this->assertIsArray( $result );
 
-        // Find content with 'usx' source
-        $usx_content = array_filter($result, function ( $verse ) {
-            return $verse['source'] === 'usx';
+        // Find content with 'paratext' source
+        $paratext_content = array_filter($result, function ( $verse ) {
+            return $verse['source'] === 'paratext';
         });
 
-        // Verify we found at least one verse with 'usx' source
-        $this->assertNotEmpty( $usx_content, "No content with 'usx' source found" );
+        // Verify we found at least one verse with 'paratext' source
+        $this->assertNotEmpty( $paratext_content, "No content with 'paratext' source found" );
 
-        // Check the structure of a usx verse
-        $verse = reset( $usx_content );
+        // Check the structure of a paratext verse
+        $verse = reset( $paratext_content );
         $this->assertIsArray( $verse );
         $this->assertArrayHasKey( 'book_id', $verse );
         $this->assertArrayHasKey( 'chapter', $verse );
@@ -134,7 +132,7 @@ class ContentAggregatorTest extends TestCase {
             "Either 'content' or 'verse_text' field should be present"
         );
 
-        $this->assertEquals( 'usx', $verse['source'] );
+        $this->assertEquals( 'paratext', $verse['source'] );
     }
 
     /**

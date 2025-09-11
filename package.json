@@ -38,7 +38,7 @@
     "@spectrum-web-components/button-group": "^0.42.2",
     "@spectrum-web-components/card": "^0.42.2",
     "@spectrum-web-components/checkbox": "^0.42.2",
-    "@spectrum-web-components/color-slider": "^0.42.2",
+    "@spectrum-web-components/color-slider": "^0.42.xf2",
     "@spectrum-web-components/combobox": "^0.42.2",
     "@spectrum-web-components/dialog": "^0.42.2",
     "@spectrum-web-components/divider": "^0.42.2",

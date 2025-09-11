@@ -2,16 +2,11 @@
 
 namespace CodeZone\Bible\Providers;
 
-use CodeZone\Bible\CodeZone\WPSupport\Options\Options;
 use CodeZone\Bible\League\Container\Exception\NotFoundException;
 use CodeZone\Bible\League\Container\ServiceProvider\AbstractServiceProvider;
 use CodeZone\Bible\League\Container\ServiceProvider\BootableServiceProviderInterface;
 use CodeZone\Bible\Psr\Container\ContainerExceptionInterface;
-use CodeZone\Bible\Services\Locale;
-use CodeZone\Bible\Settings\LanguagesSetting;
 use CodeZone\Bible\Settings\Settings;
-use CodeZone\Bible\Settings\USXBiblesSetting;
-use CodeZone\Bible\Sources\Aggregators\LanguageAggregator;
 use function CodeZone\Bible\config;
 
 /**

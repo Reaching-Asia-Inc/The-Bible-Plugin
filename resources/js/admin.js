@@ -74,7 +74,7 @@ import './web-components/languages-field.js';
  * Alpine Components
  */
 import './alpine-components/bible-brains-key-form.js';
-import './alpine-components/usx-bibles-form.js';
+import './alpine-components/custom-bibles-form.js';
 
 loaded(() => {
     document.querySelectorAll('.tbp-cloak').forEach((el) => el.classList.remove('tbp-cloak'));

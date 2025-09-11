@@ -9,3 +9,5 @@ mysite.sql.gz
 .env
 phpunit.xml
 .secrets
+develop.svn.wordpress.org
+.manifest

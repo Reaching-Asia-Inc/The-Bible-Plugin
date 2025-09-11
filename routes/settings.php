@@ -15,7 +15,7 @@ use CodeZone\Bible\Controllers\Settings\AdvancedController;
 use CodeZone\Bible\Controllers\Settings\BibleFormController;
 use CodeZone\Bible\Controllers\Settings\CustomizationFomController;
 use CodeZone\Bible\Controllers\Settings\SupportController;
-use CodeZone\Bible\Controllers\Settings\USXBiblesController;
+use CodeZone\Bible\Controllers\Settings\CustomBiblesController;
 
 return [
     'general'        => [ BibleFormController::class, 'show' ],
@@ -26,9 +26,9 @@ return [
     'customization'  => [ CustomizationFomController::class, 'show' ],
 
     // Custom Bibles settings tab and ajax-like handlers
-    'usx_bibles'        => [ USXBiblesController::class, 'show' ],
-    'usx_bibles_upload' => [ USXBiblesController::class, 'upload' ],
-    'usx_bibles_delete' => [ USXBiblesController::class, 'delete' ],
-    'usx_bibles_update' => [ USXBiblesController::class, 'update' ],
-    'usx_language_search' => [ USXBiblesController::class, 'language_search' ],
+    'local_bibles'        => [ CustomBiblesController::class, 'show' ],
+    'local_bibles_upload' => [ CustomBiblesController::class, 'upload' ],
+    'local_bibles_delete' => [ CustomBiblesController::class, 'delete' ],
+    'local_bibles_update' => [ CustomBiblesController::class, 'update' ],
+    'custom_language_search' => [ CustomBiblesController::class, 'language_search' ],
 ];

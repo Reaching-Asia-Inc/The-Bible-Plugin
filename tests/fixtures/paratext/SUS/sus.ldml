@@ -1,0 +1,25 @@
+﻿<ldml><identity><version number="" /><generation date="0001-01-01T00:00:00Z" /><language type="sus" /></identity><characters><exemplarCharacters>[ABD-IK-PR-UW-Yabd-ik-pr-uw-y\u019D\u0254\u025B\u0272{Gb}{gb}]</exemplarCharacters><special xmlns:sil="urn://www.sil.org/ldml/0.1"><sil:exemplarCharacters type="wordFormingPunctuation">[]</sil:exemplarCharacters><sil:exemplarCharacters type="footnotes">[]</sil:exemplarCharacters><sil:exemplarCharacters type="crossrefs">[]</sil:exemplarCharacters><sil:exemplarCharacters type="verseSegments">[]</sil:exemplarCharacters><sil:exemplarCharacters type="diacritics">[]</sil:exemplarCharacters><sil:exemplarCharacters type="wordBreaks">[]</sil:exemplarCharacters></special><exemplarCharacters type="punctuation">[!(),-.\:?\u00AB\u00BB\u200C\u200D\u201C\u201D\u2039\u203A]</exemplarCharacters></characters><delimiters><quotationStart>«</quotationStart><quotationEnd>»</quotationEnd><alternateQuotationStart>‹</alternateQuotationStart><alternateQuotationEnd>›</alternateQuotationEnd><special xmlns:sil="urn://www.sil.org/ldml/0.1"><sil:matched-pairs><sil:matched-pair open="(" close=")" paraClose="false" /><sil:matched-pair open="[" close="]" paraClose="false" /><sil:matched-pair open="{" close="}" paraClose="false" /><sil:matched-pair open="‹" close="›" paraClose="false" /><sil:matched-pair open="«" close="»" paraClose="false" /><sil:matched-pair open="“" close="”" paraClose="false" /></sil:matched-pairs><sil:quotation-marks paraContinueType="all"><sil:quotationContinue></sil:quotationContinue><sil:quotation open="«" close="»" level="3" /></sil:quotation-marks></special></delimiters><layout><orientation><characterOrder>left-to-right</characterOrder></orientation></layout><collations><defaultCollation>standard</defaultCollation><collation type="standard"><cr><![CDATA[&[before 1] [first regular] < a\/A < b\/B < d\/D < e\/E < ɛ < f\/F < g\/G < gb << Gb < h\/H < i\/I < k\/K < l\/L < m\/M < n\/N < ɲ\/Ɲ < o\/O < ɔ < p\/P < r\/R < s\/S < t\/T < u\/U < w\/W < x\/X < y\/Y]]></cr><special xmlns:sil="urn://www.sil.org/ldml/0.1"><sil:simple><![CDATA[a/A
+b/B
+d/D
+e/E
+ɛ
+f/F
+g/G
+gb Gb
+h/H
+i/I
+k/K
+l/L
+m/M
+n/N
+ɲ/Ɲ
+o/O
+ɔ
+p/P
+r/R
+s/S
+t/T
+u/U
+w/W
+x/X
+y/Y]]></sil:simple></special></collation></collations><special xmlns:sil="urn://www.sil.org/ldml/0.1"><sil:external-resources><sil:font name="Doulos SIL Compact" /></sil:external-resources></special></ldml>

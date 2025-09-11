@@ -6,23 +6,26 @@ use CodeZone\Bible\Exceptions\BiblePluginException;
 use CodeZone\Bible\Sources\Aggregator;
 use CodeZone\Bible\Sources\BibleBrains\BibleBrainsBibles;
 use CodeZone\Bible\Sources\BibleBrains\Normalizers\BibleBrainsBookNormalizer;
-use CodeZone\Bible\Sources\USX\Normalizers\USXBookNormalizer;
-use CodeZone\Bible\Sources\USX\USXBibles;
+use CodeZone\Bible\Sources\Paratext\Normalizers\ParatextBookNormalizer;
+use CodeZone\Bible\Sources\Paratext\ParatextBibles;
 
 class BookAggregator extends Aggregator
 {
     const COMPARE_KEY = "id";
 
+    protected $bb_bibles;
+    protected $paratext_bibles;
+
     public function __construct(
         BibleBrainsBibles $bb_bibles,
-        USXBibles $usx_bibles,
+        ParatextBibles $paratext_bibles,
         BibleBrainsBookNormalizer $bb_normalizer,
-        USXBookNormalizer $usx_normalizer
+        ParatextBookNormalizer $paratext_normalizer
     ) {
         $this->bb_bibles = $bb_bibles;
-        $this->usx_bibles = $usx_bibles;
+        $this->paratext_bibles = $paratext_bibles;
         $this->bb_normalizer = $bb_normalizer;
-        $this->usx_normalizer = $usx_normalizer;
+        $this->paratext_normalizer = $paratext_normalizer;
     }
 
     /**
@@ -35,9 +38,9 @@ class BookAggregator extends Aggregator
      */
     public function all( string $bible, array $params = [] ): array
     {
-        $usx = $this->usx_bibles->usx( $bible );
+        $paratext = $this->paratext_bibles->paratext( $bible );
         return $this->aggregate(
-            $usx ? $usx->books() : [],
+            $paratext ? $paratext->books() : [],
             $this->bb_bibles->books( $bible, $params )
         );
     }
@@ -52,9 +55,9 @@ class BookAggregator extends Aggregator
      */
     public function find( string $book, string $bible ): ?array
     {
-        $usx = $this->usx_bibles->usx( $bible );
+        $paratext = $this->paratext_bibles->paratext( $bible );
         return $this->aggregate_item(
-            $usx ? $usx->book( $book ) : null,
+            $paratext ? $paratext->book( $book ) : null,
             $this->bb_bibles->book( $bible, $book )
         );
     }

@@ -30,7 +30,7 @@ class LanguageTest extends TestCase {
         $this->assertArrayHasKey('source', $language);
 
         // Verify source field is set
-        $this->assertContains($language['source'], ['bible-brains', 'usx']);
+        $this->assertContains($language['source'], ['bible-brains', 'paratext']);
     }
 
     /**
@@ -48,7 +48,7 @@ class LanguageTest extends TestCase {
 
         // Verify it's the correct language
         $this->assertEquals(6414, $result['id']);
-        $this->assertContains($result['source'], ['bible-brains', 'usx']);
+        $this->assertContains($result['source'], ['bible-brains', 'paratext']);
     }
 
     /**
@@ -80,7 +80,7 @@ class LanguageTest extends TestCase {
             $this->assertArrayHasKey('source', $language);
 
             // Verify source field is set
-            $this->assertContains($language['source'], ['bible-brains', 'usx']);
+            $this->assertContains($language['source'], ['bible-brains', 'paratext']);
         }
     }
 

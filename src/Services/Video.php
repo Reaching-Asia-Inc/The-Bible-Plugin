@@ -5,6 +5,7 @@ namespace CodeZone\Bible\Services;
 use CodeZone\Bible\GuzzleHttp\Client;
 use CodeZone\Bible\Sources\BibleBrains\BibleBrainsBibles;
 use CodeZone\Bible\Sources\BibleBrains\Normalizers\BibleBrainsVideoNormalizer;
+use CodeZone\Bible\Sources\Normalizer;
 
 /**
  * Class Video
@@ -23,6 +24,8 @@ class Video {
      * Guzzle client
      */
     protected $http;
+
+    protected Normalizer $normalizer;
 
     /**
      * Constructor method for initializing the class with required dependencies.

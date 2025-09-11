@@ -6,8 +6,8 @@ use CodeZone\Bible\Sources\Aggregator;
 use CodeZone\Bible\Sources\BibleBrains\BibleBrainsBibles;
 use CodeZone\Bible\Sources\BibleBrains\Normalizers\BibleBrainsBibleNormalizer;
 use CodeZone\Bible\Sources\Normalizer;
-use CodeZone\Bible\Sources\USX\Normalizers\USXBibleNormalizer;
-use CodeZone\Bible\Sources\USX\USXBibles;
+use CodeZone\Bible\Sources\Paratext\Normalizers\ParatextBibleNormalizer;
+use CodeZone\Bible\Sources\Paratext\ParatextBibles;
 
 /**
  * Class BibleAggregator
@@ -20,20 +20,20 @@ class BibleAggregator extends Aggregator
 {
     const COMPARE_KEY = "name";
     private BibleBrainsBibles $bb_bibles;
-    private USXBibles $usx_bibles;
+    private ParatextBibles $paratext_bibles;
     protected Normalizer $bb_normalizer;
-    protected Normalizer $usx_normalizer;
+    protected Normalizer $paratext_normalizer;
 
     public function __construct(
         BibleBrainsBibles $bibles,
-        USXBibles $usx_bibles,
+        ParatextBibles $paratext_bibles,
         BibleBrainsBibleNormalizer $bb_normalizer,
-        USXBibleNormalizer $usx_normalizer
+        ParatextBibleNormalizer $paratext_normalizer
     ) {
         $this->bb_bibles = $bibles;
-        $this->usx_bibles = $usx_bibles;
+        $this->paratext_bibles = $paratext_bibles;
         $this->bb_normalizer = $bb_normalizer;
-        $this->usx_normalizer = $usx_normalizer;
+        $this->paratext_normalizer = $paratext_normalizer;
     }
 
     /**
@@ -45,7 +45,7 @@ class BibleAggregator extends Aggregator
     public function all( array $params = [] ): array
     {
         return $this->aggregate(
-            $this->usx_bibles->all(),
+            $this->paratext_bibles->all(),
             $this->bb_bibles->all( $params )
         );
     }
@@ -65,7 +65,7 @@ class BibleAggregator extends Aggregator
            $language_code = $bible_brains_bibles[0]['iso'] ?? null;
         }
         return $this->aggregate(
-            $this->usx_bibles->for_language( $language_code ?? $language_id ),
+            $this->paratext_bibles->for_language( $language_code ?? $language_id ),
             $bible_brains_bibles
         );
     }
@@ -80,7 +80,7 @@ class BibleAggregator extends Aggregator
     public function search( string $query, array $params ): array
     {
         return $this->aggregate(
-            $this->usx_bibles->search( $query ),
+            $this->paratext_bibles->search( $query ),
             $this->bb_bibles->search( $query, $params )
         );
     }
@@ -95,7 +95,7 @@ class BibleAggregator extends Aggregator
     public function find( $id, array $params ): ?array
     {
         return $this->aggregate_item(
-            $this->usx_bibles->find( $id ),
+            $this->paratext_bibles->find( $id ),
             $this->bb_bibles->find( $id, $params )
         );
     }
@@ -112,8 +112,8 @@ class BibleAggregator extends Aggregator
         if ( $bb_bible && is_numeric( $language_id ) ) {
             $language_code = $bb_bible['iso'] ?? null;
         }
-        $usx_bibles = array_values( $this->usx_bibles->for_language( $language_code ?? $language_id ) );
+        $paratext_bibles = array_values( $this->paratext_bibles->for_language( $language_code ?? $language_id ) );
 
-        return $this->aggregate_item( $usx_bibles[0] ?? null, $bb_bible );
+        return $this->aggregate_item( $paratext_bibles[0] ?? null, $bb_bible );
     }
 }

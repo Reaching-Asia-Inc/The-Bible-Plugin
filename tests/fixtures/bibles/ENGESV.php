@@ -2403,7 +2403,7 @@ return [
                                 ],
                             14 =>
                                 [
-                                    'id' => 'ENGESVN_ET-usx',
+                                    'id' => 'ENGESVN_ET-paratext',
                                     'type' => 'text_usx',
                                     'size' => 'NT',
                                     'stock_no' => null,
@@ -2434,7 +2434,7 @@ return [
                                 ],
                             17 =>
                                 [
-                                    'id' => 'ENGESVO_ET-usx',
+                                    'id' => 'ENGESVO_ET-paratext',
                                     'type' => 'text_usx',
                                     'size' => 'OT',
                                     'stock_no' => null,

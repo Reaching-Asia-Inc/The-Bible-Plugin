@@ -11,7 +11,7 @@ use CodeZone\Bible\Traits\Optionable;
  * Class Bible
  *
  * This class serves as a manager for interacting with Bible data from multiple sources
- * (USX bibles and Bible Brains bibles) and provides functionality for finding, searching,
+ * (Paratext bibles and Bible Brains bibles) and provides functionality for finding, searching,
  * and merging bible data. Transformers are used to process and prepare data appropriately
  * for each source.
  */
