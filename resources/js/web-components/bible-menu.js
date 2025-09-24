@@ -10,6 +10,7 @@ import {$hasVideo, $videoOpen, $playVideo} from "../stores/video.js";
 
 import {__} from "../helpers.js"
 import {css} from "@spectrum-web-components/base";
+import "./social-share.js";
 
 @customElement('tbp-bible-menu')
 export class BibleMenu extends withStores(TBPElement, [$otBooks, $ntBooks, $hasAudio, $audioOpen, $hasVideo, $videoOpen, $hasSelection, $canShare]) {
@@ -75,6 +76,12 @@ export class BibleMenu extends withStores(TBPElement, [$otBooks, $ntBooks, $hasA
                        vertical
                      ></sp-divider>
                 ` }
+                <tbp-social-share compact></tbp-social-share>
+                <sp-divider
+                  size="s"
+                  style="align-self: stretch; height: auto;"
+                  vertical
+                ></sp-divider>
                 ${$hasAudio.get() ? html`
                   <sp-button
                     variant="accent"
