@@ -10,6 +10,7 @@ import {$hasVideo, $videoOpen, $playVideo} from "../stores/video.js";
 
 import {__} from "../helpers.js"
 import {css} from "@spectrum-web-components/base";
+import "./language-menu.js";
 
 @customElement('tbp-bible-menu')
 export class BibleMenu extends withStores(TBPElement, [$otBooks, $ntBooks, $hasAudio, $audioOpen, $hasVideo, $videoOpen, $hasSelection, $canShare]) {
@@ -91,6 +92,9 @@ export class BibleMenu extends withStores(TBPElement, [$otBooks, $ntBooks, $hasA
                   </sp-button>
                 `
                 : nothing}
+
+                <tbp-language-menu></tbp-language-menu>
+
                 <tbp-book-menu label="${__("Books")}"
                                .books=${$otBooks.get().concat($ntBooks.get())}
                                class="book-menu--mobile"></tbp-book-menu>

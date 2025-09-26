@@ -53,6 +53,18 @@ export class Bible extends withStores(TBPElement, [$query, $bookName, $chapter, 
 
     firstUpdated(_changedProperties) {
         $reference.set(this.reference);
+
+        // Restore full-screen state from URL params if present
+        try {
+            const url = new URL(window.location.href);
+            const fsParam = url.searchParams.get('fullScreen');
+            if (fsParam === '1' || fsParam === 'true') {
+                $fullScreen.set(true);
+            }
+        } catch (e) {
+            // ignore
+        }
+
         document.addEventListener('keydown', (e) => {
             if (e.key === "Escape") {
                 $fullScreen.set(false);
