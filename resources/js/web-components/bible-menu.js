@@ -76,12 +76,6 @@ export class BibleMenu extends withStores(TBPElement, [$otBooks, $ntBooks, $hasA
                        vertical
                      ></sp-divider>
                 ` }
-                <tbp-social-share compact></tbp-social-share>
-                <sp-divider
-                  size="s"
-                  style="align-self: stretch; height: auto;"
-                  vertical
-                ></sp-divider>
                 ${$hasAudio.get() ? html`
                   <sp-button
                     variant="accent"
