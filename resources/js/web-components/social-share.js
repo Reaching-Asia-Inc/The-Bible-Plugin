@@ -1,0 +1,126 @@
+import {customElement, property} from "lit/decorators.js";
+import {withStores} from "@nanostores/lit";
+import {TBPElement} from "./base.js";
+import {html} from "lit";
+import {css} from "@spectrum-web-components/base";
+import {__} from "../helpers.js";
+import {$shareUrl, $shareText} from "../stores/share.js";
+
+@customElement('tbp-social-share')
+export class SocialShare extends withStores(TBPElement, [$shareUrl, $shareText]) {
+  @property({type: Boolean, reflect: true}) compact = false;
+
+  static get styles() {
+    return [
+      super.styles,
+      css`
+        :host {
+          display: inline-block;
+        }
+
+        .row {
+          display: flex;
+          gap: var(--spectrum-global-dimension-size-200);
+          align-items: center;
+          flex-wrap: wrap;
+        }
+
+        .label {
+          margin-inline-end: var(--spectrum-global-dimension-size-200);
+        }
+      `
+    ];
+  }
+
+  openShare(url) {
+    try {
+      window.open(url, "_blank", "noopener,noreferrer");
+    } catch (e) {
+      // ignore
+    }
+  }
+
+  get facebookUrl() {
+    const url = $shareUrl.get() || window.location.href;
+    return `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(url)}`;
+  }
+
+  get xUrl() {
+    const url = $shareUrl.get() || window.location.href;
+    const text = $shareText.get() || "";
+    // X supports /intent/post, include both text and url for best results
+    return `https://x.com/intent/post?text=${encodeURIComponent(text)}&url=${encodeURIComponent(url)}`;
+  }
+
+  render() {
+    if (this.compact) {
+      return html`
+        <div class="row" role="group" aria-label="${__('Share on')}">
+          <sp-button
+            label="Facebook"
+            icon-only
+            quiet
+            static="black"
+            @click=${() => this.openShare(this.facebookUrl)}
+          >
+            <iconify-icon
+              icon="simple-icons:facebook"
+              slot="icon"
+              width="18"
+              height="18"
+              style="color: black"
+            ></iconify-icon>
+          </sp-button>
+
+          <sp-button
+            label="X"
+            icon-only
+            quiet
+            static="black"
+            @click=${() => this.openShare(this.xUrl)}
+          >
+            <iconify-icon
+              icon="simple-icons:x"
+              slot="icon"
+              width="16"
+              height="16"
+              style="color: black"
+            ></iconify-icon>
+          </sp-button>
+        </div>
+      `;
+    }
+
+    return html`
+      <div class="row">
+        <sp-button
+          label="Facebook"
+          @click=${() => this.openShare(this.facebookUrl)}
+        >
+          <iconify-icon
+            icon="simple-icons:facebook"
+            slot="icon"
+            width="18"
+            height="18"
+            style="color: black"
+          ></iconify-icon>
+          Facebook
+        </sp-button>
+
+        <sp-button
+          label="X"
+          @click=${() => this.openShare(this.xUrl)}
+        >
+          <iconify-icon
+            icon="simple-icons:x"
+            slot="icon"
+            width="16"
+            height="16"
+            style="color: black"
+          ></iconify-icon>
+          Twitter
+        </sp-button>
+      </div>
+    `;
+  }
+}

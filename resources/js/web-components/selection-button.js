@@ -18,6 +18,7 @@ import {__} from "../helpers.js";
 import {css} from "@spectrum-web-components/base";
 import {$book} from "../stores/book.js";
 import {$displayMessage} from "../stores/message.js";
+import "./social-share.js";
 
 @customElement('tbp-selection-button')
 export class SelectionButton extends withStores(TBPElement, [$selection, $selectionOpen, $shareUrl, $shareText, $book, $selectionCount]) {
@@ -105,6 +106,11 @@ export class SelectionButton extends withStores(TBPElement, [$selection, $select
           <sp-button @click="${() => this.copyText($shareText.get())}">
             ${__('Copy')}
           </sp-button>
+        </div>
+
+        <div class="selection__copy">
+          <sp-label>${__('Share')}</sp-label>
+          <tbp-social-share></tbp-social-share>
         </div>
       </sp-dialog-wrapper>
       </sp-overlay>

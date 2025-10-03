@@ -10,6 +10,7 @@ import {$hasVideo, $videoOpen, $playVideo} from "../stores/video.js";
 
 import {__} from "../helpers.js"
 import {css} from "@spectrum-web-components/base";
+import "./social-share.js";
 
 @customElement('tbp-bible-menu')
 export class BibleMenu extends withStores(TBPElement, [$otBooks, $ntBooks, $hasAudio, $audioOpen, $hasVideo, $videoOpen, $hasSelection, $canShare]) {
