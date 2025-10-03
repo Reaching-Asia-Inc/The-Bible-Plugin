@@ -224,13 +224,19 @@ class Scripture {
      */
     private function resolve_bible( array $parameters, array $language ): ?array
     {
-        $bible = ( $parameters['bible'] ?? null )
-            ? $this->bibles->find( $parameters['bible'] )
+        // Prefer explicit bible parameter; otherwise use the language's default_bible if available
+        $requestedBible = $parameters['bible'] ?? null;
+        if ( !$requestedBible && !empty($language['default_bible']) ) {
+            $requestedBible = $language['default_bible'];
+        }
+
+        $bible = $requestedBible
+            ? $this->bibles->find( $requestedBible )
             : null;
 
         if ( !$bible ) {
             $bible = $this->bibles->find_or_default( [
-                'code' => $parameters['bible'],
+                'code' => $requestedBible,
                 'language_id' => $language['id']
             ] );
         }
