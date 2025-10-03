@@ -25,7 +25,7 @@ class LocalBiblesController
 
         $local_bibles = container()->get( ParatextBibles::class )->all();
 
-        return view( 'settings/local-bibles-form', compact( 'tab', 'nonce', 'local_bibles', 'success_message', 'error_message') );
+        return view( 'settings/local-bibles-form', compact( 'tab', 'nonce', 'local_bibles', 'success_message', 'error_message' ) );
     }
 
     /**
@@ -40,7 +40,7 @@ class LocalBiblesController
         $success_message = esc_html__( 'Paratext Bible uploaded successfully.', 'bible-plugin' );
 
         // Branch 1: multipart/form-data via direct $_FILES handling (no File_Upload_Upgrader inside REST)
-        // phpcs:ignore WordPress.Security.NonceVerification.Missing -- REST uses X-WP-Nonce header; here we only read the uploaded filename
+        // phpcs:ignore WordPress.Security.NonceVerification.Missing -- REST uses X-WP-Nonce header; permission is enforced by the route; here we only validate the upload
         $filename = ( isset( $_FILES['file']['name'] ) ) ? sanitize_file_name( wp_unslash( (string) $_FILES['file']['name'] ) ) : '';
         if ( $filename !== '' ) {
             // Validate file type by sanitized filename extension (avoid trusting MIME type)
@@ -55,8 +55,9 @@ class LocalBiblesController
 
 
             // Use the temporary uploaded file path directly
+            // phpcs:ignore WordPress.Security.NonceVerification.Missing, WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- tmp_name is server-provided path; validated below with is_uploaded_file()
             $tmp_path = isset( $_FILES['file']['tmp_name'] ) ? (string) $_FILES['file']['tmp_name'] : '';
-            if ( ! $tmp_path || ! file_exists( $tmp_path ) ) {
+            if ( ! $tmp_path || ! file_exists( $tmp_path ) || ! is_uploaded_file( $tmp_path ) ) {
                 return new \WP_Error(
                     'no_file',
                     esc_html__( 'No file was uploaded.', 'bible-plugin' ),
@@ -247,7 +248,7 @@ class LocalBiblesController
      */
     public function language_search( Request $request ): array
     {
-        $code = $request->code  ? sanitize_text_field( $request->code ) : '';
+        $code = $request->code ? sanitize_text_field( $request->code ) : '';
         $results = [];
 
         // Attempt to use a Paratext language service if available

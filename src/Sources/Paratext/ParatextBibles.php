@@ -104,9 +104,9 @@ class ParatextBibles extends ArraySource
     /**
      * Extracts a zip file, retrieves its contents, and adds the extracted directory.
      *
-     * @param string $zip_file Path to the zip file to be extracted
-     * @param mixed $key Identifier or key used for adding the extracted directory
-     * @return mixed Returns the result of the directory addition operation or false on failure
+     * @param string $zip_file Path to the zip file to be extracted.
+     * @param string|null $folder_name Optional folder name to use when extracting.
+     * @return string|false The key of the added directory on success, or false on failure.
      * @throws \Exception
      */
     public function extract_and_add( string $zip_file, ?string $folder_name = null )

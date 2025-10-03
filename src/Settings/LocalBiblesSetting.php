@@ -68,7 +68,7 @@ class LocalBiblesSetting
     /**
      * Delete a Paratext Bible.
      *
-     * @param string $key The Bible key.
+     * @param string $id The Bible key.
      * @return bool True on success, false on failure.
      */
     public function delete( string $id ): bool
