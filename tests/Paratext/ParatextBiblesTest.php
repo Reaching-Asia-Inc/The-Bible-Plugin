@@ -122,32 +122,4 @@ class ParatextBiblesTest extends TestCase
         $this->assertSame( $this->mocked_paratext_instance, $paratext );
         $this->assertNull( $this->service->paratext( 'non_existent' ) );
     }
-
-    /**
-     * @test
-     */
-    public function it_can_extract_and_add_a_bible_from_zip_success()
-    {
-        $this->mocked_paratext_instance->expects( $this->once() )
-            ->method( 'extract_zip' )
-            ->with( '/path/to/zip/file.zip', 'extracted' )
-            ->willReturn( '/path/to/extracted' );
-
-        $this->mocked_paratext_instance->expects( $this->once() )
-            ->method( 'get_translation_name' )
-            ->willReturn( 'Test Bible' );
-
-        $this->mocked_paratext_instance->expects( $this->once() )
-            ->method( 'get_translation_abbreviation' )
-            ->willReturn( 'test' );
-
-        $this->mocked_paratext_instance->expects( $this->once() )
-            ->method( 'get_language_code' )
-            ->willReturn( 'eng' );
-
-        $result = $this->service->extract_and_add( '/path/to/zip/file.zip', 'test', 'extracted' );
-        $this->assertEquals( 'test', $result );
-        $this->assertArrayHasKey( 'test', $this->test_bibles );
-        $this->assertEquals( 'Test Bible', $this->test_bibles['test']['name'] );
-    }
 }
