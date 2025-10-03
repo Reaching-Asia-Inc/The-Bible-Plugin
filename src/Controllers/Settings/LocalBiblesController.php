@@ -11,7 +11,7 @@ use function CodeZone\Bible\view;
 /**
  * Controller to manage Custom Paratext Bible uploads and settings
  */
-class CustomBiblesController
+class LocalBiblesController
 {
     /**
      * Render the Custom Bibles settings UI
@@ -19,10 +19,13 @@ class CustomBiblesController
     public function show( Request $request )
     {
         $tab = 'local_bibles';
-        $nonce = wp_create_nonce( 'local_upload_nonce' );
+        $nonce = wp_create_nonce( 'wp_rest' );
+        $success_message = null;
+        $error_message = null;
+
         $local_bibles = container()->get( ParatextBibles::class )->all();
 
-        return view( 'settings/custom-bibles-form', compact( 'tab', 'nonce', 'local_bibles' ) );
+        return view( 'settings/local-bibles-form', compact( 'tab', 'nonce', 'local_bibles', 'success_message', 'error_message') );
     }
 
     /**
@@ -32,53 +35,111 @@ class CustomBiblesController
     public function upload( Request $request )
     {
         // REST: permission handled by route. Only validate inputs and process.
-        // Check if file was uploaded (by sanitized filename)
+        // Support both multipart/form-data uploads and JSON base64 payloads
+        $language_id = null;
+        $success_message = esc_html__( 'Paratext Bible uploaded successfully.', 'bible-plugin' );
+
+        // Branch 1: multipart/form-data via direct $_FILES handling (no File_Upload_Upgrader inside REST)
         // phpcs:ignore WordPress.Security.NonceVerification.Missing -- REST uses X-WP-Nonce header; here we only read the uploaded filename
         $filename = ( isset( $_FILES['file']['name'] ) ) ? sanitize_file_name( wp_unslash( (string) $_FILES['file']['name'] ) ) : '';
-        if ( $filename === '' ) {
-            return new \WP_Error(
-                'no_file',
-                esc_html__( 'No file was uploaded.', 'bible-plugin' ),
-                [ 'status' => 400 ]
-            );
+        if ( $filename !== '' ) {
+            // Validate file type by sanitized filename extension (avoid trusting MIME type)
+            $ext = strtolower( pathinfo( $filename, PATHINFO_EXTENSION ) );
+            if ( $ext !== 'zip' ) {
+                return new \WP_Error(
+                    'invalid_type',
+                    esc_html__( 'Invalid file type. Please upload a ZIP file.', 'bible-plugin' ),
+                    [ 'status' => 400 ]
+                );
+            }
+
+
+            // Use the temporary uploaded file path directly
+            $tmp_path = isset( $_FILES['file']['tmp_name'] ) ? (string) $_FILES['file']['tmp_name'] : '';
+            if ( ! $tmp_path || ! file_exists( $tmp_path ) ) {
+                return new \WP_Error(
+                    'no_file',
+                    esc_html__( 'No file was uploaded.', 'bible-plugin' ),
+                    [ 'status' => 400 ]
+                );
+            }
+
+            try {
+                container()->get( ParatextBibles::class )->extract_and_add( $tmp_path );
+            } catch ( \Throwable $e ) {
+                return new \WP_Error( 'upload_failed', $e->getMessage(), [ 'status' => 400 ] );
+            }
+        } else {
+            // Branch 2: JSON upload with base64-encoded file content
+            // Note: Do not sanitize base64 payload via Request::get(), it would corrupt it.
+            $file_name = sanitize_file_name( (string) $request->file_name );
+            $file_data = (string) $request->file_data; // raw base64
+
+            if ( $file_name === '' || $file_data === '' ) {
+                return new \WP_Error(
+                    'no_file',
+                    esc_html__( 'No file was uploaded.', 'bible-plugin' ),
+                    [ 'status' => 400 ]
+                );
+            }
+
+            $ext = strtolower( pathinfo( $file_name, PATHINFO_EXTENSION ) );
+            if ( $ext !== 'zip' ) {
+                return new \WP_Error(
+                    'invalid_type',
+                    esc_html__( 'Invalid file type. Please upload a ZIP file.', 'bible-plugin' ),
+                    [ 'status' => 400 ]
+                );
+            }
+
+            // If data URL provided, strip the prefix
+            if ( strpos( $file_data, ',' ) !== false && strpos( $file_data, 'data:' ) === 0 ) {
+                $parts = explode( ',', $file_data, 2 );
+                $file_data = $parts[1];
+            }
+
+            $binary = base64_decode( $file_data, true );
+            if ( $binary === false ) {
+                return new \WP_Error(
+                    'invalid_payload',
+                    esc_html__( 'Invalid file payload.', 'bible-plugin' ),
+                    [ 'status' => 400 ]
+                );
+            }
+
+            // Create a temporary file under uploads and write contents
+            $tmp = wp_tempnam( $file_name );
+            if ( ! $tmp ) {
+                return new \WP_Error(
+                    'server_error',
+                    esc_html__( 'Could not create a temporary file for upload.', 'bible-plugin' ),
+                    [ 'status' => 500 ]
+                );
+            }
+
+            $bytes = file_put_contents( $tmp, $binary );
+            if ( $bytes === false ) {
+                // phpcs:ignore WordPressVIPMinimum.Functions.RestrictedFunctions.file_ops_unlink
+                @unlink( $tmp );
+                return new \WP_Error(
+                    'server_error',
+                    esc_html__( 'Could not write uploaded file.', 'bible-plugin' ),
+                    [ 'status' => 500 ]
+                );
+            }
+
+            try {
+                container()->get( ParatextBibles::class )->extract_and_add( $tmp );
+            } catch ( \Throwable $e ) {
+                // phpcs:ignore WordPressVIPMinimum.Functions.RestrictedFunctions.file_ops_unlink
+                @unlink( $tmp );
+                return new \WP_Error( 'upload_failed', $e->getMessage(), [ 'status' => 400 ] );
+            }
+
+            // Cleanup temp file
+            // phpcs:ignore WordPressVIPMinimum.Functions.RestrictedFunctions.file_ops_unlink
+            @unlink( $tmp );
         }
-
-        // Validate file type by sanitized filename extension (avoid trusting MIME type)
-        $ext = strtolower( pathinfo( $filename, PATHINFO_EXTENSION ) );
-        if ( $ext !== 'zip' ) {
-            return new \WP_Error(
-                'invalid_type',
-                esc_html__( 'Invalid file type. Please upload a ZIP file.', 'bible-plugin' ),
-                [ 'status' => 400 ]
-            );
-        }
-
-        if ( ! class_exists( 'File_Upload_Upgrader' ) ) {
-            require_once ABSPATH . 'wp-admin/includes/class-file-upload-upgrader.php';
-        }
-
-        // The second parameter is for a GET param holding a filename, not used here.
-        $upgrader = new \File_Upload_Upgrader( 'file', '' );
-
-        // The constructor handles the upload and will wp_die on errors.
-        // The file path is available in $upgrader->package.
-        $path = $upgrader->package;
-        // phpcs:ignore WordPress.Security.NonceVerification.Missing -- REST uses X-WP-Nonce header; reading optional form field
-        $language_id = isset( $_POST['language_id'] ) ? sanitize_text_field( wp_unslash( (string) $_POST['language_id'] ) ) : null;
-
-        try {
-            container()->get( ParatextBibles::class )->extract_and_add( $path, $language_id );
-            // Success, the ArraySource service has processed the file.
-            $success_message = esc_html__( 'Paratext Bible uploaded successfully.', 'bible-plugin' );
-        } catch ( \Throwable $e ) {
-            // The ArraySource service threw an error.
-            $error_message = $e->getMessage();
-            $upgrader->cleanup();
-            return new \WP_Error( 'upload_failed', $error_message, [ 'status' => 400 ] );
-        }
-
-        // Cleanup temporary file
-        $upgrader->cleanup();
 
         // Return JSON payload with a refreshed list
         return [
@@ -93,10 +154,12 @@ class CustomBiblesController
      */
     public function update( Request $request )
     {
-        $id = isset( $request->id ) ? sanitize_text_field( $request->id ) : '';
+        // Avoid isset($request->id) as magic properties aren't recognized by isset().
+        $id = (string) $request->get( 'id', '' );
+        $id = $id !== '' ? sanitize_text_field( $id ) : '';
         $data = [];
-        if ( isset( $request->language_id ) ) {
-            $data['language_id'] = sanitize_text_field( $request->language_id );
+        if ( $request->get( 'language_id', null ) !== null ) {
+            $data['language_id'] = sanitize_text_field( (string) $request->get( 'language_id' ) );
         }
 
         if ( $id === '' ) {
@@ -137,7 +200,10 @@ class CustomBiblesController
      */
     public function delete( Request $request )
     {
-        $id = isset( $request->id ) ? sanitize_text_field( $request->id ) : '';
+        // Avoid isset($request->id) as magic properties aren't recognized by isset().
+        $id = (string) $request->get( 'id', '' );
+        $id = $id !== '' ? sanitize_text_field( $id ) : '';
+
         if ( $id === '' ) {
             return new \WP_Error(
                 'invalid_request',
@@ -147,9 +213,7 @@ class CustomBiblesController
         }
 
         $setting = container()->get( LocalBiblesSetting::class );
-        $all = $setting->all() ?: [];
-        $path = isset( $all[$id]['path'] ) ? $all[$id]['path'] : null;
-
+        $path = $setting->find( $id )['path'] ?? null;
         $ok = $setting->delete( $id );
         if ( ! $ok ) {
             return new \WP_Error(
@@ -183,7 +247,7 @@ class CustomBiblesController
      */
     public function language_search( Request $request ): array
     {
-        $code = isset( $request->code ) ? sanitize_text_field( $request->code ) : '';
+        $code = $request->code  ? sanitize_text_field( $request->code ) : '';
         $results = [];
 
         // Attempt to use a Paratext language service if available

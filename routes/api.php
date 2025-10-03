@@ -2,7 +2,7 @@
 
 use CodeZone\Bible\Controllers\Settings\AdvancedController;
 use CodeZone\Bible\Controllers\Settings\BibleFormController;
-use CodeZone\Bible\Controllers\Settings\CustomBiblesController;
+use CodeZone\Bible\Controllers\Settings\LocalBiblesController;
 use CodeZone\Bible\Controllers\Settings\CustomizationFomController;
 use CodeZone\Bible\Controllers\ScriptureController;
 use CodeZone\Bible\Controllers\LanguageController;
@@ -92,7 +92,7 @@ return [
     [
         'method' => 'POST',
         'route' => '/local-bibles/upload',
-        'callback' => [ CustomBiblesController::class, 'upload' ],
+        'callback' => [ LocalBiblesController::class, 'upload' ],
         'permission_callback' => function () {
             return current_user_can( 'manage_options' );
         },
@@ -100,7 +100,7 @@ return [
     [
         'method' => 'POST',
         'route' => '/local-bibles/delete',
-        'callback' => [ CustomBiblesController::class, 'delete' ],
+        'callback' => [ LocalBiblesController::class, 'delete' ],
         'permission_callback' => function () {
             return current_user_can( 'manage_options' );
         },
@@ -108,7 +108,7 @@ return [
     [
         'method' => 'POST',
         'route' => '/local-bibles/update',
-        'callback' => [ CustomBiblesController::class, 'update' ],
+        'callback' => [ LocalBiblesController::class, 'update' ],
         'permission_callback' => function () {
             return current_user_can( 'manage_options' );
         },
@@ -116,7 +116,7 @@ return [
     [
         'method' => 'POST',
         'route' => '/local-bibles/search',
-        'callback' => [ CustomBiblesController::class, 'language_search' ],
+        'callback' => [ LocalBiblesController::class, 'language_search' ],
         'permission_callback' => function () {
             return current_user_can( 'manage_options' );
         },

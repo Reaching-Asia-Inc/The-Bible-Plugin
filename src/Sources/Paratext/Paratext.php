@@ -297,7 +297,9 @@ class Paratext
                 $base = config( 'services.paratext.uploads_path' );
                 return $extractor->extract_to( $zip_file, $base, $folder_name );
             }
-            return $extractor->extract( $zip_file );
+            $path = $extractor->extract( $zip_file );
+            $this->set_directory( $path );
+            return $path;
         } catch ( \Throwable $e ) {
             return false;
         }

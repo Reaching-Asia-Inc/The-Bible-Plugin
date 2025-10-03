@@ -24,11 +24,14 @@ $action_base = admin_url( 'admin.php?page=bible-plugin' );
 
 $this->layout( 'layouts/settings', compact( 'tab' ) );
 ?>
-<div class="wrap" x-data="br_custom_bibles_form(<?php echo esc_attr( wp_json_encode( [
+<div class="wrap" x-data="br_local_bibles_form(<?php echo esc_attr( wp_json_encode( [
         'bibles'     => $local_bibles ?? [],
         'nonce'      => $nonce,
         'actionBase' => $action_base,
     ] ) ); ?>)" x-init="init()">
+
+    <?php $this->insert( 'partials/alerts' ); ?>
+
     <div id="local-ajax-notices" x-show="notice.message" :class="'notice is-dismissible notice-' + notice.type" style="display:none;">
         <p x-text="notice.message"></p>
         <button type="button" class="notice-dismiss" @click="notice.message=''" aria-label="<?php echo esc_attr__( 'Dismiss this notice.', 'bible-plugin' ); ?>">
@@ -41,6 +44,11 @@ $this->layout( 'layouts/settings', compact( 'tab' ) );
         printf(
             '<div class="notice notice-success is-dismissible"><p>%s</p></div>',
             esc_html( $success_message )
+        );
+    } elseif ( !empty( $error_message ) ) {
+        printf(
+            '<div class="notice notice-error is-dismissible"><p>%s</p></div>',
+            esc_html( $error_message )
         );
     } elseif ( isset( $_GET['upload-success'], $_GET['message'] ) ) {
         // Backward-compatible fallback using query parameters
@@ -57,7 +65,7 @@ $this->layout( 'layouts/settings', compact( 'tab' ) );
     <hr />
 
     <h2><?php echo esc_html__( 'Add Paratext Bible', 'bible-plugin' ); ?></h2>
-    <form id="local-bible-upload-form" x-ref="uploadForm" @submit.prevent="uploadBible" enctype="multipart/form-data" method="post" action="<?php echo esc_url( \CodeZone\Bible\api_url( 'local-bibles/upload' ) ); ?>">
+    <form id="local-bible-upload-form" x-ref="uploadForm" enctype="multipart/form-data" method="post" @submit.prevent="submit">
         <input type="hidden" name="_wpnonce" value="<?php echo esc_attr( $nonce ); ?>" />
         <table class="form-table" role="presentation">
             <tbody>
@@ -80,7 +88,7 @@ $this->layout( 'layouts/settings', compact( 'tab' ) );
             </tbody>
         </table>
         <p>
-            <sp-button variant="primary" @click="uploadBible"><?php echo esc_html__( 'Add Paratext Bible', 'bible-plugin' ); ?></sp-button>
+            <sp-button variant="primary" type="submit"><?php echo esc_html__( 'Add Paratext Bible', 'bible-plugin' ); ?></sp-button>
         </p>
     </form>
 
@@ -105,24 +113,27 @@ $this->layout( 'layouts/settings', compact( 'tab' ) );
         </template>
         <template x-for="([id, b], idx) in Object.entries(bibles)" :key="id">
             <tr :data-id="id">
-                <td><code x-text="id"></code></td>
+                <td><code x-text="b?.id"></code></td>
                 <td x-text="b?.name || ''"></td>
                 <td x-text="b?.iso || ''"></td>
                 <td x-text="b?.language || ''"></td>
                 <td>
                     <sp-textfield
                         class="language-id-input"
-                        :value="bibles[id].language_id || ''"
+                        :value="b?.language_id || ''"
                         placeholder="<?php echo esc_attr__( 'e.g., eng', 'bible-plugin' ); ?>"
-                        @input="bibles[id].language_id = $event.target.value"
+                        @input="b.language_id = $event.target.value"
                     ></sp-textfield>
                 </td>
                 <td style="max-width: 300px; word-break: break-all;">
-                    <small x-text="b?.path || ''"></small>
+                    <sp-textfield
+                        :value="b?.path || ''"
+                        readonly
+                    ></sp-textfield>
                 </td>
                 <td>
-                    <sp-button variant="secondary" class="local-bible-save" @click="saveBible(id)"><?php echo esc_html__( 'Save', 'bible-plugin' ); ?></sp-button>
-                    <sp-button variant="negative" class="local-bible-delete" @click="deleteBible(id)"><?php echo esc_html__( 'Delete', 'bible-plugin' ); ?></sp-button>
+                    <sp-button variant="secondary" class="local-bible-save" @click="saveBible(b?.id)"><?php echo esc_html__( 'Save', 'bible-plugin' ); ?></sp-button>
+                    <sp-button variant="negative" class="local-bible-delete" @click="deleteBible(b?.id)"><?php echo esc_html__( 'Delete', 'bible-plugin' ); ?></sp-button>
                 </td>
             </tr>
         </template>

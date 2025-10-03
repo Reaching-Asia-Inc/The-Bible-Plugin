@@ -3,7 +3,6 @@
  * Bible Brains Setup Form
  *
  * @var $action string
- * @var $nonce string
  * @var $tab string
  * @var $language_options array
  * @var $bible_options array

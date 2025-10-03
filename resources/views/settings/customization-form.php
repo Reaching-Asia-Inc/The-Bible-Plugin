@@ -12,13 +12,13 @@ use function CodeZone\Bible\api_url;
 
 $this->layout( 'layouts/settings', compact( 'tab' ) );
 ?>
-<form x-data="br_form(<?php echo esc_attr(
+<form method="post"
+      x-data="br_form(<?php echo esc_attr(
 	wp_json_encode(
 		array_merge(
 			[
 				'refresh'              => true,
 				'fields'               => $fields,
-				'nonce'                => $nonce,
 				'action'               => esc_url( api_url( "customization" ) ),
 				'error'                => $error ?? '',
 				'color_scheme_options' => $color_scheme_options

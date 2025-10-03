@@ -51,6 +51,7 @@ class LocalBiblesSetting
     public function update( string $key, array $data ): bool
     {
         $bibles = $this->all();
+        $key = $this->find_key( $key );
 
         // Check if the Bible exists
         if ( !isset( $bibles[$key] ) ) {
@@ -70,9 +71,10 @@ class LocalBiblesSetting
      * @param string $key The Bible key.
      * @return bool True on success, false on failure.
      */
-    public function delete( string $key ): bool
+    public function delete( string $id ): bool
     {
         $bibles = $this->all();
+        $key = $this->find_key( $id );
 
         // Check if the Bible exists
         if ( !isset( $bibles[$key] ) ) {
@@ -84,6 +86,16 @@ class LocalBiblesSetting
 
         // Save the updated list
         return $this->save( $bibles );
+    }
+
+    public function find( string $id ): ?array
+    {
+        return array_find( $this->all(), fn( $item ) => $item['id'] === $id );
+    }
+
+    public function find_key( string $id ): ?string
+    {
+        return array_find_key( $this->all(), fn( $item ) => $item['id'] === $id );
     }
 
     /**

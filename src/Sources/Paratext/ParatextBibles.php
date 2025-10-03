@@ -109,16 +109,15 @@ class ParatextBibles extends ArraySource
      * @return mixed Returns the result of the directory addition operation or false on failure
      * @throws \Exception
      */
-    public function extract_and_add( string $zip_file, $key, ?string $folder_name = null )
+    public function extract_and_add( string $zip_file, ?string $folder_name = null )
     {
         // Use the Paratext instance to extract zip to keep backward compatibility with tests
         $paratext = $this->paratext->factory();
         $path = $paratext->extract_zip( $zip_file, $folder_name );
+        $key = $paratext->get_translation_abbreviation();
         if ( !$path ) {
             return false;
         }
-        // Bind the extracted path to the instance and add
-        $paratext->set_directory( $path );
         return $this->add_dir( $key, $path, $paratext );
     }
 
