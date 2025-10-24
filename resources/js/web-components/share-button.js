@@ -7,6 +7,7 @@ import {__} from "../helpers.js";
 import {css} from "@spectrum-web-components/base";
 import {$share, $canShare} from "../stores/share.js";
 import {$selectionCount} from "../stores/selection.js";
+import {trackEvent} from "../analytics.js";
 
 @customElement('tbp-share-button')
 export class SelectionButton extends withStores(TBPElement, [$canShare, $selectionCount]) {
@@ -26,6 +27,17 @@ export class SelectionButton extends withStores(TBPElement, [$canShare, $selecti
     return $selectionCount.get() !== 0;
   }
 
+  handleShareClick() {
+    try {
+      trackEvent('tbp_share_click', {
+        selection_count: $selectionCount.get()
+      });
+    } catch (e) {
+      // noop
+    }
+    $share();
+  }
+
   render() {
     if (!$canShare.get()) {
       return nothing;
@@ -38,7 +50,7 @@ export class SelectionButton extends withStores(TBPElement, [$canShare, $selecti
         ?selected="${this.displayCount}"
         icon-only="${!this.displayCount}"
         label="${this.displayCount ? __("Selected") : ""}"
-        @click=${() => $share()}
+        @click=${() => this.handleShareClick()}
       >
         ${this.displayCount ?  html`
           <b slot="icon" class="count">

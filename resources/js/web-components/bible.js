@@ -11,10 +11,12 @@ import {$error} from "../stores/error.js"
 import {$reference} from "../stores/reference.js";
 import {__} from "../helpers.js";
 import {$hasVideo} from "../stores/video.js";
+import {trackEvent} from "../analytics.js";
 
 @customElement('tbp-bible')
 export class Bible extends withStores(TBPElement, [$query, $bookName, $chapter, $fullScreen, $message, $error, $hasVideo]) {
     @property({type: String}) reference = 'JHN 1'
+    _lastViewKey = '';
 
     static get styles() {
         return [
@@ -72,6 +74,29 @@ export class Bible extends withStores(TBPElement, [$query, $bookName, $chapter, 
         });
     }
 
+    updated() {
+        // Track bible page view when loading finishes and reference changes
+        try {
+            const q = $query.get();
+            if (!q.loading) {
+                const book = $bookName.get();
+                const chapter = $chapter.get();
+                const key = `${book || ''}|${chapter || ''}`;
+                if (key && key !== this._lastViewKey) {
+                    this._lastViewKey = key;
+                    trackEvent('tbp_bible_page_view', {
+                        book: book || '',
+                        chapter: chapter || '',
+                        has_video: !!$hasVideo.get(),
+                        full_screen: !!$fullScreen.get()
+                    });
+                }
+            }
+        } catch (e) {
+            // noop
+        }
+    }
+
     render() {
         if ($query.get().loading) {
             return this.renderLoader();
@@ -104,6 +129,11 @@ export class Bible extends withStores(TBPElement, [$query, $bookName, $chapter, 
     }
 
     handleErrorClick() {
+        try {
+            trackEvent('tbp_error_reload_click', {});
+        } catch (e) {
+            // noop
+        }
         const url = new URL(window.location.href);
         window.location.href = url.protocol + "//" + url.host + url.pathname;
     }

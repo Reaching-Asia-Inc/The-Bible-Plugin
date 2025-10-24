@@ -7,9 +7,12 @@ import {$media, findContent} from "../stores/media.js";
 import {$hasText, $text} from "../stores/text.js";
 import {$direction} from "../stores/bible.js";
 import {nothing} from "lit";
+import {trackEvent} from "../analytics.js";
 
 @customElement('tbp-reader')
 export class Reader extends withStores(TBPElement, [$referenceData, $media, $direction]) {
+    _lastTrackedRefKey = '';
+
     get content() {
         return findContent('text') ?? [];
     }
@@ -28,6 +31,26 @@ export class Reader extends withStores(TBPElement, [$referenceData, $media, $dir
                 }
             `
         ];
+    }
+
+    updated() {
+        // Track when a new reference's text content is available
+        try {
+            if ($hasText.get()) {
+                const ref = $referenceData.get();
+                const key = JSON.stringify(ref || {});
+                if (key && key !== this._lastTrackedRefKey) {
+                    this._lastTrackedRefKey = key;
+                    trackEvent('tbp_reference_loaded', {
+                        reference: ref?.reference || ref?.ref || '',
+                        direction: $direction.get() || '',
+                        media_type: 'text'
+                    });
+                }
+            }
+        } catch (e) {
+            // noop
+        }
     }
 
     render() {

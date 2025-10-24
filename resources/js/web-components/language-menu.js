@@ -3,6 +3,7 @@ import {css, html, nothing} from "@spectrum-web-components/base";
 import {TBPElement} from "./base.js";
 import {__, apiUrl} from "../helpers.js";
 import {$fullScreen} from "../stores/full-screen.js";
+import {trackEvent} from "../analytics.js";
 
 @customElement('tbp-language-menu')
 export class LanguageMenu extends TBPElement {
@@ -192,6 +193,15 @@ export class LanguageMenu extends TBPElement {
             url.searchParams.set('fullScreen', '1');
         } else {
             url.searchParams.delete('fullScreen');
+        }
+
+        try {
+            // Track language change
+            trackEvent('tbp_language_change', {
+                language: this.selectedLanguage || ''
+            });
+        } catch (e) {
+            // noop
         }
 
         // Notify listeners
