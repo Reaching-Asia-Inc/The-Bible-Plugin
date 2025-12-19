@@ -185,9 +185,6 @@ class Scripture {
 
         // Process media types
         $media = $this->process_media_types( $parameters, $language, $bible, $book );
-        if ( !count( $media ) ) {
-            dd( $params, $this->resolve_language( $parameters ) );
-        }
 
         // Determine the source based on the bible data
         $source = isset( $bible['source'] ) ? $bible['source'] : 'bible-brains';
@@ -237,7 +234,7 @@ class Scripture {
         if ( !$bible ) {
             $bible = $this->bibles->find_or_default( [
                 'code' => $requestedBible,
-                'language_id' => $language['id']
+                'language_id' => $language['id'] ?? null
             ] );
         }
 
@@ -252,17 +249,25 @@ class Scripture {
      * @return array
      * @throws BiblePluginException
      */
-    private function resolve_book( array $parameters, array $bible ): array
+    private function resolve_book( array $parameters, ?array $bible ): array
     {
+        if ( !$bible || empty( $bible['books'] ) ) {
+             throw new BiblePluginException(
+                __( 'Bible version not found or contains no books.', 'bible-plugin' )
+            );
+        }
+
         $filtered_books = array_filter($bible['books'], function ( $book ) use ( $parameters ) {
-            return strtolower( $book['id'] ) == strtolower( $parameters['book'] )
-                || strtolower( $book['name'] ) == strtolower( $parameters['book'] );
+            return strtolower( $book['id'] ?? '' ) == strtolower( $parameters['book'] ?? '' )
+                || strtolower( $book['name'] ?? '' ) == strtolower( $parameters['book'] ?? '' );
         });
         $book = !empty( $filtered_books ) ? reset( $filtered_books ) : null;
 
         if ( !$book ) {
+            $bibleName = $bible['name'] ?? $bible['abbr'] ?? 'unknown bible';
+            $bookName = $parameters['book'] ?? 'unknown book';
             throw new BiblePluginException(
-                esc_attr( "Bible, {$bible['name']}, does not contain {$parameters['book']}." )
+                esc_attr( "Bible, {$bibleName}, does not contain {$bookName}." )
             );
         }
 

@@ -13,7 +13,8 @@ export class Footer extends withStores(TBPElement, [$fullScreen]) {
             super.styles,
             css`
                 footer {
-                    margin: var(--tpb-footer-margin, 25px 0);
+                    max-width: var(--wp--style--global--wide-size, 1200px);
+                    margin: var(--tpb-footer-margin, 25px auto);
                     display: flex;
                     justify-content: space-between;
                     align-items: center;

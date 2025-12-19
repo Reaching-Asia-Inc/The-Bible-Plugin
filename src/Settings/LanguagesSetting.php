@@ -7,6 +7,7 @@ use CodeZone\Bible\Exceptions\BiblePluginException;
 use CodeZone\Bible\Services\Locale;
 use CodeZone\Bible\Sources\Aggregators\LanguageAggregator;
 use function CodeZone\Bible\config;
+use function CodeZone\Bible\container;
 use function CodeZone\Bible\set_plugin_option;
 
 /**
@@ -219,8 +220,8 @@ class LanguagesSetting
      */
     public function format( array $items ) {
         foreach ( $items as $idx => $item ) {
-            $items[$idx] = $this->format_language(
-                $this->hydrate_language( $item )
+            $items[$idx] = $this->hydrate_language(
+                $this->format_language( $item )
             );
         }
         return $items;
@@ -295,6 +296,30 @@ class LanguagesSetting
                 $item['source'] = $language['source'];
             }
         }
+
+        if ( !empty( $item['bibles'] ) ) {
+            $bible_resource = container()->get( \CodeZone\Bible\Resources\Bible::class );
+            $bible_id = $item['bibles'];
+            $bible = $bible_resource->find( $bible_id );
+            if ( $bible ) {
+                if ( is_array( $bible_id ) ) {
+                    $names = array_map( fn( $b ) => $b['name'] ?? $b['abbr'] ?? $b['code'] ?? '', $bible );
+                    $item['bible_name'] = implode( ', ', array_filter( $names ) );
+                    $item['bibles_data'] = array_map( fn( $b ) => [
+                        'id' => $b['id'] ?? $b['abbr'] ?? $b['code'] ?? '',
+                        'name' => $b['name'] ?? $b['abbr'] ?? $b['code'] ?? '',
+                    ], $bible );
+                } else {
+                    $name = $bible['name'] ?? $bible['abbr'] ?? $bible['code'] ?? $bible_id;
+                    $item['bible_name'] = $name;
+                    $item['bibles_data'] = [ [
+                        'id' => $bible['id'] ?? $bible['abbr'] ?? $bible['code'] ?? $bible_id,
+                        'name' => $name,
+                    ] ];
+                }
+            }
+        }
+
         return $item;
     }
 }
