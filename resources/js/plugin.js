@@ -35,6 +35,7 @@ import '@spectrum-web-components/top-nav/sp-top-nav-item.js';
 import '@spectrum-web-components/toast/sp-toast.js';
 import 'iconify-icon';
 
+import "./web-components/verse-popover.js"
 import "./web-components/content.js"
 
 import "./web-components/dialog-wrapper.js"
@@ -59,6 +60,33 @@ import "./web-components/header.js"
 
 import {loaded} from "./helpers.js";
 
+window.tbp = () => {
+    document.querySelectorAll('a[href^="#tbp"]').forEach((link) => {
+        if (link.closest('tbp-verse-popover')) return; // Avoid double processing
+
+        const href = link.getAttribute('href');
+        const reference = decodeURIComponent(href.replace(/^#tbp-?/, ''));
+        const popover = document.createElement('tbp-verse-popover');
+
+        // Transfer all attributes (bible, language, etc.)
+        Array.from(link.attributes).forEach(attr => {
+            if (attr.name !== 'href' && attr.name !== 'class') {
+                popover.setAttribute(attr.name, attr.value);
+            }
+        });
+
+        // Preserve original classes if any
+        if (link.className) {
+            popover.className = link.className;
+        }
+
+        popover.setAttribute('reference', reference);
+        popover.innerHTML = link.innerHTML;
+        link.parentNode.replaceChild(popover, link);
+    });
+};
+
 loaded(() => {
     document.querySelectorAll('.tbp-cloak').forEach((el) => el.classList.remove('tbp-cloak'));
+    window.tbp();
 });
