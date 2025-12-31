@@ -5,11 +5,10 @@ namespace CodeZone\Bible\Controllers\Settings;
 use CodeZone\Bible\Requests\RequestInterface as Request;
 use CodeZone\Bible\Services\BibleBrainsKeys;
 use CodeZone\Bible\Services\MediaTypes;
+use CodeZone\Bible\Settings\LanguagesSetting;
 use Exception;
 use function CodeZone\Bible\admin_path;
 use function CodeZone\Bible\container;
-use function CodeZone\Bible\get_plugin_option;
-use function CodeZone\Bible\set_plugin_option;
 use function CodeZone\Bible\transaction;
 use function CodeZone\Bible\validate;
 use function CodeZone\Bible\view;
@@ -32,6 +31,7 @@ class BibleFormController {
         // Service initialization
         $keys = container()->get( BibleBrainsKeys::class );
         $media_type_service = container()->get( MediaTypes::class );
+        $languages_setting = container()->get( LanguagesSetting::class );
 
         // Key validation
         if ( !$keys->random() ) {
@@ -44,7 +44,7 @@ class BibleFormController {
             'bible_brains_key' => $keys->field_value(),
             'bible_brains_key_instructions' => $keys->field_instructions(),
             'bible_brains_key_readonly' => $keys->has_override(),
-            'languages' => is_array( get_plugin_option( 'languages' ) ) ? get_plugin_option( 'languages' ) : [],
+            'languages' => $languages_setting->all() ?: [],
         ];
 
         // Render view
@@ -178,10 +178,11 @@ class BibleFormController {
         unset( $lang );
 
         $languages_to_save = array_values( $merged );
+        $languages_setting = container()->get( LanguagesSetting::class );
 
-        $result = transaction(function () use ( $languages_to_save ) {
-            return set_plugin_option( 'languages', $languages_to_save );
-        });
+        $result = transaction( function () use ( $languages_to_save, $languages_setting ) {
+            return $languages_setting->save( $languages_to_save );
+        } );
 
         if ( $result !== true ) {
             return new \WP_Error(

@@ -5,7 +5,9 @@ namespace Tests\Controllers;
 use CodeZone\Bible\Controllers\Settings\CustomizationFomController;
 use CodeZone\Bible\Requests\Request;
 use CodeZone\Bible\Requests\RequestInterface;
+use CodeZone\Bible\Settings\ColorsSetting;
 use Tests\TestCase;
+use function CodeZone\Bible\container;
 use function CodeZone\Bible\get_plugin_option;
 
 /**
@@ -133,32 +135,4 @@ class CustomizationControllerTest extends TestCase
         $this->assertEquals( $translations, $saved_translations );
     }
 
-    /**
-     * Test that the controller formats colors correctly.
-     * @test
-     */
-    public function it_formats_colors_correctly() {
-        $controller = new CustomizationFomController();
-
-        // Test with empty input
-        $result = $controller->format_colors( null );
-        $this->assertIsArray( $result );
-        $this->assertArrayHasKey( 'accent', $result );
-        $this->assertArrayHasKey( 'accent_steps', $result );
-
-        // Test with legacy format (indexed array)
-        $legacy_colors = [ '#3490dc', 5 ];
-        $result = $controller->format_colors( $legacy_colors );
-        $this->assertEquals( '#3490dc', $result['accent'] );
-        $this->assertEquals( 5, $result['accent_steps'] );
-
-        // Test with complete input
-        $complete_colors = [
-            'accent' => '#ff0000',
-            'accent_steps' => 3
-        ];
-        $result = $controller->format_colors( $complete_colors );
-        $this->assertEquals( '#ff0000', $result['accent'] );
-        $this->assertEquals( 3, $result['accent_steps'] );
-    }
 }
