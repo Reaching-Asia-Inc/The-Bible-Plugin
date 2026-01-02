@@ -87,6 +87,21 @@ class BibleBrainsFormControllerTest extends TestCase
 
         // Assert that the languages were saved to the plugin options
         $saved_languages = \CodeZone\Bible\get_plugin_option( 'languages' );
-        $this->assertEquals( $languages, $saved_languages );
+
+        $expected_languages = [
+            [
+                'value'         => 'eng',
+                'itemText'      => 'English',
+                'bibles'        => [ 'ENGKJV' ],
+                'media_types'   => 'audio,video,text',
+                'is_default'    => 1,
+                'default_bible' => 'ENGKJV',
+                'id'            => null,
+                'code'          => null,
+                'source'        => null,
+            ]
+        ];
+
+        $this->assertEquals( $expected_languages, $saved_languages );
     }
 }
