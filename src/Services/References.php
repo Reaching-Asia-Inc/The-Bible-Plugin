@@ -123,9 +123,9 @@ class References {
         $reference = str_replace( '—', '-', $reference );
 
         // Add space between letters and digits if missing (e.g. John3 -> John 3)
-        $reference = preg_replace( '/([a-zA-Z])(\d)/', '$1 $2', $reference );
+        $reference = preg_replace('/([a-zA-Z])(\d)/', '$1 $2', $reference);
         // Add space at start between digit and letters (e.g. 1John -> 1 John)
-        $reference = preg_replace( '/^(\d)([a-zA-Z])/', '$1 $2', $reference );
+        $reference = preg_replace('/^(\d)([a-zA-Z])/', '$1 $2', $reference);
 
         return $reference;
     }
