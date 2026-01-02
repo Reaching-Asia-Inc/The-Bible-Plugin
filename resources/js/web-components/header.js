@@ -5,10 +5,11 @@ import {withStores} from "@nanostores/lit";
 import {$query} from "../stores/query.js";
 import {$bookName} from "../stores/book.js";
 import {$chapter} from "../stores/chapter.js";
+import {$fullScreen} from "../stores/full-screen.js";
 import {$message} from "../stores/message.js"
 
 @customElement('tbp-header')
-export class Header extends withStores(TBPElement, [$query, $bookName, $chapter, $message]) {
+export class Header extends withStores(TBPElement, [$query, $bookName, $chapter, $message, $fullScreen]) {
     @property({type: String}) text = '';
 
     static get styles() {
@@ -21,8 +22,16 @@ export class Header extends withStores(TBPElement, [$query, $bookName, $chapter,
                     width: 100%;
                 }
 
-                tbp-bible-menu {
-                    margin-left: auto;
+                sp-top-nav-item {
+                    max-width: var(--tbp-header-item-max-width, 120px);
+                    overflow: hidden;
+                    text-overflow: ellipsis;
+                    white-space: nowrap;
+                }
+
+                sp-top-nav {
+                    max-width: var(--wp--style--global--wide-size, 1200px);
+                    margin: 0 auto;
                 }
 
                 #message {
@@ -37,18 +46,25 @@ export class Header extends withStores(TBPElement, [$query, $bookName, $chapter,
 
     render() {
         const {loading} = $query.get();
+        const isFullScreen = $fullScreen.get();
 
         return html`
-            <sp-top-nav size="m">
-                <sp-top-nav-item size="m"><strong>${loading ? html`
-                    <sp-progress-circle
-                            size="s"
-                            label="Loading bible..."
-                            indeterminate
-                    ></sp-progress-circle>` : $bookName.get() + " " + $chapter.get()}</strong></sp-top-nav-item>
+
+            <sp-top-nav size="m" style="${isFullScreen ? '--tbp-header-item-max-width: none' : ''}">
+                <sp-top-nav-item size="m" title="${$bookName.get() + " " + $chapter.get()}">
+                    ${loading ? html`
+                        <sp-progress-circle
+                                size="s"
+                                label="Loading bible..."
+                                indeterminate
+                        ></sp-progress-circle>` : $bookName.get() + " " + $chapter.get()}
+                </sp-top-nav-item>
                 ${this.renderMessage()}
-                <tbp-bible-menu></tbp-bible-menu>
-            </sp-top-nav>`
+                <div style="margin-inline-start: auto; display: flex; align-items: center;">
+                  <tbp-bible-menu></tbp-bible-menu>
+                </div>
+            </sp-top-nav>
+        `
     }
 
     renderMessage() {

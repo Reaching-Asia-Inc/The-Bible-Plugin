@@ -94,6 +94,17 @@ class BibleAggregator extends Aggregator
      */
     public function find( $id, array $params ): ?array
     {
+        if ( is_array( $id ) ) {
+            $items = [];
+            foreach ( $id as $single_id ) {
+                $item = $this->find( $single_id, $params );
+                if ( $item ) {
+                    $items[] = $item;
+                }
+            }
+            return $items;
+        }
+
         return $this->aggregate_item(
             $this->usx_bibles->find( $id ),
             $this->bb_bibles->find( $id, $params )
@@ -107,7 +118,7 @@ class BibleAggregator extends Aggregator
      * @return array An array containing the data with source information.
      */
     public function language_default( $language_id ): ?array {
-        $bb_bible = $this->bb_bibles->language_defualt( $language_id );
+        $bb_bible = $this->bb_bibles->language_default( $language_id );
         $language_code = null;
         if ( $bb_bible && is_numeric( $language_id ) ) {
             $language_code = $bb_bible['iso'] ?? null;
