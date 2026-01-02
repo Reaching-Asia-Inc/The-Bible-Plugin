@@ -104,11 +104,19 @@ class LanguageTest extends TestCase
             'value' => '6414',
             'code' => 'eng',
             'itemText' => 'English',
-            'bibles' => 'ENGESV',
+            'bibles' => [ 'ENGESV' ],
             'is_default' => true,
             'id' => 5414,
             'media_types' => 'text,audio-video,video',
-            'source' => 'bible-brains'
+            'source' => 'bible-brains',
+            'default_bible' => 'ENGESV',
+            'bible_name' => 'English Standard Version®',
+            'bibles_data' => [
+                [
+                    'id' => 'ENGESV',
+                    'name' => 'English Standard Version®',
+                ]
+            ],
         ];
 
         // Assert that the result is the expected language config
@@ -234,7 +242,7 @@ class LanguageTest extends TestCase
             'id' => 'spa',
             'value' => 'spa',
             'itemText' => 'Spanish',
-            'bibles' => 'SPASBA',
+            'bibles' => [ 'SPASBA' ],
             'code' => 'spa',
             'media_types' => 'text,audio-video,video',
             'source' => 'bible-brains'
@@ -389,12 +397,13 @@ class LanguageTest extends TestCase
         $expected = [
             'value' => 'spa',
             'itemText' => 'Spanish',
-            'bibles' => 'SPASBA',
+            'bibles' => [ 'SPASBA' ],
             'is_default' => true,
             'id' => 'spa',
             'media_types' => 'text,audio-video,video',
             'code' => 'spa',
             'source' => 'bible-brains',
+            'default_bible' => 'SPASBA',
         ];
 
         // Assert that the result is the language marked as default
@@ -444,11 +453,18 @@ class LanguageTest extends TestCase
         $expected = [
             'value' => 'eng',
             'itemText' => 'English',
-            'bibles' => 'ENGESV',
+            'bibles' => [ 'ENGESV' ],
             'id' => 5414,
             'code' => 'eng',
             'media_types' => 'text,audio-video,video',
-            'source' => 'bible-brains'
+            'source' => 'bible-brains',
+            'bible_name' => 'English Standard Version®',
+            'bibles_data' => [
+                [
+                    'id' => 'ENGESV',
+                    'name' => 'English Standard Version®',
+                ]
+            ],
         ];
 
         // Assert that the result is the first language in the config
