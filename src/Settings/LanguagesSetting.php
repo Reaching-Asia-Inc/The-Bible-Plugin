@@ -236,43 +236,43 @@ class LanguagesSetting
      */
     private function format_language( array $item ): array {
         // Migrate 'bible' => 'bibles' for backward compatibility
-        if ( (isset( $item['bible'] ) && $item['bible'] !== null && $item['bible'] !== '')
-            && (!isset( $item['bibles'] ) || empty( $item['bibles'] )) ) {
-            $item['bibles'] = [$item['bible']];
-            unset($item['bible']);
+        if ( ( isset( $item['bible'] ) && $item['bible'] !== null && $item['bible'] !== '' )
+            && ( !isset( $item['bibles'] ) || empty( $item['bibles'] ) ) ) {
+            $item['bibles'] = [ $item['bible'] ];
+            unset( $item['bible'] );
         }
 
         // Normalize 'bibles' to an array of unique, non-empty strings
         if ( isset( $item['bibles'] ) ) {
             if ( is_string( $item['bibles'] ) ) {
                 // Support comma-separated storage formats
-                $parts = array_map('trim', explode(',', $item['bibles']));
+                $parts = array_map( 'trim', explode( ',', $item['bibles'] ) );
                 $item['bibles'] = $parts;
             }
             if ( !is_array( $item['bibles'] ) ) {
                 $item['bibles'] = [];
             }
 
-            $item['bibles'] = array_values(array_unique(array_filter($item['bibles'], static function ($v) {
-                return is_string($v) && $v !== '';
+            $item['bibles'] = array_values(array_unique(array_filter($item['bibles'], static function ( $v ) {
+                return is_string( $v ) && $v !== '';
             })));
         } else {
             $item['bibles'] = [];
         }
 
         // Ensure default_bible presence/consistency when is_default is true
-        $isDefault = !empty($item['is_default']);
+        $isDefault = !empty( $item['is_default'] );
         $defaultBible = $item['default_bible'] ?? null;
 
         // If default selected but no default_bible set, pick first available bible
-        if ( $isDefault && (empty($defaultBible)) && !empty($item['bibles']) ) {
+        if ( $isDefault && ( empty( $defaultBible ) ) && !empty( $item['bibles'] ) ) {
             $item['default_bible'] = $item['bibles'][0];
             $defaultBible = $item['default_bible'];
         }
 
         // If a default_bible exists but not within bibles, add it to bibles
-        if ( !empty($defaultBible) && is_string($defaultBible) && !in_array($defaultBible, $item['bibles'], true) ) {
-            $item['bibles'] = array_values(array_unique(array_merge([$defaultBible], $item['bibles'])));
+        if ( !empty( $defaultBible ) && is_string( $defaultBible ) && !in_array( $defaultBible, $item['bibles'], true ) ) {
+            $item['bibles'] = array_values( array_unique( array_merge( [ $defaultBible ], $item['bibles'] ) ) );
         }
 
         return $item;
@@ -312,10 +312,12 @@ class LanguagesSetting
                 } else {
                     $name = $bible['name'] ?? $bible['abbr'] ?? $bible['code'] ?? $bible_id;
                     $item['bible_name'] = $name;
-                    $item['bibles_data'] = [ [
+                    $item['bibles_data'] = [
+[
                         'id' => $bible['id'] ?? $bible['abbr'] ?? $bible['code'] ?? $bible_id,
                         'name' => $name,
-                    ] ];
+                    ]
+];
                 }
             }
         }

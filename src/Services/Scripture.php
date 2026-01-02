@@ -223,7 +223,7 @@ class Scripture {
     {
         // Prefer explicit bible parameter; otherwise use the language's default_bible if available
         $requestedBible = $parameters['bible'] ?? null;
-        if ( !$requestedBible && !empty($language['default_bible']) ) {
+        if ( !$requestedBible && !empty( $language['default_bible'] ) ) {
             $requestedBible = $language['default_bible'];
         }
 
@@ -252,7 +252,7 @@ class Scripture {
     private function resolve_book( array $parameters, ?array $bible ): array
     {
         if ( !$bible || empty( $bible['books'] ) ) {
-             throw new BiblePluginException(
+            throw new BiblePluginException(
                 __( 'Bible version not found or contains no books.', 'bible-plugin' )
             );
         }

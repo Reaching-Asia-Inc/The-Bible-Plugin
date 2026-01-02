@@ -80,47 +80,47 @@ class BibleFormController {
 
         // Normalize and merge duplicate languages (by 'value'), combining bible versions
         $merged = [];
-        $languages = is_array($languages) ? $languages : [];
+        $languages = is_array( $languages ) ? $languages : [];
         foreach ( $languages as $lang ) {
-            if ( !is_array($lang) ) {
+            if ( !is_array( $lang ) ) {
                 continue;
             }
-            $key = strtolower(trim((string)($lang['value'] ?? '')));
+            $key = strtolower( trim( (string) ( $lang['value'] ?? '' ) ) );
             if ( $key === '' ) {
                 continue;
             }
 
             // Normalize bibles from legacy 'bible' or CSV/string to array
             $bibles = [];
-            if ( isset($lang['bibles']) ) {
-                if ( is_string($lang['bibles']) ) {
-                    $bibles = array_filter(array_map('trim', explode(',', $lang['bibles'])));
-                } elseif ( is_array($lang['bibles']) ) {
+            if ( isset( $lang['bibles'] ) ) {
+                if ( is_string( $lang['bibles'] ) ) {
+                    $bibles = array_filter( array_map( 'trim', explode( ',', $lang['bibles'] ) ) );
+                } elseif ( is_array( $lang['bibles'] ) ) {
                     $bibles = $lang['bibles'];
                 }
-            } elseif ( !empty($lang['bible']) ) {
-                $bibles = [ (string)$lang['bible'] ];
+            } elseif ( !empty( $lang['bible'] ) ) {
+                $bibles = [ (string) $lang['bible'] ];
             }
 
-            $bibles = array_values(array_unique(array_filter($bibles, static function ($v) {
-                return is_string($v) && $v !== '';
+            $bibles = array_values(array_unique(array_filter($bibles, static function ( $v ) {
+                return is_string( $v ) && $v !== '';
             })));
 
             // Normalize media_types as CSV union
-            $mediaCsv = (string)($lang['media_types'] ?? '');
-            $mediaParts = array_values(array_unique(array_filter(array_map('trim', explode(',', $mediaCsv)), static function ($v) {
+            $mediaCsv = (string) ( $lang['media_types'] ?? '' );
+            $mediaParts = array_values(array_unique(array_filter(array_map( 'trim', explode( ',', $mediaCsv ) ), static function ( $v ) {
                 return $v !== '';
             })));
 
-            $isDefault = !empty($lang['is_default']);
-            $defaultBible = isset($lang['default_bible']) && is_string($lang['default_bible']) ? $lang['default_bible'] : '';
+            $isDefault = !empty( $lang['is_default'] );
+            $defaultBible = isset( $lang['default_bible'] ) && is_string( $lang['default_bible'] ) ? $lang['default_bible'] : '';
 
-            if ( !isset($merged[$key]) ) {
+            if ( !isset( $merged[$key] ) ) {
                 $merged[$key] = [
                     'value' => $lang['value'] ?? null,
                     'itemText' => $lang['itemText'] ?? null,
                     'bibles' => $bibles,
-                    'media_types' => implode(',', $mediaParts),
+                    'media_types' => implode( ',', $mediaParts ),
                     'is_default' => $isDefault ? 1 : 0,
                     'default_bible' => $defaultBible,
                     // keep any identifiers if present; hydrate will fill if missing
@@ -133,11 +133,11 @@ class BibleFormController {
                 $existing = $merged[$key];
 
                 // Merge bibles
-                $mergedBibles = array_values(array_unique(array_merge($existing['bibles'], $bibles)));
+                $mergedBibles = array_values( array_unique( array_merge( $existing['bibles'], $bibles ) ) );
 
                 // Merge media types (CSV union)
-                $existingMedia = array_filter(array_map('trim', explode(',', (string)$existing['media_types'])));
-                $mergedMedia = array_values(array_unique(array_merge($existingMedia, $mediaParts)));
+                $existingMedia = array_filter( array_map( 'trim', explode( ',', (string) $existing['media_types'] ) ) );
+                $mergedMedia = array_values( array_unique( array_merge( $existingMedia, $mediaParts ) ) );
 
                 // Merge defaults
                 $mergedDefault = $existing['is_default'] || $isDefault ? 1 : 0;
@@ -145,13 +145,13 @@ class BibleFormController {
 
                 $merged[$key] = array_merge($existing, [
                     'bibles' => $mergedBibles,
-                    'media_types' => implode(',', $mergedMedia),
+                    'media_types' => implode( ',', $mergedMedia ),
                     'is_default' => $mergedDefault,
                     'default_bible' => $mergedDefaultBible,
-                    'itemText' => $existing['itemText'] ?: ($lang['itemText'] ?? null),
-                    'id' => $existing['id'] ?: ($lang['id'] ?? null),
-                    'code' => $existing['code'] ?: ($lang['code'] ?? null),
-                    'source' => $existing['source'] ?: ($lang['source'] ?? null),
+                    'itemText' => $existing['itemText'] ?: ( $lang['itemText'] ?? null ),
+                    'id' => $existing['id'] ?: ( $lang['id'] ?? null ),
+                    'code' => $existing['code'] ?: ( $lang['code'] ?? null ),
+                    'source' => $existing['source'] ?: ( $lang['source'] ?? null ),
                 ]);
             }
         }
@@ -159,25 +159,25 @@ class BibleFormController {
         // Finalize default_bible validity and fallbacks
         foreach ( $merged as &$lang ) {
             // Ensure default_bible is within bibles if set
-            if ( !empty($lang['default_bible']) && is_string($lang['default_bible']) ) {
-                if ( !in_array($lang['default_bible'], $lang['bibles'], true) && !empty($lang['bibles']) ) {
+            if ( !empty( $lang['default_bible'] ) && is_string( $lang['default_bible'] ) ) {
+                if ( !in_array( $lang['default_bible'], $lang['bibles'], true ) && !empty( $lang['bibles'] ) ) {
                     // If not present, add to list at front to keep it consistent
-                    array_unshift($lang['bibles'], $lang['default_bible']);
-                    $lang['bibles'] = array_values(array_unique($lang['bibles']));
+                    array_unshift( $lang['bibles'], $lang['default_bible'] );
+                    $lang['bibles'] = array_values( array_unique( $lang['bibles'] ) );
                 }
             }
             // If language is default but default_bible missing, derive from first bible if available
-            if ( !empty($lang['is_default']) && empty($lang['default_bible']) && !empty($lang['bibles']) ) {
+            if ( !empty( $lang['is_default'] ) && empty( $lang['default_bible'] ) && !empty( $lang['bibles'] ) ) {
                 $lang['default_bible'] = $lang['bibles'][0];
             }
             // Persist bibles as array for storage; formatter will keep it normalized
-            if ( !is_array($lang['bibles']) ) {
+            if ( !is_array( $lang['bibles'] ) ) {
                 $lang['bibles'] = [];
             }
         }
-        unset($lang);
+        unset( $lang );
 
-        $languagesToSave = array_values($merged);
+        $languagesToSave = array_values( $merged );
 
         $result = transaction(function () use ( $languagesToSave ) {
             return set_plugin_option( 'languages', $languagesToSave );
