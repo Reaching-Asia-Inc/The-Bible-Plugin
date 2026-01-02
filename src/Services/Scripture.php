@@ -222,18 +222,18 @@ class Scripture {
     private function resolve_bible( array $parameters, array $language ): ?array
     {
         // Prefer explicit bible parameter; otherwise use the language's default_bible if available
-        $requestedBible = $parameters['bible'] ?? null;
-        if ( !$requestedBible && !empty( $language['default_bible'] ) ) {
-            $requestedBible = $language['default_bible'];
+        $requested_bible = $parameters['bible'] ?? null;
+        if ( !$requested_bible && !empty( $language['default_bible'] ) ) {
+            $requested_bible = $language['default_bible'];
         }
 
-        $bible = $requestedBible
-            ? $this->bibles->find( $requestedBible )
+        $bible = $requested_bible
+            ? $this->bibles->find( $requested_bible )
             : null;
 
         if ( !$bible ) {
             $bible = $this->bibles->find_or_default( [
-                'code' => $requestedBible,
+                'code' => $requested_bible,
                 'language_id' => $language['id'] ?? null
             ] );
         }
@@ -264,10 +264,10 @@ class Scripture {
         $book = !empty( $filtered_books ) ? reset( $filtered_books ) : null;
 
         if ( !$book ) {
-            $bibleName = $bible['name'] ?? $bible['abbr'] ?? 'unknown bible';
+            $bible_name = $bible['name'] ?? $bible['abbr'] ?? 'unknown bible';
             $bookName = $parameters['book'] ?? 'unknown book';
             throw new BiblePluginException(
-                esc_attr( "Bible, {$bibleName}, does not contain {$bookName}." )
+                esc_attr( "Bible, {$bible_name}, does not contain {$bookName}." )
             );
         }
 
