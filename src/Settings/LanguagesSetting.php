@@ -261,18 +261,18 @@ class LanguagesSetting
         }
 
         // Ensure default_bible presence/consistency when is_default is true
-        $is_default = !empty( $item['is_default'] );
-        $default_bible = $item['default_bible'] ?? null;
+        $isDefault = !empty( $item['is_default'] );
+        $defaultBible = $item['default_bible'] ?? null;
 
         // If default selected but no default_bible set, pick first available bible
-        if ( $is_default && ( empty( $default_bible ) ) && !empty( $item['bibles'] ) ) {
+        if ( $isDefault && ( empty( $defaultBible ) ) && !empty( $item['bibles'] ) ) {
             $item['default_bible'] = $item['bibles'][0];
-            $default_bible = $item['default_bible'];
+            $defaultBible = $item['default_bible'];
         }
 
         // If a default_bible exists but not within bibles, add it to bibles
-        if ( !empty( $default_bible ) && is_string( $default_bible ) && !in_array( $default_bible, $item['bibles'], true ) ) {
-            $item['bibles'] = array_values( array_unique( array_merge( [ $default_bible ], $item['bibles'] ) ) );
+        if ( !empty( $defaultBible ) && is_string( $defaultBible ) && !in_array( $defaultBible, $item['bibles'], true ) ) {
+            $item['bibles'] = array_values( array_unique( array_merge( [ $defaultBible ], $item['bibles'] ) ) );
         }
 
         return $item;

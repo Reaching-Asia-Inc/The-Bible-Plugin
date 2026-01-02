@@ -107,22 +107,22 @@ class BibleFormController {
             })));
 
             // Normalize media_types as CSV union
-            $media_csv = (string) ( $lang['media_types'] ?? '' );
-            $media_parts = array_values(array_unique(array_filter(array_map( 'trim', explode( ',', $media_csv ) ), static function ( $v ) {
+            $mediaCsv = (string) ( $lang['media_types'] ?? '' );
+            $mediaParts = array_values(array_unique(array_filter(array_map( 'trim', explode( ',', $mediaCsv ) ), static function ( $v ) {
                 return $v !== '';
             })));
 
-            $is_default = !empty( $lang['is_default'] );
-            $default_bible = isset( $lang['default_bible'] ) && is_string( $lang['default_bible'] ) ? $lang['default_bible'] : '';
+            $isDefault = !empty( $lang['is_default'] );
+            $defaultBible = isset( $lang['default_bible'] ) && is_string( $lang['default_bible'] ) ? $lang['default_bible'] : '';
 
             if ( !isset( $merged[$key] ) ) {
                 $merged[$key] = [
                     'value' => $lang['value'] ?? null,
                     'itemText' => $lang['itemText'] ?? null,
                     'bibles' => $bibles,
-                    'media_types' => implode( ',', $media_parts ),
-                    'is_default' => $is_default ? 1 : 0,
-                    'default_bible' => $default_bible,
+                    'media_types' => implode( ',', $mediaParts ),
+                    'is_default' => $isDefault ? 1 : 0,
+                    'default_bible' => $defaultBible,
                     // keep any identifiers if present; hydrate will fill if missing
                     'id' => $lang['id'] ?? null,
                     'code' => $lang['code'] ?? null,
@@ -133,21 +133,21 @@ class BibleFormController {
                 $existing = $merged[$key];
 
                 // Merge bibles
-                $merged_bibles = array_values( array_unique( array_merge( $existing['bibles'], $bibles ) ) );
+                $mergedBibles = array_values( array_unique( array_merge( $existing['bibles'], $bibles ) ) );
 
                 // Merge media types (CSV union)
-                $existing_media = array_filter( array_map( 'trim', explode( ',', (string) $existing['media_types'] ) ) );
-                $merged_media = array_values( array_unique( array_merge( $existing_media, $media_parts ) ) );
+                $existingMedia = array_filter( array_map( 'trim', explode( ',', (string) $existing['media_types'] ) ) );
+                $mergedMedia = array_values( array_unique( array_merge( $existingMedia, $mediaParts ) ) );
 
                 // Merge defaults
-                $merged_default = $existing['is_default'] || $is_default ? 1 : 0;
-                $merged_default_bible = $existing['default_bible'] ?: $default_bible;
+                $mergedDefault = $existing['is_default'] || $isDefault ? 1 : 0;
+                $mergedDefaultBible = $existing['default_bible'] ?: $defaultBible;
 
                 $merged[$key] = array_merge($existing, [
-                    'bibles' => $merged_bibles,
-                    'media_types' => implode( ',', $merged_media ),
-                    'is_default' => $merged_default,
-                    'default_bible' => $merged_default_bible,
+                    'bibles' => $mergedBibles,
+                    'media_types' => implode( ',', $mergedMedia ),
+                    'is_default' => $mergedDefault,
+                    'default_bible' => $mergedDefaultBible,
                     'itemText' => $existing['itemText'] ?: ( $lang['itemText'] ?? null ),
                     'id' => $existing['id'] ?: ( $lang['id'] ?? null ),
                     'code' => $existing['code'] ?: ( $lang['code'] ?? null ),
@@ -177,10 +177,10 @@ class BibleFormController {
         }
         unset( $lang );
 
-        $languages_to_save = array_values( $merged );
+        $languagesToSave = array_values( $merged );
 
-        $result = transaction(function () use ( $languages_to_save ) {
-            return set_plugin_option( 'languages', $languages_to_save );
+        $result = transaction(function () use ( $languagesToSave ) {
+            return set_plugin_option( 'languages', $languagesToSave );
         });
 
         if ( $result !== true ) {

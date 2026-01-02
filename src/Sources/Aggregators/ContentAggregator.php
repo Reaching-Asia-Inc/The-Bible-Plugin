@@ -37,7 +37,7 @@ class ContentAggregator extends Aggregator
         BibleBrainsBibles $bibles,
         USXBibles $usx_bibles,
         BibleBrainsContentNormalizer $bb_normalizer,
-        USXContentNormalizer $usx_normalizer
+        USXContentNormalizer $usx_normalizer,
     ) {
         $this->bb_bibles = $bibles;
         $this->usx_bibles = $usx_bibles;
