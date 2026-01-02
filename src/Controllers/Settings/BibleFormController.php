@@ -177,10 +177,10 @@ class BibleFormController {
         }
         unset( $lang );
 
-        $languagesToSave = array_values( $merged );
+        $languages_to_save = array_values( $merged );
 
-        $result = transaction(function () use ( $languagesToSave ) {
-            return set_plugin_option( 'languages', $languagesToSave );
+        $result = transaction(function () use ( $languages_to_save ) {
+            return set_plugin_option( 'languages', $languages_to_save );
         });
 
         if ( $result !== true ) {

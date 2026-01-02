@@ -253,7 +253,7 @@ class Scripture {
     {
         if ( !$bible || empty( $bible['books'] ) ) {
             throw new BiblePluginException(
-                __( 'Bible version not found or contains no books.', 'bible-plugin' )
+                esc_html__( 'Bible version not found or contains no books.', 'bible-plugin' )
             );
         }
 
@@ -265,9 +265,9 @@ class Scripture {
 
         if ( !$book ) {
             $bible_name = $bible['name'] ?? $bible['abbr'] ?? 'unknown bible';
-            $bookName = $parameters['book'] ?? 'unknown book';
+            $book_name = $parameters['book'] ?? 'unknown book';
             throw new BiblePluginException(
-                esc_attr( "Bible, {$bible_name}, does not contain {$bookName}." )
+                esc_attr( "Bible, {$bible_name}, does not contain {$book_name}." )
             );
         }
 
