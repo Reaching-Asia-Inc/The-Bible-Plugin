@@ -134,5 +134,4 @@ class CustomizationControllerTest extends TestCase
         $this->assertEquals( $colors, $saved_colors );
         $this->assertEquals( $translations, $saved_translations );
     }
-
 }
