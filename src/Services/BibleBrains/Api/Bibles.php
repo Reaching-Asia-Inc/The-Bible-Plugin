@@ -154,4 +154,21 @@ class Bibles extends ApiService {
             'verse_end'   => $verse_end
         ]);
     }
+
+    /**
+     * Find a record by ID or multiple records by IDs.
+     *
+     * @param string|array $id Record ID or array of IDs
+     * @param array $params Additional parameters
+     * @return array              Found record(s)
+     */
+    public function find( $id, array $params = [] ): array {
+        $data = parent::find( $id, $params );
+
+        if ( is_array( $id ) && !empty( $data['data'] ) && count( $data['data'] ) > 0 ) {
+            return $data['data'][0];
+        }
+
+        return $data;
+    }
 }

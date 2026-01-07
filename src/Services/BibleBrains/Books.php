@@ -126,7 +126,6 @@ class Books {
 	 */
 	public function find( string $book, string $bible = 'ENGESV' ): ?array {
 		$books = $this->all( $bible );
-
 		return $this->pluck( $book, $books );
 	}
 
