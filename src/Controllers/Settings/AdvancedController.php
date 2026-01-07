@@ -5,9 +5,9 @@ namespace CodeZone\Bible\Controllers\Settings;
 use CodeZone\Bible\Exceptions\BiblePluginException;
 use CodeZone\Bible\Requests\RequestInterface as Request;
 use CodeZone\Bible\Services\BibleBrainsKeys;
+use CodeZone\Bible\Settings\BibleBrainsKeySetting;
 use CodeZone\Bible\Sources\BibleBrains\BibleBrainsBibles;
 use function CodeZone\Bible\container;
-use function CodeZone\Bible\set_plugin_option;
 use function CodeZone\Bible\transaction;
 use function CodeZone\Bible\validate;
 use function CodeZone\Bible\view;
@@ -76,8 +76,9 @@ class AdvancedController
         }
 
         if ( !$keys->has_override() ) {
-            $result = transaction(function () use ( $bible_brains_key ) {
-                set_plugin_option( 'bible_brains_key', $bible_brains_key );
+            $bible_brains_key_setting = container()->get( BibleBrainsKeySetting::class );
+            $result = transaction(function () use ( $bible_brains_key, $bible_brains_key_setting ) {
+                $bible_brains_key_setting->save( $bible_brains_key );
             });
 
             if ( $result !== true ) {
