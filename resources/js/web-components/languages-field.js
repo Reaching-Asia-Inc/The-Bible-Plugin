@@ -204,6 +204,15 @@ export class LanguagesField extends TBPElement {
                     </sp-field-label>
                     <pre id="shortcodes">[tbp-scripture reference="John 3:16" language="${value}" bible="${exampleBible}"]</pre>
                   </sp-field-group>
+
+                  <sp-field-group>
+                    <sp-field-label
+                      for="popover-link"
+                    >
+                      ${__('Example Popover Link')}
+                    </sp-field-label>
+                    <pre id="shortcodes">&lt;a href="#tbp-John3-16" language="${value}" bible="${exampleBible}"&gt;John 3:16&lt;/a&gt;</pre>
+                  </sp-field-group>
                 </div>
 
 
