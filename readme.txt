@@ -1,5 +1,5 @@
 === Plugin Name ===
-Contributors: incraigulous
+Contributors: codezone.io
 Donate link: https://reachingasia.com/give/
 Tags: bible, scripture, bible reader, scripture viewer, faith, embed bible
 Requires at least: 4.7
