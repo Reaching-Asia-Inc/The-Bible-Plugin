@@ -1,6 +1,7 @@
 {
   "name": "codezone/bible",
   "description": "A bible plugin for WordPress.",
+  "version": "1.0",
   "type": "project",
   "autoload": {
     "psr-4": {
