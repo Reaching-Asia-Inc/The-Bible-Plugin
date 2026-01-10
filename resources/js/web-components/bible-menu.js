@@ -9,6 +9,7 @@ import {$hasAudio, $audioOpen, $playAudio} from "../stores/audio.js";
 import {$hasVideo, $videoOpen, $playVideo} from "../stores/video.js";
 import {$availableLanguages, $selectedLanguage, $availableBibles, $selectedBible, $translationOptions, $selectedCombined, setSelectedCombined} from "../stores/settings.js";
 import {$fullScreen} from "../stores/full-screen.js";
+import {trackEvent} from "../analytics.js";
 
 import {__} from "../helpers.js"
 import {css} from "@spectrum-web-components/base";
@@ -94,7 +95,12 @@ export class BibleMenu extends withStores(TBPElement, [$otBooks, $ntBooks, $hasA
                     variant="accent"
                     label="Icon only"
                     icon-only
-                    @click=${$playAudio}
+                    @click=${() => {
+                        $playAudio();
+                        trackEvent('tbp_audio_play_click', {
+                            open: $audioOpen.get()
+                        });
+                    }}
                   >
                     ${$audioOpen.get() ? html`
                       <sp-icon-replay slot="icon"></sp-icon-replay>` : html`
@@ -135,7 +141,13 @@ export class BibleMenu extends withStores(TBPElement, [$otBooks, $ntBooks, $hasA
                     size="s"
                     value="${selectedValue}"
                     title="${label}"
-                    @change="${(e) => setSelectedCombined(e.target.value)}"
+                    @change="${(e) => {
+                        const newValue = e.target.value;
+                        setSelectedCombined(newValue);
+                        trackEvent('tbp_translation_change', {
+                            translation: newValue
+                        });
+                    }}"
                     style="margin-bottom: 0; max-width: ${isFullScreen ? 'none' : '120px'}; padding-top:10px"
             >
                 ${options.map(opt => html`

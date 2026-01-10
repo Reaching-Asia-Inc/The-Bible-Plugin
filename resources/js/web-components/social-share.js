@@ -5,6 +5,7 @@ import {html} from "lit";
 import {css} from "@spectrum-web-components/base";
 import {__} from "../helpers.js";
 import {$shareUrl, $shareText} from "../stores/share.js";
+import {trackEvent} from "../analytics.js";
 
 @customElement('tbp-social-share')
 export class SocialShare extends withStores(TBPElement, [$shareUrl, $shareText]) {
@@ -32,8 +33,13 @@ export class SocialShare extends withStores(TBPElement, [$shareUrl, $shareText])
     ];
   }
 
-  openShare(url) {
+  openShare(url, platform) {
     try {
+      trackEvent('tbp_social_share', {
+        platform: platform,
+        url: $shareUrl.get() || window.location.href,
+        text: $shareText.get() || ""
+      });
       window.open(url, "_blank", "noopener,noreferrer");
     } catch (e) {
       // ignore
@@ -61,7 +67,7 @@ export class SocialShare extends withStores(TBPElement, [$shareUrl, $shareText])
             icon-only
             quiet
             static="black"
-            @click=${() => this.openShare(this.facebookUrl)}
+            @click=${() => this.openShare(this.facebookUrl, 'facebook')}
           >
             <iconify-icon
               icon="simple-icons:facebook"
@@ -77,7 +83,7 @@ export class SocialShare extends withStores(TBPElement, [$shareUrl, $shareText])
             icon-only
             quiet
             static="black"
-            @click=${() => this.openShare(this.xUrl)}
+            @click=${() => this.openShare(this.xUrl, 'x')}
           >
             <iconify-icon
               icon="simple-icons:x"
@@ -95,7 +101,7 @@ export class SocialShare extends withStores(TBPElement, [$shareUrl, $shareText])
       <div class="row">
         <sp-button
           label="Facebook"
-          @click=${() => this.openShare(this.facebookUrl)}
+          @click=${() => this.openShare(this.facebookUrl, 'facebook')}
         >
           <iconify-icon
             icon="simple-icons:facebook"
@@ -109,7 +115,7 @@ export class SocialShare extends withStores(TBPElement, [$shareUrl, $shareText])
 
         <sp-button
           label="X"
-          @click=${() => this.openShare(this.xUrl)}
+          @click=${() => this.openShare(this.xUrl, 'x')}
         >
           <iconify-icon
             icon="simple-icons:x"

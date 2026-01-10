@@ -4,6 +4,7 @@ import {TBPElement} from "./base.js";
 import {apiUrl, reference_from_content} from "../helpers.js";
 import {$selectedLanguage, $selectedBible, $availableLanguages} from "../stores/settings.js";
 import {css} from "@spectrum-web-components/base";
+import {trackEvent} from "../analytics.js";
 
 @customElement('tbp-verse-popover')
 export class VersePopover extends TBPElement {
@@ -113,6 +114,13 @@ export class VersePopover extends TBPElement {
                 reference: reference,
                 language: language,
                 bible: bible,
+            });
+
+            trackEvent('tbp_scripture_load', {
+                reference: reference,
+                language: language,
+                bible: bible,
+                is_fallback: !!this.fallbackUsed
             });
 
             const response = await fetch(endpoint, {
