@@ -92,9 +92,12 @@ class BibleBrainsBibles extends BibleBrainsSource {
      * @return array
      * @throws BiblePluginException
      */
-    public function language_defualt( string $language_id ): array {
-        $bible = $this->for_language( $language_id );
-        return $this->find( $bible[0]['abbr'] );
+    public function language_default( string $language_id ): array {
+        $bibles = $this->for_language( $language_id );
+        if ( empty( $bibles ) ) {
+            return [];
+        }
+        return $this->find( $bibles[0]['abbr'] ?? $bibles[0]['id'] );
     }
 
     /**
@@ -107,7 +110,7 @@ class BibleBrainsBibles extends BibleBrainsSource {
     public function languages_default( array $language_codes ): array {
         $result = [];
         foreach ( $language_codes as $language_code ) {
-            $language = $this->language_defualt( $language_code );
+            $language = $this->language_default( $language_code );
             $result[] = $language;
         }
         return $result;

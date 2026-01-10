@@ -7,6 +7,7 @@ use CodeZone\Bible\Exceptions\BiblePluginException;
 use CodeZone\Bible\Services\Locale;
 use CodeZone\Bible\Sources\Aggregators\LanguageAggregator;
 use function CodeZone\Bible\config;
+use function CodeZone\Bible\container;
 use function CodeZone\Bible\set_plugin_option;
 
 /**
@@ -219,8 +220,8 @@ class LanguagesSetting
      */
     public function format( array $items ) {
         foreach ( $items as $idx => $item ) {
-            $items[$idx] = $this->format_language(
-                $this->hydrate_language( $item )
+            $items[$idx] = $this->hydrate_language(
+                $this->format_language( $item )
             );
         }
         return $items;
@@ -235,43 +236,43 @@ class LanguagesSetting
      */
     private function format_language( array $item ): array {
         // Migrate 'bible' => 'bibles' for backward compatibility
-        if ( (isset( $item['bible'] ) && $item['bible'] !== null && $item['bible'] !== '')
-            && (!isset( $item['bibles'] ) || empty( $item['bibles'] )) ) {
-            $item['bibles'] = [$item['bible']];
-            unset($item['bible']);
+        if ( ( isset( $item['bible'] ) && $item['bible'] !== null && $item['bible'] !== '' )
+            && ( !isset( $item['bibles'] ) || empty( $item['bibles'] ) ) ) {
+            $item['bibles'] = [ $item['bible'] ];
+            unset( $item['bible'] );
         }
 
         // Normalize 'bibles' to an array of unique, non-empty strings
         if ( isset( $item['bibles'] ) ) {
             if ( is_string( $item['bibles'] ) ) {
                 // Support comma-separated storage formats
-                $parts = array_map('trim', explode(',', $item['bibles']));
+                $parts = array_map( 'trim', explode( ',', $item['bibles'] ) );
                 $item['bibles'] = $parts;
             }
             if ( !is_array( $item['bibles'] ) ) {
                 $item['bibles'] = [];
             }
 
-            $item['bibles'] = array_values(array_unique(array_filter($item['bibles'], static function ($v) {
-                return is_string($v) && $v !== '';
+            $item['bibles'] = array_values(array_unique(array_filter($item['bibles'], static function ( $v ) {
+                return is_string( $v ) && $v !== '';
             })));
         } else {
             $item['bibles'] = [];
         }
 
         // Ensure default_bible presence/consistency when is_default is true
-        $isDefault = !empty($item['is_default']);
-        $defaultBible = $item['default_bible'] ?? null;
+        $is_default = !empty( $item['is_default'] );
+        $default_bible = $item['default_bible'] ?? null;
 
         // If default selected but no default_bible set, pick first available bible
-        if ( $isDefault && (empty($defaultBible)) && !empty($item['bibles']) ) {
+        if ( $is_default && ( empty( $default_bible ) ) && !empty( $item['bibles'] ) ) {
             $item['default_bible'] = $item['bibles'][0];
-            $defaultBible = $item['default_bible'];
+            $default_bible = $item['default_bible'];
         }
 
         // If a default_bible exists but not within bibles, add it to bibles
-        if ( !empty($defaultBible) && is_string($defaultBible) && !in_array($defaultBible, $item['bibles'], true) ) {
-            $item['bibles'] = array_values(array_unique(array_merge([$defaultBible], $item['bibles'])));
+        if ( !empty( $default_bible ) && is_string( $default_bible ) && !in_array( $default_bible, $item['bibles'], true ) ) {
+            $item['bibles'] = array_values( array_unique( array_merge( [ $default_bible ], $item['bibles'] ) ) );
         }
 
         return $item;
@@ -295,6 +296,32 @@ class LanguagesSetting
                 $item['source'] = $language['source'];
             }
         }
+
+        if ( !empty( $item['bibles'] ) ) {
+            $bible_resource = container()->get( \CodeZone\Bible\Resources\Bible::class );
+            $bible_id = $item['bibles'];
+            $bible = $bible_resource->find( $bible_id );
+            if ( $bible ) {
+                if ( is_array( $bible_id ) ) {
+                    $names = array_map( fn( $b ) => $b['name'] ?? $b['abbr'] ?? $b['code'] ?? '', $bible );
+                    $item['bible_name'] = implode( ', ', array_filter( $names ) );
+                    $item['bibles_data'] = array_map( fn( $b ) => [
+                        'id' => $b['id'] ?? $b['abbr'] ?? $b['code'] ?? '',
+                        'name' => $b['name'] ?? $b['abbr'] ?? $b['code'] ?? '',
+                    ], $bible );
+                } else {
+                    $name = $bible['name'] ?? $bible['abbr'] ?? $bible['code'] ?? $bible_id;
+                    $item['bible_name'] = $name;
+                    $item['bibles_data'] = [
+[
+                        'id' => $bible['id'] ?? $bible['abbr'] ?? $bible['code'] ?? $bible_id,
+                        'name' => $name,
+                    ]
+];
+                }
+            }
+        }
+
         return $item;
     }
 }

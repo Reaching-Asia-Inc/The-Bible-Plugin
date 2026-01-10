@@ -46,7 +46,7 @@ class ScriptureController
 			}
 
             $scripture = container()->get( Scripture::class );
-            $content = $scripture->by_reference( $request->reference );
+            $content = $scripture->by_reference( $request->reference, $request->all() );
             if ( $request->video ) {
                 $video = container()->get( Video::class );
                 $content = $video->hydrate_content( $content );

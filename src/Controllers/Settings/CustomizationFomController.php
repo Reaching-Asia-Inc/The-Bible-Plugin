@@ -4,10 +4,11 @@ namespace CodeZone\Bible\Controllers\Settings;
 
 use CodeZone\Bible\Requests\RequestInterface as Request;
 use CodeZone\Bible\Services\Translations;
+use CodeZone\Bible\Settings\ColorSchemeSetting;
+use CodeZone\Bible\Settings\ColorsSetting;
+use CodeZone\Bible\Settings\TranslationsSetting;
 use function CodeZone\Bible\config;
 use function CodeZone\Bible\container;
-use function CodeZone\Bible\get_plugin_option;
-use function CodeZone\Bible\set_plugin_option;
 use function CodeZone\Bible\transaction;
 use function CodeZone\Bible\validate;
 use function CodeZone\Bible\view;
@@ -26,6 +27,9 @@ class CustomizationFomController {
      */
     public function show( Request $request ): string {
         $translations_service = container()->get( Translations::class );
+        $color_scheme_setting = container()->get( ColorSchemeSetting::class );
+        $colors_setting = container()->get( ColorsSetting::class );
+        $translations_setting = container()->get( TranslationsSetting::class );
 
         $tab = "customization";
         $nonce = wp_create_nonce( 'bible-brains' );
@@ -41,26 +45,10 @@ class CustomizationFomController {
         ];
 
         $translation_options = $translations_service->options();
-        $translations = get_plugin_option( 'translations', [], true );
-
-        //Make sure all translation keys are present and remove any keys that are not present in the translation options
-        foreach ( $translation_options as $option ) {
-            if ( !array_key_exists( $option['value'], $translations ) ) {
-                $translations[$option['value']] = "";
-            }
-        }
-
-        // Get all valid translation values
-        $valid_translations = array_map(function ( $option ) {
-            return $option['value'];
-        }, $translation_options);
-
-
-        $translations = array_intersect_key( $translations, array_flip( $valid_translations ) );
         $fields = [
-            'color_scheme' => get_plugin_option( 'color_scheme', null, true ),
-            'colors'       => $this->format_colors( get_plugin_option( 'colors', null, true ) ),
-            'translations' => $translations
+            'color_scheme' => $color_scheme_setting->get(),
+            'colors'       => $colors_setting->get(),
+            'translations' => $translations_setting->get()
         ];
 
         return view("settings/customization-form",
@@ -90,10 +78,14 @@ class CustomizationFomController {
             ];
         }
 
-        $result = transaction(function () use ( $request ) {
-            set_plugin_option( 'color_scheme', $request->color_scheme );
-            set_plugin_option( 'colors', $this->format_colors( $request->colors ) );
-            set_plugin_option( 'translations', $request->translations );
+        $color_scheme_setting = container()->get( ColorSchemeSetting::class );
+        $colors_setting = container()->get( ColorsSetting::class );
+        $translations_setting = container()->get( TranslationsSetting::class );
+
+        $result = transaction(function () use ( $request, $color_scheme_setting, $colors_setting, $translations_setting ) {
+            $color_scheme_setting->save( $request->color_scheme );
+            $colors_setting->save( $request->colors );
+            $translations_setting->save( $request->translations );
         });
 
         if ( $result !== true ) {
@@ -108,40 +100,6 @@ class CustomizationFomController {
 
         return [
             'success' => true,
-        ];
-    }
-
-    /**
-     * Formats and ensures the structure of the colors array.
-     *
-     * @param array $colors The input array containing color configurations. It can be null or incomplete.
-     * @return array The formatted colors array with all required keys and defaults applied.
-     */
-    public function format_colors( $colors ) {
-        if ( !is_array( $colors ) ) {
-            $colors = [];
-        }
-
-        if ( isset( $colors[0] ) && empty( $colors['accent'] ) ) {
-            $colors['accent'] = $colors[0];
-        }
-
-        if ( isset( $colors[1] ) && empty( $colors['accent_steps'] ) ) {
-            $colors['accent_steps'] = $colors[1];
-        }
-
-        if ( empty( $colors['accent_steps'] ) ) {
-            $colors['accent_steps'] = config( 'options.defaults.colors.accent_steps' );
-        }
-
-        if ( empty( $colors['accent'] ) ) {
-            $colors['accent'] = config( 'options.defaults.colors.accent' );
-;
-        }
-
-        return [
-            'accent'         => $colors['accent'],
-            'accent_steps'   => $colors['accent_steps'],
         ];
     }
 }

@@ -51,6 +51,7 @@ $config->merge( [
                    'Bible Version'                                                                => __( 'Bible Version', 'bible-plugin' ),
                ],
                'apiUrl' => api_url(),
+               'enabledLanguages' => container()->get( \CodeZone\Bible\Settings\LanguagesSetting::class )->all(),
                'nonce' => wp_create_nonce( 'wp_rest' ),
                'mediaTypes' => container()->get( MediaTypes::class )->all(),
            ];

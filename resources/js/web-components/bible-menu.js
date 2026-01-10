@@ -7,13 +7,16 @@ import {$hasSelection} from "../stores/selection.js";
 import {$canShare} from "../stores/share.js";
 import {$hasAudio, $audioOpen, $playAudio} from "../stores/audio.js";
 import {$hasVideo, $videoOpen, $playVideo} from "../stores/video.js";
+import {$availableLanguages, $selectedLanguage, $availableBibles, $selectedBible, $translationOptions, $selectedCombined, setSelectedCombined} from "../stores/settings.js";
+import {$fullScreen} from "../stores/full-screen.js";
 
 import {__} from "../helpers.js"
 import {css} from "@spectrum-web-components/base";
 import "./language-menu.js";
+import "./social-share.js";
 
 @customElement('tbp-bible-menu')
-export class BibleMenu extends withStores(TBPElement, [$otBooks, $ntBooks, $hasAudio, $audioOpen, $hasVideo, $videoOpen, $hasSelection, $canShare]) {
+export class BibleMenu extends withStores(TBPElement, [$otBooks, $ntBooks, $hasAudio, $audioOpen, $hasVideo, $videoOpen, $hasSelection, $canShare, $availableLanguages, $selectedLanguage, $availableBibles, $selectedBible, $translationOptions, $selectedCombined, $fullScreen]) {
 
     static get styles() {
         return [
@@ -59,23 +62,33 @@ export class BibleMenu extends withStores(TBPElement, [$otBooks, $ntBooks, $hasA
     }
 
     render() {
+        const showPicker = $translationOptions.get().length > 1;
+
         return html`
             <sp-action-group style="margin-inline-start: auto;">
-                ${$canShare.get() ? html`
-                    <tbp-share-button></tbp-share-button>
+                <tbp-book-menu label="${__("Books")}"
+                               .books=${$otBooks.get().concat($ntBooks.get())}
+                               class="book-menu--mobile"></tbp-book-menu>
+                <tbp-book-menu label="${__("Old Testament")}" .books=${$otBooks.get()}
+                               class="book-menu--desktop"></tbp-book-menu>
+                <tbp-book-menu label="${__("New Testament")}" .books=${$ntBooks.get()}
+                               class="book-menu--desktop"></tbp-book-menu>
+
+                <sp-divider
+                  size="s"
+                  style="align-self: stretch; height: auto;"
+                  vertical
+                ></sp-divider>
+
+                ${showPicker ? html`
+                    ${this.renderTranslationPicker()}
                     <sp-divider
                       size="s"
                       style="align-self: stretch; height: auto;"
                       vertical
                     ></sp-divider>
-                ` : html`
-                     <tbp-selection-button></tbp-selection-button>
-                     <sp-divider
-                       size="s"
-                       style="align-self: stretch; height: auto;"
-                       vertical
-                     ></sp-divider>
-                ` }
+                ` : nothing}
+
                 ${$hasAudio.get() ? html`
                   <sp-button
                     variant="accent"
@@ -90,19 +103,45 @@ export class BibleMenu extends withStores(TBPElement, [$otBooks, $ntBooks, $hasA
                                     width="18px"
                                     height="18px"></iconify-icon>`}
                   </sp-button>
+                  <sp-divider
+                    size="s"
+                    style="align-self: stretch; height: auto;"
+                    vertical
+                  ></sp-divider>
                 `
                 : nothing}
 
-                <tbp-language-menu></tbp-language-menu>
+<!--                <tbp-language-menu></tbp-language-menu>-->
 
-                <tbp-book-menu label="${__("Books")}"
-                               .books=${$otBooks.get().concat($ntBooks.get())}
-                               class="book-menu--mobile"></tbp-book-menu>
-                <tbp-book-menu label="${__("Old Testament")}" .books=${$otBooks.get()}
-                               class="book-menu--desktop"></tbp-book-menu>
-                <tbp-book-menu label="${__("New Testament")}" .books=${$ntBooks.get()}
-                               class="book-menu--desktop"></tbp-book-menu>
+                ${$canShare.get() ? html`
+                    <tbp-share-button></tbp-share-button>
+                ` : html`
+                    <tbp-selection-button></tbp-selection-button>
+                ` }
             </sp-action-group>
+        `;
+    }
+
+    renderTranslationPicker() {
+        const options = $translationOptions.get();
+        const selectedValue = $selectedCombined.get();
+        const selectedOption = options.find(opt => opt.value === selectedValue);
+        const label = selectedOption ? selectedOption.label : '';
+        const isFullScreen = $fullScreen.get();
+
+        return html`
+            <sp-picker
+                    quiet
+                    size="s"
+                    value="${selectedValue}"
+                    title="${label}"
+                    @change="${(e) => setSelectedCombined(e.target.value)}"
+                    style="margin-bottom: 0; max-width: ${isFullScreen ? 'none' : '120px'}; padding-top:10px"
+            >
+                ${options.map(opt => html`
+                    <sp-menu-item value="${opt.value}">${opt.label}</sp-menu-item>
+                `)}
+            </sp-picker>
         `;
     }
 }

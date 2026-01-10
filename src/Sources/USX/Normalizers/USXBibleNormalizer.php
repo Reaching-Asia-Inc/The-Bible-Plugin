@@ -18,6 +18,7 @@ class USXBibleNormalizer implements Normalizer
     {
         return [
             'source'      => 'usx',
+            'id'       => $data['id'],
             'code'     => $data['id'],
             'name'     => $data['name'],
             'filesets' => [

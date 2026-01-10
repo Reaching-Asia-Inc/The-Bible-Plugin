@@ -7,6 +7,7 @@ import {$chapter} from "./chapter.js";
 import {$reference} from './reference.js';
 import {$media} from "./media.js";
 import {$language, $languageId, $languageIso} from "./language.js";
+import {$selectedLanguage, $selectedBible} from "./settings.js";
 import {$error} from "./error.js";
 import {apiUrl} from "../helpers.js";
 
@@ -17,7 +18,7 @@ if (!endpoint.includes('?')) {
     endpoint += '&'
 }
 
-export const $query = fetchState([endpoint, 'reference=', $reference, '&video=', true]);
+export const $query = fetchState([endpoint, 'reference=', $reference, '&language=', $selectedLanguage, '&bible=', $selectedBible, '&video=', true]);
 $query.listen((response) => {
     const {loading, data: body, error} = response;
     const data = body?.data ?? body;
