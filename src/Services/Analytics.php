@@ -57,12 +57,14 @@ class Analytics
         }
         $params_json = ! empty( $config_params ) ? ', ' . wp_json_encode( $config_params ) : '';
 
-        // phpcs:ignore WordPress.WP.EnqueuedResources.NonEnqueuedScript
+        // phpcs:disable WordPress.WP.EnqueuedResources.NonEnqueuedScript
         ?>
         <!-- Google tag (gtag.js) - Added by The Bible Plugin -->
         <script async src="https://www.googletagmanager.com/gtag/js?id=<?php echo esc_attr( $main_id ); ?>"></script>
-        <?php // phpcs:ignore WordPress.WP.EnqueuedResources.NonEnqueuedScript ?>
         <script>
+        <?php
+        // phpcs:enable WordPress.WP.EnqueuedResources.NonEnqueuedScript
+        ?>
             /**
              * The Bible Plugin - Google Analytics Configuration
              * This script enables tracking for Bible Reader events.
