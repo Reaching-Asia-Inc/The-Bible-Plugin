@@ -61,6 +61,7 @@ class Analytics
         ?>
         <!-- Google tag (gtag.js) - Added by The Bible Plugin -->
         <script async src="https://www.googletagmanager.com/gtag/js?id=<?php echo esc_attr( $main_id ); ?>"></script>
+        <?php // phpcs:ignore WordPress.WP.EnqueuedResources.NonEnqueuedScript ?>
         <script>
             /**
              * The Bible Plugin - Google Analytics Configuration
