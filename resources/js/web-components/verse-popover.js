@@ -6,6 +6,9 @@ import {$selectedLanguage, $selectedBible, $availableLanguages} from "../stores/
 import {css} from "@spectrum-web-components/base";
 import {trackEvent} from "../analytics.js";
 
+// Global cache for verses to make popovers "instant" on repeated hovers
+const verseCache = new Map();
+
 @customElement('tbp-verse-popover')
 export class VersePopover extends TBPElement {
     @property({type: String}) reference = "";
@@ -17,6 +20,51 @@ export class VersePopover extends TBPElement {
     @state() error = null;
     @state() fallbackUsed = false;
     @state() fallbackBibleName = "";
+
+    constructor() {
+        super();
+        this.observer = null;
+    }
+
+    connectedCallback() {
+        super.connectedCallback();
+        // Check cache immediately
+        const cacheKey = this.getCacheKey();
+        if (verseCache.has(cacheKey)) {
+            this.content = verseCache.get(cacheKey);
+        } else {
+            // Pre-fetch when it comes into view
+            this.setupIntersectionObserver();
+        }
+    }
+
+    disconnectedCallback() {
+        if (this.observer) {
+            this.observer.disconnect();
+        }
+        super.disconnectedCallback();
+    }
+
+    setupIntersectionObserver() {
+        if (!('IntersectionObserver' in window)) return;
+
+        this.observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    this.fetchVerse();
+                    this.observer.disconnect();
+                }
+            });
+        }, { rootMargin: '200px' }); // Pre-fetch 200px before it scrolls into view
+
+        this.observer.observe(this);
+    }
+
+    getCacheKey(bible = null, language = null) {
+        const b = bible || this.bible || $selectedBible.get();
+        const l = language || this.language || $selectedLanguage.get();
+        return `${this.getNormalizedReference()}|${b}|${l}`;
+    }
 
     static get styles() {
         return [
@@ -95,6 +143,12 @@ export class VersePopover extends TBPElement {
     }
 
     async fetchVerse(bibleToTry = null, languageToTry = null) {
+        const cacheKey = this.getCacheKey(bibleToTry, languageToTry);
+        if (verseCache.has(cacheKey) && !bibleToTry) {
+            this.content = verseCache.get(cacheKey);
+            return;
+        }
+
         if (this.content && !bibleToTry) return;
         if (this.loading && !bibleToTry) return;
         if (!window.$tbp || !window.$tbp.apiUrl) {
@@ -132,8 +186,8 @@ export class VersePopover extends TBPElement {
 
             const data = await response.json();
 
-            if (!response.ok) {
-                const errorMsg = data.message || data.error || 'Failed to fetch verse';
+            if (!response.ok || data.success === false) {
+                const errorMsg = data.message || data.error || (data.data && data.data.error) || 'Failed to fetch verse';
 
                 // Fallback logic: if "does not contain" error and we haven't tried fallback yet
                 if (errorMsg.includes('does not contain') && !this.fallbackUsed) {
@@ -151,6 +205,8 @@ export class VersePopover extends TBPElement {
             }
 
             this.content = data.data || data;
+            // Store in global cache
+            verseCache.set(cacheKey, this.content);
         } catch (e) {
             console.error('TBP Popover Error:', e);
             this.error = e.message;

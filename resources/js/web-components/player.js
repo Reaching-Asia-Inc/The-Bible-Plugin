@@ -75,7 +75,7 @@ export class Scripture extends TBPElement {
      * @return {void}
      */
     connectedCallback() {
-        this.addEventListener('tpb-player:initialize', this.init.bind(this))
+        this.addEventListener('tbp-player:initialize', this.init.bind(this))
         super.connectedCallback();
     }
 

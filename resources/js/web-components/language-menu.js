@@ -213,8 +213,10 @@ export class LanguageMenu extends TBPElement {
             }
         }));
 
-        // Navigate so content reloads in the new language
-        window.location.href = url.toString();
+        // Small delay to allow analytics to fire before navigation
+        setTimeout(() => {
+            window.location.href = url.toString();
+        }, 100);
     }
 
     render() {
