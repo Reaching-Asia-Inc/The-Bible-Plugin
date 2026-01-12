@@ -56,6 +56,8 @@ class Analytics
             $config_params['debug_mode'] = true;
         }
         $params_json = ! empty( $config_params ) ? ', ' . wp_json_encode( $config_params ) : '';
+
+        // phpcs:ignore WordPress.WP.EnqueuedResources.NonEnqueuedScript
         ?>
         <!-- Google tag (gtag.js) - Added by The Bible Plugin -->
         <script async src="https://www.googletagmanager.com/gtag/js?id=<?php echo esc_attr( $main_id ); ?>"></script>
@@ -68,7 +70,7 @@ class Analytics
             function gtag(){dataLayer.push(arguments);}
             gtag('js', new Date());
             <?php foreach ( $valid_ids as $id ) : ?>
-            gtag('config', '<?php echo esc_js( $id ); ?>'<?php echo $params_json; ?>);
+            gtag('config', '<?php echo esc_js( $id ); ?>'<?php echo $params_json; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>);
             <?php endforeach; ?>
         </script>
         <?php
