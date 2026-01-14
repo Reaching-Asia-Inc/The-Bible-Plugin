@@ -18,6 +18,7 @@ import {__} from "../helpers.js";
 import {css} from "@spectrum-web-components/base";
 import {$book} from "../stores/book.js";
 import {$displayMessage} from "../stores/message.js";
+import {trackEvent} from "../analytics.js";
 import "./social-share.js";
 
 @customElement('tbp-selection-button')
@@ -95,7 +96,7 @@ export class SelectionButton extends withStores(TBPElement, [$selection, $select
         <div class="selection__copy">
           <sp-label>${__('Link')}</sp-label>
           <sp-textfield disabled value="${$shareUrl.get()}"></sp-textfield>
-          <sp-button @click="${() => this.copyText($shareUrl.get())}">
+          <sp-button @click="${() => this.copyText($shareUrl.get(), 'url')}">
             ${__('Copy')}
           </sp-button>
         </div>
@@ -103,7 +104,7 @@ export class SelectionButton extends withStores(TBPElement, [$selection, $select
         <div class="selection__copy">
           <sp-label>${__('Text')}</sp-label>
           <sp-textfield disabled multiline value="${$shareText.get()}"></sp-textfield>
-          <sp-button @click="${() => this.copyText($shareText.get())}">
+          <sp-button @click="${() => this.copyText($shareText.get(), 'text')}">
             ${__('Copy')}
           </sp-button>
         </div>
@@ -121,7 +122,11 @@ export class SelectionButton extends withStores(TBPElement, [$selection, $select
     $selectionOpen.set(false)
   }
 
-  copyText(text) {
+  copyText(text, type) {
+    trackEvent('tbp_copy_clipboard', {
+        type: type,
+        text_length: text?.length || 0
+    });
     navigator.clipboard.writeText(text)
     $displayMessage(__('Copied to clipboard'))
     this.close()

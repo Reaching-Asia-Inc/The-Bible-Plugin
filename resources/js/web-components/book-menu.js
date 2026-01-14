@@ -5,6 +5,7 @@ import {css, html, nothing} from "@spectrum-web-components/base";
 import {$visitBook} from "../stores/book.js"
 import {property, state, query} from "lit/decorators.js";
 import {$book} from "../stores/book.js";
+import {trackEvent} from "../analytics.js";
 
 @customElement('tbp-book-menu')
 export class BookMenu extends withStores(TBPElement, [$book]) {
@@ -121,6 +122,11 @@ export class BookMenu extends withStores(TBPElement, [$book]) {
     }
 
     visitBook(book, chapter = 1) {
+        trackEvent('tbp_book_visit', {
+            book: book.name,
+            book_id: book.id,
+            chapter: chapter
+        });
         $visitBook(book, chapter);
         this.trigger.click();
         this.selectedBook = null;

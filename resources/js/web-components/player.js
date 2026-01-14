@@ -6,6 +6,7 @@ import {css, html, unsafeCSS} from "@spectrum-web-components/base";
 import {createRef, ref} from "lit/directives/ref.js";
 import svg from 'plyr/dist/plyr.svg?raw'
 import {unsafeSVG} from "lit-html/directives/unsafe-svg.js";
+import {trackEvent} from "../analytics.js";
 
 /**
  * Represents a Scripture element that wraps around a video or audio player.
@@ -74,7 +75,7 @@ export class Scripture extends TBPElement {
      * @return {void}
      */
     connectedCallback() {
-        this.addEventListener('tpb-player:initialize', this.init.bind(this))
+        this.addEventListener('tbp-player:initialize', this.init.bind(this))
         super.connectedCallback();
     }
 
@@ -121,6 +122,28 @@ export class Scripture extends TBPElement {
         this.plyr = new Plyr(
             this.el
         )
+
+        this.plyr.on('play', () => {
+            trackEvent('tbp_player_play', {
+                type: this.el.tagName.toLowerCase(),
+                src: this.el.currentSrc
+            });
+        });
+
+        this.plyr.on('pause', () => {
+            trackEvent('tbp_player_pause', {
+                type: this.el.tagName.toLowerCase(),
+                src: this.el.currentSrc
+            });
+        });
+
+        this.plyr.on('ended', () => {
+            trackEvent('tbp_player_ended', {
+                type: this.el.tagName.toLowerCase(),
+                src: this.el.currentSrc
+            });
+        });
+
         setTimeout(() => {
             if (this.autoplay) {
                 this.plyr.play()

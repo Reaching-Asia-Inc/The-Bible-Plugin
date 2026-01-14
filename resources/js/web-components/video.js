@@ -31,7 +31,7 @@ export class Video extends TBPElement {
             const isHls = this.content.some(({files}) => {
               return Array.isArray(files) && files.some(stream => stream.url.includes('.m3u8'));
             });
-            let initEvent = new CustomEvent('tpb-player:initialize', {
+            let initEvent = new CustomEvent('tbp-player:initialize', {
                 bubbles: true,
                 composed: true
             });
