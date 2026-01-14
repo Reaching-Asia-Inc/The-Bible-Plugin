@@ -24,11 +24,13 @@ class AdvancedControllerTest extends TestCase
         $request = $this->getMockBuilder( RequestInterface::class )
             ->getMock();
 
-        // Configure the mock to return empty string for bible_brains_key
+        // Configure the mock to return values for bible_brains_key and google_tag_id
         $request->expects( $this->any() )
             ->method( 'get' )
-            ->with( 'bible_brains_key', null )
-            ->willReturn( '' );
+            ->willReturnMap([
+                [ 'bible_brains_key', null, '' ],
+                [ 'google_tag_id', null, null ],
+            ]);
 
 
         // Create the controller
@@ -59,11 +61,13 @@ class AdvancedControllerTest extends TestCase
         // Create a mock Request object
         $request = $this->createMock( RequestInterface::class );
 
-        // Configure the mock to return the valid key
+        // Configure the mock to return values for bible_brains_key and google_tag_id
         $request->expects( $this->any() )
             ->method( 'get' )
-            ->with( 'bible_brains_key', null )
-            ->willReturn( $valid_key );
+            ->willReturnMap([
+                [ 'bible_brains_key', null, $valid_key ],
+                [ 'google_tag_id', null, null ],
+            ]);
 
         // Create the controller
         $controller = new AdvancedController();
