@@ -28,7 +28,7 @@ class AdvancedControllerTest extends TestCase
         $request->expects( $this->any() )
             ->method( 'get' )
             ->willReturnMap([
-                [ 'bible_brains_key', null, '' ],
+                [ 'bible_brains_key', null, 12345 ],
                 [ 'google_tag_id', null, '' ],
             ]);
 
