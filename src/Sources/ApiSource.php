@@ -104,7 +104,7 @@ abstract class ApiSource {
             $result = json_decode( $response->getBody()->getContents(), true );
 
             if ( !is_array( $result ) ) {
-                throw new BiblePluginException( 'Invalid response format.' );
+                return [];
             }
 
             if ( !empty( $result['error'] ) ) {

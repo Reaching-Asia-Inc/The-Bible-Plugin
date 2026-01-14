@@ -128,10 +128,11 @@ class BibleBrainsBibles extends BibleBrainsSource {
      */
     public function content( $fileset, $book, $chapter, $verse_start, $verse_end ): ?array {
         try {
-            return $this->get($this->endpoint . "/filesets/{$fileset}/{$book}/{$chapter}", [
+            $result = $this->get($this->endpoint . "/filesets/{$fileset}/{$book}/{$chapter}", [
                 'verse_start' => $verse_start,
                 'verse_end'   => $verse_end
             ]);
+            return empty( $result ) ? [] : $result;
         } catch ( BiblePluginException $exception ) {
             return [];
         }
@@ -148,10 +149,11 @@ class BibleBrainsBibles extends BibleBrainsSource {
     public function reference( $reference, $fileset ): array {
         [$book, $chapter, $verse_start, $verse_end] = References::spread( $reference );
         try {
-            return $this->get("{$this->endpoint}/filesets/{$fileset}/{$book}/{$chapter}", array_filter([
+            $result = $this->get("{$this->endpoint}/filesets/{$fileset}/{$book}/{$chapter}", array_filter([
                 'verse_start' => $verse_start,
                 'verse_end'   => $verse_end
             ]));
+            return empty( $result ) ? [] : $result;
         } catch ( BiblePluginException $exception ) {
             return [];
         }
