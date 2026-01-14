@@ -59,6 +59,8 @@ class BibleAggregator extends Aggregator
      */
     public function for_language( $language_id, $params = [] ): array
     {
+        $language_id = $this->resolve_language_id( $language_id );
+
         $bible_brains_bibles = $this->bb_bibles->for_language( $language_id, $params );
         $language_code = null;
         if ( count( $bible_brains_bibles ) && is_numeric( $language_id ) ) {
@@ -94,6 +96,17 @@ class BibleAggregator extends Aggregator
      */
     public function find( $id, array $params ): ?array
     {
+        if ( is_array( $id ) ) {
+            $items = [];
+            foreach ( $id as $single_id ) {
+                $item = $this->find( $single_id, $params );
+                if ( $item ) {
+                    $items[] = $item;
+                }
+            }
+            return $items;
+        }
+
         return $this->aggregate_item(
             $this->paratext_bibles->find( $id ),
             $this->bb_bibles->find( $id, $params )
@@ -107,7 +120,8 @@ class BibleAggregator extends Aggregator
      * @return array An array containing the data with source information.
      */
     public function language_default( $language_id ): ?array {
-        $bb_bible = $this->bb_bibles->language_defualt( $language_id );
+        $language_id = $this->resolve_language_id( $language_id );
+        $bb_bible = $this->bb_bibles->language_default( $language_id );
         $language_code = null;
         if ( $bb_bible && is_numeric( $language_id ) ) {
             $language_code = $bb_bible['iso'] ?? null;
@@ -115,5 +129,29 @@ class BibleAggregator extends Aggregator
         $paratext_bibles = array_values( $this->paratext_bibles->for_language( $language_code ?? $language_id ) );
 
         return $this->aggregate_item( $paratext_bibles[0] ?? null, $bb_bible );
+    }
+
+    /**
+     * Resolves a language identifier (ID, code, or name) to a numeric ID or ISO code.
+     *
+     * @param int|string $language_id The language identifier to resolve.
+     * @return int|string The resolved language identifier.
+     */
+    private function resolve_language_id( $language_id ) {
+        if ( !is_numeric( $language_id ) && strlen( $language_id ) > 3 ) {
+            $languages = $this->language_aggregator->search( $language_id );
+            if ( !empty( $languages ) ) {
+                $found = null;
+                foreach ( $languages as $lang ) {
+                    if ( strtolower( $lang['name'] ?? '' ) === strtolower( $language_id ) ) {
+                        $found = $lang;
+                        break;
+                    }
+                }
+                $found = $found ?: $languages[0];
+                return $found['id'] ?? $found['code'] ?? $language_id;
+            }
+        }
+        return $language_id;
     }
 }

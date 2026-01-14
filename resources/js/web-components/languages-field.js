@@ -67,7 +67,11 @@ export class LanguagesField extends TBPElement {
         `
     }
 
-    renderLanguage({bibles = '', media_types = '', itemText = '', value = '', is_default = false}, idx) {
+    renderLanguage({bibles = [], media_types = '', itemText = '', value = '', is_default = false, default_bible = ''}, idx) {
+        // Ensure bibles is an array for rendering
+        const bibleValues = Array.isArray(bibles) ? bibles : (typeof bibles === 'string' && bibles ? bibles.split(',') : []);
+        const exampleBible = default_bible || (bibleValues[0] || '');
+
         return html`
             <sp-card heading="${itemText ? itemText : __('Language')}" class="language">
                 <div slot="footer">
@@ -95,16 +99,17 @@ export class LanguagesField extends TBPElement {
                             <sp-field-label
                                     required
                                     for="${`languages_${idx}_bibles`}">
-                                ${__('Bible Version')}
+                                ${__('Bible Versions')}
                             </sp-field-label>
 
                             <tbp-overlay-picker id="${`languages_${idx}_bibles`}"
                                                 placeholder="${__('Search') + '...'}"
-                                                label="${__('Translation')}"
+                                                label="${__('Translations')}"
                                                 searchLabel="${__('Search')}"
-                                                value="${bibles}"
-                                                @change="${(e) => this.value[idx].bibles = e.target.value}"
+                                                value="${bibleValues.join(',')}"
+                                                @change="${(e) => this.onBiblesChange(e, idx)}"
                                                 optionsUrl="${apiUrl('bibles/options', {language: value})}"
+                                                selects="multiple"
                                                 ?required
                                                 ?searchable
                                                 ?prefetch
@@ -112,7 +117,7 @@ export class LanguagesField extends TBPElement {
                             </tbp-overlay-picker>
 
                             <sp-help-text size="s">
-                                ${__('Select the bible version you would like to make available for this language.')}
+                                ${__('Select one or more bible versions you would like to make available for this language.')}
                             </sp-help-text>
                         </sp-field-group>
 
@@ -160,6 +165,34 @@ export class LanguagesField extends TBPElement {
                                 </sp-field-group>
                             </sp-field-group>
                         `}
+
+                        ${is_default ? html`
+                            <sp-field-group>
+                                <sp-field-label
+                                        required
+                                        for="${`languages_${idx}_default_bible`}"
+                                >
+                                    ${__('Default Bible')}
+                                </sp-field-label>
+
+                                <tbp-overlay-picker id="${`languages_${idx}_default_bible`}"
+                                                    placeholder="${__('Search') + '...'}"
+                                                    label="${__('Default Bible')}"
+                                                    searchLabel="${__('Search')}"
+                                                    value="${default_bible}"
+                                                    @change="${(e) => this.onDefaultBibleChange(e, idx)}"
+                                                    optionsUrl="${apiUrl('bibles/options', {language: value})}"
+                                                    ?required
+                                                    ?searchable
+                                                    ?prefetch
+                                >
+                                </tbp-overlay-picker>
+
+                                <sp-help-text size="s">
+                                    ${__('Choose which bible should be used by default for this language.')}
+                                </sp-help-text>
+                            </sp-field-group>
+                        ` : nothing}
                     ` : nothing}
                   </sp-field-group>
 
@@ -169,7 +202,16 @@ export class LanguagesField extends TBPElement {
                     >
                       ${__('Example Shortcode')}
                     </sp-field-label>
-                    <pre id="shortcodes">[tbp-scripture reference="John 3:16" language="${value}" bible="${bibles}"]</pre>
+                    <pre id="shortcodes">[tbp-scripture reference="John 3:16" language="${value}" bible="${exampleBible}"]</pre>
+                  </sp-field-group>
+
+                  <sp-field-group>
+                    <sp-field-label
+                      for="popover-link"
+                    >
+                      ${__('Example Popover Link')}
+                    </sp-field-label>
+                    <pre id="shortcodes">&lt;a href="#tbp-John3-16" language="${value}" bible="${exampleBible}"&gt;John 3:16&lt;/a&gt;</pre>
                   </sp-field-group>
                 </div>
 
@@ -194,8 +236,35 @@ export class LanguagesField extends TBPElement {
         this.requestUpdate();
     }
 
+    onBiblesChange(e, idx) {
+        const incoming = e.target.value;
+        const list = Array.isArray(incoming)
+            ? incoming
+            : (typeof incoming === 'string' && incoming.length ? incoming.split(',') : []);
+        // unique and non-empty
+        const clean = [...new Set(list.filter(Boolean))];
+        this.value[idx].bibles = clean;
+
+        // If language is default and default_bible is not set, pick the first selected
+        if (this.value[idx].is_default && !this.value[idx].default_bible) {
+            this.value[idx].default_bible = clean[0] || '';
+        }
+        this.requestUpdate();
+    }
+
     onDefaultChange(e, idx) {
         this.value[idx].is_default = e.target.checked;
+        // If became default and we have bibles but no default_bible, set it
+        if (this.value[idx].is_default && (!this.value[idx].default_bible)) {
+            const b = this.value[idx].bibles;
+            const list = Array.isArray(b) ? b : (typeof b === 'string' && b ? b.split(',') : []);
+            this.value[idx].default_bible = list[0] || '';
+        }
+        this.requestUpdate();
+    }
+
+    onDefaultBibleChange(e, idx) {
+        this.value[idx].default_bible = e.target.value || '';
         this.requestUpdate();
     }
 
@@ -232,11 +301,12 @@ export class LanguagesField extends TBPElement {
 
     onAddClick() {
         this.value = [...this.value, {
-            bibles: '',
+            bibles: [],
             media_types: this.mediaTypeOptions.map(({value}) => value).join(','),
             itemText: 'Language',
             value: '',
-            is_default: this.value.length === 0
+            is_default: this.value.length === 0,
+            default_bible: ''
         }];
     }
 }

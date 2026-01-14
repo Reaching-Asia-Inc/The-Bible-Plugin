@@ -100,8 +100,27 @@ class LanguageTest extends TestCase
         // Test resolving language
         $result = $language->guess();
 
+        $expected = [
+            'value' => '6414',
+            'code' => 'eng',
+            'itemText' => 'English',
+            'bibles' => [ 'ENGESV' ],
+            'is_default' => true,
+            'id' => 5414,
+            'media_types' => 'text,audio-video,video',
+            'source' => 'bible-brains',
+            'default_bible' => 'ENGESV',
+            'bible_name' => 'English Standard Version®',
+            'bibles_data' => [
+                [
+                    'id' => 'ENGESV',
+                    'name' => 'English Standard Version®',
+                ]
+            ],
+        ];
+
         // Assert that the result is the expected language config
-        $this->assertEquals( $result, $language_config[0] );
+        $this->assertEquals( $expected, $result );
     }
 
     /**
@@ -156,8 +175,27 @@ class LanguageTest extends TestCase
         // Test resolving language
         $result = $language_mock->guess();
 
+        $expected = [
+            'value' => 'eng',
+            'code' => 'eng',
+            'itemText' => 'English',
+            'bibles' => [ 'ENGESV' ],
+            'is_default' => true,
+            'id' => 5414,
+            'media_types' => 'text,audio-video,video',
+            'source' => 'bible-brains',
+            'default_bible' => 'ENGESV',
+            'bible_name' => 'English Standard Version®',
+            'bibles_data' => [
+                [
+                    'id' => 'ENGESV',
+                    'name' => 'English Standard Version®',
+                ]
+            ],
+        ];
+
         // Assert that the result is the default language config
-        $this->assertEquals( $language_config[0], $result );
+        $this->assertEquals( $expected, $result );
     }
 
     /**
@@ -200,8 +238,18 @@ class LanguageTest extends TestCase
         // Test finding a language by code
         $result = $language->find( 'spa' );
 
+        $expected = [
+            'id' => 'spa',
+            'value' => 'spa',
+            'itemText' => 'Spanish',
+            'bibles' => [ 'SPASBA' ],
+            'code' => 'spa',
+            'media_types' => 'text,audio-video,video',
+            'source' => 'bible-brains'
+        ];
+
         // Assert that the result is the expected language config
-        $this->assertEquals( $result, $language_config[1] );
+        $this->assertEquals( $expected, $result );
     }
 
     /**
@@ -346,8 +394,20 @@ class LanguageTest extends TestCase
         // Test getting default language
         $result = $language->default();
 
+        $expected = [
+            'value' => 'spa',
+            'itemText' => 'Spanish',
+            'bibles' => [ 'SPASBA' ],
+            'is_default' => true,
+            'id' => 'spa',
+            'media_types' => 'text,audio-video,video',
+            'code' => 'spa',
+            'source' => 'bible-brains',
+            'default_bible' => 'SPASBA',
+        ];
+
         // Assert that the result is the language marked as default
-        $this->assertEquals( $result, $language_config[1] );
+        $this->assertEquals( $expected, $result );
     }
 
     /**
@@ -390,8 +450,25 @@ class LanguageTest extends TestCase
         // Test getting default language when none is marked as default
         $result = $language->default();
 
+        $expected = [
+            'value' => 'eng',
+            'itemText' => 'English',
+            'bibles' => [ 'ENGESV' ],
+            'id' => 5414,
+            'code' => 'eng',
+            'media_types' => 'text,audio-video,video',
+            'source' => 'bible-brains',
+            'bible_name' => 'English Standard Version®',
+            'bibles_data' => [
+                [
+                    'id' => 'ENGESV',
+                    'name' => 'English Standard Version®',
+                ]
+            ],
+        ];
+
         // Assert that the result is the first language in the config
-        $this->assertEquals( $result, $language_config[0] );
+        $this->assertEquals( $expected, $result );
     }
 
     /**
@@ -458,14 +535,43 @@ class LanguageTest extends TestCase
         // Test finding an existing language
         $result = $language->search_or_default( 'spa' );
 
+        $expected = [
+            'value' => 'spa',
+            'itemText' => 'Spanish',
+            'bibles' => [ 'SPASBA' ],
+            'id' => 'spa',
+            'code' => 'spa',
+            'media_types' => 'text,audio-video,video',
+            'source' => 'bible-brains'
+        ];
+
         // Assert that the result is the found language
-        $this->assertEquals( $language_config[1], $result );
+        $this->assertEquals( $expected, $result );
 
         // Test finding a non-existent language
         $result = $language->search_or_default( 'fra' );
 
+        $expected_eng = [
+            'value' => 'eng',
+            'code' => 'eng',
+            'itemText' => 'English',
+            'bibles' => [ 'ENGESV' ],
+            'is_default' => true,
+            'id' => 5414,
+            'media_types' => 'text,audio-video,video',
+            'source' => 'bible-brains',
+            'default_bible' => 'ENGESV',
+            'bible_name' => 'English Standard Version®',
+            'bibles_data' => [
+                [
+                    'id' => 'ENGESV',
+                    'name' => 'English Standard Version®',
+                ]
+            ],
+        ];
+
         // Assert that the result is the default language
-        $this->assertEquals( $result, $language_config[0] );
+        $this->assertEquals( $expected_eng, $result );
     }
 
     /**

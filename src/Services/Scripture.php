@@ -185,9 +185,6 @@ class Scripture {
 
         // Process media types
         $media = $this->process_media_types( $parameters, $language, $bible, $book );
-        if ( !count( $media ) ) {
-            dd( $params, $this->resolve_language( $parameters ) );
-        }
 
         // Determine the source based on the bible data
         $source = isset( $bible['source'] ) ? $bible['source'] : 'bible-brains';
@@ -224,14 +221,20 @@ class Scripture {
      */
     private function resolve_bible( array $parameters, array $language ): ?array
     {
-        $bible = ( $parameters['bible'] ?? null )
-            ? $this->bibles->find( $parameters['bible'] )
+        // Prefer explicit bible parameter; otherwise use the language's default_bible if available
+        $requested_bible = $parameters['bible'] ?? null;
+        if ( !$requested_bible && !empty( $language['default_bible'] ) ) {
+            $requested_bible = $language['default_bible'];
+        }
+
+        $bible = $requested_bible
+            ? $this->bibles->find( $requested_bible )
             : null;
 
         if ( !$bible ) {
             $bible = $this->bibles->find_or_default( [
-                'code' => $parameters['bible'],
-                'language_id' => $language['id']
+                'code' => $requested_bible,
+                'language_id' => $language['id'] ?? null
             ] );
         }
 
@@ -246,17 +249,25 @@ class Scripture {
      * @return array
      * @throws BiblePluginException
      */
-    private function resolve_book( array $parameters, array $bible ): array
+    private function resolve_book( array $parameters, ?array $bible ): array
     {
+        if ( !$bible || empty( $bible['books'] ) ) {
+            throw new BiblePluginException(
+                esc_html__( 'Bible version not found or contains no books.', 'bible-plugin' )
+            );
+        }
+
         $filtered_books = array_filter($bible['books'], function ( $book ) use ( $parameters ) {
-            return strtolower( $book['id'] ) == strtolower( $parameters['book'] )
-                || strtolower( $book['name'] ) == strtolower( $parameters['book'] );
+            return strtolower( $book['id'] ?? '' ) == strtolower( $parameters['book'] ?? '' )
+                || strtolower( $book['name'] ?? '' ) == strtolower( $parameters['book'] ?? '' );
         });
         $book = !empty( $filtered_books ) ? reset( $filtered_books ) : null;
 
         if ( !$book ) {
+            $bible_name = $bible['name'] ?? $bible['abbr'] ?? 'unknown bible';
+            $book_name = $parameters['book'] ?? 'unknown book';
             throw new BiblePluginException(
-                esc_attr( "Bible, {$bible['name']}, does not contain {$parameters['book']}." )
+                esc_attr( "Bible, {$bible_name}, does not contain {$book_name}." )
             );
         }
 

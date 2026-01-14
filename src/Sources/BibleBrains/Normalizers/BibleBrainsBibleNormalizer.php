@@ -27,6 +27,8 @@ class BibleBrainsBibleNormalizer implements Normalizer
     {
         return [
             'source'   => 'bible-brains',
+            'id'       => $data['abbr'],
+            'abbr'     => $data['abbr'],
             'code'     => $data['abbr'],
             'name'     => $data['name'],
             'filesets' => $this->includeFilesets( $data ),
