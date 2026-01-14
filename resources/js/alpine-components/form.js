@@ -13,6 +13,7 @@ export const form = (props = {}) => {
         action: "",
         refresh: false,
         redirect: "",
+        nonce: null,
         ...props,
 
         /**
@@ -63,30 +64,23 @@ export const form = (props = {}) => {
             this.submitting = true
             try {
                 this.beforeSubmission()
-                const response = await fetch(this.action, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'X-WP-Nonce': $tbp.nonce
-                    },
-                    body: JSON.stringify(this.submission())
-                })
 
-                const data = await response.json()
+                const payload = this.submission()
+                const { response, data } = await this.request(this.action, payload, { method: 'POST' })
 
                 this.afterSubmission()
 
                 if (response.status === 200) {
-                    this.handleSubmissionSuccess(data.success)
+                    this.handleSubmissionSuccess(data.success === undefined ? true : !!data.success)
                     return;
-                } else if (data.message) {
+                } else if (data && data.message) {
                     this.handleSubmissionFailed(data.message)
                     return;
                 }
 
                 this.handleSubmissionFailed()
 
-            } catch (e) {
+            } catch (e2) {
                 this.handleSubmissionFailed()
             }
         },
@@ -99,6 +93,68 @@ export const form = (props = {}) => {
          */
         submission() {
             return this.fields
+        },
+
+        /**
+         * Generic request helper used by submit() and components.
+         * Automatically sets headers and handles JSON vs FormData payloads.
+         * Exposes parsed response on this.response.
+         */
+        async request(url, payload = null, opts = {}) {
+            const method = opts.method || 'POST'
+            const isFormData = (typeof FormData !== 'undefined') && (payload instanceof FormData)
+
+            // Resolve a valid REST nonce from multiple reliable sources (core first)
+            const resolveRestNonce = () => {
+              if (this.nonce) {
+                return this.nonce
+              }
+              if (window.wpApiSettings && window.wpApiSettings.nonce) {
+                return window.wpApiSettings.nonce
+              }
+              if (window.$tbp && $tbp.nonce) {
+                return $tbp.nonce
+              }
+              const meta = document && document.querySelector ? document.querySelector('meta[name="wp-rest-nonce"]') : null
+              if (meta && meta.content) {
+                return meta.content
+              }
+                return ''
+            }
+
+            const headers = {
+                'X-WP-Nonce': resolveRestNonce()
+            }
+            if (!isFormData) {
+                headers['Content-Type'] = 'application/json'
+                headers['Accept'] = 'application/json, text/plain, */*'
+            }
+            const options = {
+                method,
+                headers,
+                // Include credentials to ensure auth cookies are sent for REST
+                credentials: 'include'
+            }
+            if (payload !== null) {
+                options.body = isFormData ? payload : JSON.stringify(payload)
+            }
+
+            const response = await fetch(url || this.action, options)
+
+            // Try parse JSON, otherwise fallback to text
+            const ct = response.headers.get('content-type') || ''
+            let data = {}
+            if (ct.includes('application/json')) {
+                data = await response.json().catch(() => ({}))
+            } else {
+                const text = await response.text().catch(() => '')
+                data = text ? { message: text } : {}
+            }
+
+            // expose last response for hooks
+            this.response = data
+
+            return { response, data }
         },
 
 
@@ -177,7 +233,7 @@ export const form = (props = {}) => {
          * saving the data, sending notifications, or performing additional processing.
          *
          * @function afterSubmission
-         * @returns {void
+         * @returns {void}
          */
         afterSubmission() {
 

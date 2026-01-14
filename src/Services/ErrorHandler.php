@@ -17,7 +17,8 @@ class ErrorHandler {
     protected array $blacklist = [
         'CodeZone\Bible\Opis\Closure\unserialize(): Implicitly marking parameter $options as nullable is deprecated, the explicit nullable type must be used instead',
         '::$termmeta',
-        'CodeZone\Bible\League\Plates\Template\Template::data(): Implicitly marking parameter $data as nullable is deprecated, the explicit nullable type must be used instead'
+        'CodeZone\Bible\League\Plates\Template\Template::data(): Implicitly marking parameter $data as nullable is deprecated, the explicit nullable type must be used instead',
+        'Creation of dynamic property Mock_Service'
     ];
 
     /**

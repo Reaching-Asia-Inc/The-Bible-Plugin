@@ -3,10 +3,8 @@
 namespace Tests\Aggregators;
 
 use CodeZone\Bible\Sources\Aggregators\BibleAggregator;
-use CodeZone\Bible\Sources\USX\USXBibles;
 use Tests\TestCase;
 use function CodeZone\Bible\container;
-use function CodeZone\Bible\namespace_string;
 
 /**
  * @group aggregators
@@ -15,7 +13,7 @@ use function CodeZone\Bible\namespace_string;
 class BibleAggregatorTest extends TestCase {
     protected function setUp(): void {
         parent::setUp();
-        $this->load_usx_fixture( 'KJV' );
+        $this->load_paratext_fixture( 'KJV' );
     }
 
     /**
@@ -37,7 +35,7 @@ class BibleAggregatorTest extends TestCase {
         $this->assertArrayHasKey( 'source', $bible );
 
         // Verify source field is set
-        $this->assertContains( $bible['source'], [ 'bible-brains', 'usx' ] );
+        $this->assertContains( $bible['source'], [ 'bible-brains', 'paratext' ] );
     }
 
     /**
@@ -59,7 +57,7 @@ class BibleAggregatorTest extends TestCase {
             $this->assertArrayHasKey( 'source', $bible );
 
             // Verify source field is set
-            $this->assertContains( $bible['source'], [ 'bible-brains', 'usx' ] );
+            $this->assertContains( $bible['source'], [ 'bible-brains', 'paratext' ] );
         }
     }
 
@@ -82,7 +80,7 @@ class BibleAggregatorTest extends TestCase {
             $this->assertArrayHasKey( 'source', $bible );
 
             // Verify source field is set
-            $this->assertContains( $bible['source'], [ 'bible-brains', 'usx' ] );
+            $this->assertContains( $bible['source'], [ 'bible-brains', 'paratext' ] );
         }
     }
 
@@ -100,7 +98,7 @@ class BibleAggregatorTest extends TestCase {
         $this->assertArrayHasKey( 'source', $result );
         $this->assertEquals( 'ENGESV', $result['code'] );
 
-        $this->assertContains( $result['source'], [ 'bible-brains', 'usx' ] );
+        $this->assertContains( $result['source'], [ 'bible-brains', 'paratext' ] );
     }
 
     /**
@@ -127,13 +125,13 @@ class BibleAggregatorTest extends TestCase {
         $this->assertArrayHasKey( 'source', $result );
 
         // Verify source field is set
-        $this->assertContains( $result['source'], [ 'bible-brains', 'usx' ] );
+        $this->assertContains( $result['source'], [ 'bible-brains', 'paratext' ] );
     }
 
     /**
      * @test
      */
-    public function it_can_return_data_with_usx_source() {
+    public function it_can_return_data_with_paratext_source() {
         $aggregator = container()->get( BibleAggregator::class );
 
         // Get all bibles
@@ -142,20 +140,20 @@ class BibleAggregatorTest extends TestCase {
         // Verify we get an array of bibles
         $this->assertIsArray( $result );
 
-        // Find a bible with 'usx' source
-        $usx_bibles = array_filter($result, function ( $bible ) {
-            return $bible['source'] === 'usx';
+        // Find a bible with 'paratext' source
+        $paratext_bibles = array_filter($result, function ( $bible ) {
+            return $bible['source'] === 'paratext';
         });
 
-        // Verify we found at least one bible with 'usx' source
-        $this->assertNotEmpty( $usx_bibles, "No bibles with 'usx' source found" );
+        // Verify we found at least one bible with 'paratext' source
+        $this->assertNotEmpty( $paratext_bibles, "No bibles with 'paratext' source found" );
 
-        // Check the structure of a usx bible
-        $bible = reset( $usx_bibles );
+        // Check the structure of a paratext bible
+        $bible = reset( $paratext_bibles );
         $this->assertIsArray( $bible );
         $this->assertArrayHasKey( 'code', $bible );
         $this->assertArrayHasKey( 'name', $bible );
-        $this->assertEquals( 'usx', $bible['source'] );
+        $this->assertEquals( 'paratext', $bible['source'] );
     }
 
     /**

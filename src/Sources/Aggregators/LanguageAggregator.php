@@ -6,8 +6,8 @@ use CodeZone\Bible\Sources\Aggregator;
 use CodeZone\Bible\Sources\BibleBrains\BibleBrainsLanguages;
 use CodeZone\Bible\Sources\BibleBrains\Normalizers\BibleBrainsLanguageNormalizer;
 use CodeZone\Bible\Sources\Normalizer;
-use CodeZone\Bible\Sources\USX\Normalizers\USXLanguageNormalizer;
-use CodeZone\Bible\Sources\USX\USXLanguages;
+use CodeZone\Bible\Sources\Paratext\Normalizers\ParatextLanguageNormalizer;
+use CodeZone\Bible\Sources\Paratext\ParatextLanguages;
 
 /**
  * Handles the aggregation of language data from multiple sources.
@@ -15,42 +15,41 @@ use CodeZone\Bible\Sources\USX\USXLanguages;
 class LanguageAggregator extends Aggregator
 {
     private BibleBrainsLanguages $bb_languages;
-    private USXLanguages $usx_languages;
+    private ParatextLanguages $paratext_languages;
     protected Normalizer $bb_normalizer;
-    protected Normalizer $usx_normalizer;
+    protected Normalizer $paratext_normalizer;
 
     /**
      * Initializes the class with the provided language handlers.
      *
      * @param BibleBrainsLanguages $languages Instance of the BibleBrainsLanguages handler.
-     * @param USXLanguages $usx_languages Instance of the USXLanguages handler.
+     * @param ParatextLanguages $paratext_languages Instance of the ParatextLanguages handler.
      * @return void
      */
     public function __construct(
         BibleBrainsLanguages $languages,
-        USXLanguages $usx_languages,
-        USXLanguageNormalizer $usx_normalizer,
+        ParatextLanguages $paratext_languages,
+        ParatextLanguageNormalizer $paratext_normalizer,
         BibleBrainsLanguageNormalizer $bb_normalizer
     ) {
         $this->bb_languages = $languages;
-        $this->usx_languages = $usx_languages;
+        $this->paratext_languages = $paratext_languages;
         $this->bb_normalizer = $bb_normalizer;
-        $this->usx_normalizer = $usx_normalizer;
+        $this->paratext_normalizer = $paratext_normalizer;
     }
 
     /**
      * Aggregates and normalizes data from usx_data and bb_data sources and optionally merges them based on a comparison key.
      *
-     * @param array $usx_data The data set from the usx_data source to be aggregated.
+     * @param array $paratext_data The data set from the usx_data source to be aggregated.
      * @param array $bb_data The data set from the bb_data source to be aggregated.
      * @param string|null $compare Optional comparison key used for merging the data sets.
      * @return array The aggregated and merged result from both data sources.
      */
-    public function aggregate( array $usx_data, array $bb_data, string $compare = null ): array
+    public function aggregate( array $paratext_data, array $bb_data, ?string $compare = null ): array
     {
-        $usx_data = $this->normalize_usx_items( $usx_data );
-        $bb_data = $this->normalize_bb_items( $bb_data );
-        return $this->merge( $usx_data, $bb_data, $compare );
+        // Delegate to the base implementation to keep Paratext as primary
+        return parent::aggregate( $paratext_data, $bb_data, $compare );
     }
 
     /**
@@ -60,10 +59,10 @@ class LanguageAggregator extends Aggregator
      * @return array Aggregated list of languages from the specified sources.
      */
     public function all( array $params = [] ) {
-       $usx_languages = $this->usx_languages->all();
+       $paratext_languages = $this->paratext_languages->all();
        $bb_languages = $this->bb_languages->all( $params );
 
-       return $this->aggregate( $usx_languages, $bb_languages );
+       return $this->aggregate( $paratext_languages, $bb_languages );
     }
 
     /**
@@ -73,10 +72,10 @@ class LanguageAggregator extends Aggregator
      * @return mixed The aggregated result from the retrieved data.
      */
     public function find( $id ) {
-        $usx_language = $this->usx_languages->find( $id );
+        $paratext_language = $this->paratext_languages->find( $id );
         $bb_language = $this->bb_languages->find( $id );
 
-        return $this->aggregate_item( $usx_language, $bb_language );
+        return $this->aggregate_item( $paratext_language, $bb_language );
     }
 
     /**
@@ -87,9 +86,9 @@ class LanguageAggregator extends Aggregator
      * @return array The aggregated search results from both data sources.
      */
     public function search( string $query, array $params = [] ) {
-        $usx_languages = $this->usx_languages->search( $query );
+        $paratext_languages = $this->paratext_languages->search( $query );
         $bb_languages = $this->bb_languages->search( $query, $params );
 
-        return $this->aggregate( $usx_languages, $bb_languages );
+        return $this->aggregate( $paratext_languages, $bb_languages );
     }
 }

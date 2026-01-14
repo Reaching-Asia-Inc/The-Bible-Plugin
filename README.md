@@ -183,20 +183,20 @@ class BibleAggregator extends Aggregator {
 
     public function __construct(
         BibleBrainsBibles $bibles, //Bible brains API service
-        USXBibles $usx_bibles, //USX bibles
+        ParatextBibles $paratext_bibles, //Paratext bibles
         BibleBrainsBibleNormalizer $bb_normalizer,  //Normalizer class that makes sure source data conforms to API
-        USXBibleNormalizer $usx_normalizer //Normalizer class that makes sure source data conforms to API
+        ParatextBibleNormalizer $paratext_normalizer //Normalizer class that makes sure source data conforms to API
     ) {
         $this->bb_bibles = $bibles;
-        $this->usx_bibles = $usx_bibles;
+        $this->paratext_bibles = $paratext_bibles;
         $this->bb_normalizer = $bb_normalizer; //bb_normalizer MUST be set
-        $this->usx_normalizer = $usx_normalizer; //usx_normalizer MUST be set
+        $this->paratext_normalizer = $paratext_normalizer; //paratext_normalizer MUST be set
     }
 
      public function all( array $params = [] ): array
     {
         return $this->aggregate(
-            $this->usx_bibles->all(),
+            $this->paratext_bibles->all(),
             $this->bb_bibles->all( $params )
         );
     }
@@ -204,7 +204,7 @@ class BibleAggregator extends Aggregator {
     public function find( $id, array $params ): ?array
     {
         return $this->aggregate_item(
-            $this->usx_bibles->find( $id ),
+            $this->paratext_bibles->find( $id ),
             $this->bb_bibles->find( $id, $params )
         );
     }
@@ -250,24 +250,24 @@ $value = config('key');
 $value = config('key', 'default');
 
 // Accessing nested values with dot notation
-$value = config('services.usx.dirs');
+$value = config('services.paratext.dirs');
 ```
 
-##### Configuring USX Bible Sources
+##### Configuring Paratext Bible Sources
 
-To add local USX Bible translations to the plugin, add their directory paths to the `services.usx.dirs` configuration in your `config/services.php`:
+To add local paratext Bible translations to the plugin, add their directory paths to the `services.paratext.dirs` configuration in your `config/services.php`:
 
 ```
 'services' => [
-  'usx' => [
+  'paratext' => [
     'dirs' => [
-       dirname( __DIR__ ) . '/path/to/usx/KJV'
+       dirname( __DIR__ ) . '/path/to/paratext/KJV'
     ]
   ]
 ]
 ```
 
-USX bibles can also be added via the `bible_plugin_usx_bibles` filter.
+paratext bibles can also be added via the `bible_plugin_local_bibles` filter.
 
 #### Working with resources
 
@@ -335,11 +335,11 @@ The plugin provides several WordPress filters that allow you to customize its be
   ```
 
 ##### Bible Data
-- `bible_plugin_usx_bibles`: Modify USX Bible data before processing
+- `bible_plugin_local_bibles`: Modify paratext Bible data before processing
   ```php
-  add_filter('bible_plugin_usx_bibles', function($bibles) {
-      // Modify or add custom USX bibles
-      $bibles['KJV'] = container()->get( USXBibles::class )->parse_dir( '/path/to/usx/bible/KJV' );
+  add_filter('bible_plugin_local_bibles', function($bibles) {
+      // Modify or add custom Paratext bibles
+      $bibles['KJV'] = container()->get( ParatextBibles::class )->parse_dir( '/path/to/paratext/bible/KJV' );
       return $bibles;
   });
   ```
@@ -368,5 +368,5 @@ You can use the `namespace_string()` helper function to get the correct hook nam
 
 ```php
 use function CodeZone\Bible\namespace_string;
-add_filter(namespace_string('usx_bibles'), function($bibles) { ... });
+add_filter(namespace_string('local_bibles'), function($bibles) { ... });
 ```

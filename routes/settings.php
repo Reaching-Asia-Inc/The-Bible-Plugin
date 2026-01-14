@@ -15,6 +15,7 @@ use CodeZone\Bible\Controllers\Settings\AdvancedController;
 use CodeZone\Bible\Controllers\Settings\BibleFormController;
 use CodeZone\Bible\Controllers\Settings\CustomizationFomController;
 use CodeZone\Bible\Controllers\Settings\SupportController;
+use CodeZone\Bible\Controllers\Settings\LocalBiblesController;
 
 return [
     'general'        => [ BibleFormController::class, 'show' ],
@@ -23,4 +24,5 @@ return [
     'bible_brains_key' => [ BibleFormController::class, 'add_key' ],
     'bible'          => [ BibleFormController::class, 'show' ],
     'customization'  => [ CustomizationFomController::class, 'show' ],
+    'local_bibles'        => [ LocalBiblesController::class, 'show' ],
 ];

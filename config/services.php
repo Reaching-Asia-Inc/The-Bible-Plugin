@@ -10,7 +10,7 @@ use CodeZone\Bible\Providers\BibleBrainsProvider;
 use CodeZone\Bible\Providers\ConfigProvider;
 use CodeZone\Bible\Providers\FractalProvider;
 use CodeZone\Bible\Providers\OptionsProvider;
-use CodeZone\Bible\Providers\USXProvider;
+use CodeZone\Bible\Providers\ParatextProvider;
 use CodeZone\Bible\Providers\RequestServiceProvider;
 use CodeZone\Bible\Providers\RestApiProvider;
 use CodeZone\Bible\Providers\ShortcodeProvider;
@@ -28,7 +28,7 @@ $config->merge( [
             ConfigProvider::class,
             FractalProvider::class,
             BibleBrainsProvider::class,
-            USXProvider::class,
+            ParatextProvider::class,
             AssetProvider::class,
             ShortcodeProvider::class,
             ViewProvider::class,
@@ -37,9 +37,11 @@ $config->merge( [
             SettingsProvider::class,
             AnalyticsProvider::class
         ],
-        'usx' => [
+        'paratext' => [
+            'uploads_path' => 'bible-plugin/bibles/paratext',
             'dirs' => [
-               //dirname( __DIR__ ) . '/tests/fixtures/usx/KJV'
+                //dirname( __DIR__ ) . '/tests/fixtures/paratext/KJV',
+                //dirname( __DIR__ ) . '/tests/fixtures/paratext/SUS',
             ]
         ],
         'tgmpa' => [

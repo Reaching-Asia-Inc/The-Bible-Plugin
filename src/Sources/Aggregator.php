@@ -5,7 +5,7 @@ namespace CodeZone\Bible\Sources;
 abstract class Aggregator
 {
     protected Normalizer $bb_normalizer;
-    protected Normalizer $usx_normalizer;
+    protected Normalizer $paratext_normalizer;
 
     const COMPARE_KEY = "code";
 
@@ -13,19 +13,19 @@ abstract class Aggregator
      * Aggregates and merges two arrays of data by normalizing their structure and removing duplicates
      * based on a specified key.
      *
-     * @param array $usx_data An array of data to be normalized and used as the base for aggregation.
+     * @param array $paratext_data An array of data to be normalized and used as the base for aggregation.
      * @param array $bb_data An array of data to be normalized and filtered before merging.
      * @param ?string $compare The key used to compare and remove duplicates between the two arrays. Default is 'id'.
      * @return array The aggregated and merged array containing unique entries from both input arrays.
      */
-    public function aggregate( array $usx_data, array $bb_data, string $compare = null ): array
+    public function aggregate( array $paratext_data, array $bb_data, ?string $compare = null ): array
     {
-        $usx_data = $this->normalize_usx_items( $usx_data );
+        $paratext_data = $this->normalize_paratext_items( $paratext_data );
         $bb_data = $this->normalize_bb_items( $bb_data );
-        return $this->merge( $bb_data, $usx_data, $compare );
+        return $this->merge( $bb_data, $paratext_data, $compare );
     }
 
-    public function merge( array $secondary, array $primary, string $compare = null ): array
+    public function merge( array $secondary, array $primary, ?string $compare = null ): array
     {
         $compare = $compare ?? static::COMPARE_KEY;
 
@@ -53,14 +53,14 @@ abstract class Aggregator
     /**
      * Aggregates two items by normalizing them using the appropriate normalizer and selecting the result.
      *
-     * @param mixed $usx_item The USX item to be normalized. Can be null.
+     * @param mixed $paratext_item The Paratext item to be normalized. Can be null.
      * @param mixed $bb_item The BB item to be normalized. Can be null.
      * @return array|null The result of choosing between the normalized items.
      */
-    public function aggregate_item( $usx_item, $bb_item ): ?array
+    public function aggregate_item( $paratext_item, $bb_item ): ?array
     {
         return $this->choose(
-            $usx_item ? $this->normalize_usx( $usx_item ) : null,
+            $paratext_item ? $this->normalize_paratext( $paratext_item ) : null,
             $bb_item ? $this->normalize_bb( $bb_item ) : null
         );
     }
@@ -68,28 +68,28 @@ abstract class Aggregator
     /**
      * Chooses between two Bible representations and returns the appropriate one.
      *
-     * @param array|null $usx_bible The USX Bible representation. Can be null.
+     * @param array|null $paratext_bible The Paratext Bible representation. Can be null.
      * @param array|null $bb_bible The BB Bible representation. Can be null.
      * @return array|null The chosen Bible representation, preferring $usx_bible if it is available.
      */
-    public function choose( ?array $usx_bible, ?array $bb_bible ): ?array
+    public function choose( ?array $paratext_bible, ?array $bb_bible ): ?array
     {
-        if ( $usx_bible ) {
-            return $usx_bible;
+        if ( $paratext_bible ) {
+            return $paratext_bible;
         }
 
         return $bb_bible;
     }
 
     /**
-     * Normalizes an array of USX items.
+     * Normalizes an array of Paratext items.
      *
-     * @param array $usx_data Array of USX items to normalize
-     * @return array Array of normalized USX items
+     * @param array $paratext_data Array of Paratext items to normalize
+     * @return array Array of normalized Paratext items
      */
-    protected function normalize_usx_items( array $usx_data ): array
+    protected function normalize_paratext_items( array $paratext_data ): array
     {
-        return array_map( fn( $data ) => $this->normalize_usx( $data ), $usx_data );
+        return array_map( fn( $data ) => $this->normalize_paratext( $data ), $paratext_data );
     }
 
     /**
@@ -104,14 +104,14 @@ abstract class Aggregator
     }
 
     /**
-     * Normalizes a single USX item.
+     * Normalizes a single Paratext item.
      *
-     * @param array $usx_item USX item to normalize
-     * @return array Normalized USX item
+     * @param array $paratext_item Paratext item to normalize
+     * @return array Normalized Paratext item
      */
-    protected function normalize_usx( array $usx_item ): array
+    protected function normalize_paratext( array $paratext_item ): array
     {
-        return $this->usx_normalizer->normalize( $usx_item );
+        return $this->paratext_normalizer->normalize( $paratext_item );
     }
 
     /**

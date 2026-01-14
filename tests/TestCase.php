@@ -6,7 +6,7 @@ use CodeZone\Bible\GuzzleHttp\Client;
 use CodeZone\Bible\GuzzleHttp\Handler\MockHandler;
 use CodeZone\Bible\GuzzleHttp\HandlerStack;
 use CodeZone\Bible\GuzzleHttp\Psr7\Response;
-use CodeZone\Bible\Sources\USX\USXBibles;
+use CodeZone\Bible\Sources\Paratext\ParatextBibles;
 use Faker;
 use WP_UnitTestCase;
 use function CodeZone\Bible\container;
@@ -16,10 +16,10 @@ use function Patchwork\restoreAll;
 abstract class TestCase extends WP_UnitTestCase {
     protected $original_wpdb;
     protected Faker\Generator $faker;
-    protected bool $usx_filter_added = false;
+    protected bool $paratext_filter_added = false;
 
-    protected static array $usx_data = [];
-    protected static array $usx_dirs = [];
+    protected static array $paratext_data = [];
+    protected static array $paratext_dirs = [];
 
     public function __construct( ?string $name = null, array $data = [], $data_name = '' ) {
         $this->faker = Faker\Factory::create();
@@ -50,11 +50,11 @@ abstract class TestCase extends WP_UnitTestCase {
         //phpcs:ignore
         $wpdb = $this->original_wpdb;
 
-        static::$usx_dirs = [];
-        static::$usx_data = [];
-        $this->usx_filter_added = false;
+        static::$paratext_dirs = [];
+        static::$paratext_data = [];
+        $this->paratext_filter_added = false;
 
-        remove_filter( namespace_string( USXBibles::FILTER_HOOK ), [ $this, 'apply_usx' ], 10 );
+        remove_filter( namespace_string( ParatextBibles::FILTER_HOOK ), [ $this, 'apply_paratext' ], 10 );
 
         parent::tearDown();
     }
@@ -96,28 +96,28 @@ abstract class TestCase extends WP_UnitTestCase {
         exit;
     }
 
-    public function load_usx_fixture( $bible ): void {
-        $dir = __DIR__ . '/fixtures/usx/' . $bible;
+    public function load_paratext_fixture( $bible ): void {
+        $dir = __DIR__ . '/fixtures/paratext/' . $bible;
 
-        if ( !isset( static::$usx_data[$dir] ) ) {
-            static::$usx_data[$dir] = container()->get( USXBibles::class )->parse_dir( $dir );
+        if ( !isset( static::$paratext_data[$dir] ) ) {
+            static::$paratext_data[$dir] = container()->get( ParatextBibles::class )->parse_dir( $dir );
         }
 
-        if ( !in_array( $dir, static::$usx_dirs, true ) ) {
-            static::$usx_dirs[] = $dir;
+        if ( !in_array( $dir, static::$paratext_dirs, true ) ) {
+            static::$paratext_dirs[] = $dir;
         }
 
-        if ( !$this->usx_filter_added ) {
-            add_filter( namespace_string( USXBibles::FILTER_HOOK ), [ $this, 'apply_usx' ], 10, 1 );
-            $this->usx_filter_added = true;
+        if ( !$this->paratext_filter_added ) {
+            add_filter( namespace_string( ParatextBibles::FILTER_HOOK ), [ $this, 'apply_paratext' ], 10, 1 );
+            $this->paratext_filter_added = true;
         }
     }
 
-    public function apply_usx( $usx_bibles ) {
-        foreach ( static::$usx_dirs as $dir ) {
-            $data = static::$usx_data[$dir];
-            $usx_bibles[$data['id']] = $data;
+    public function apply_paratext( $paratext_bibles ) {
+        foreach ( static::$paratext_dirs as $dir ) {
+            $data = static::$paratext_data[$dir];
+            $paratext_bibles[$data['id']] = $data;
         }
-        return $usx_bibles;
+        return $paratext_bibles;
     }
 }

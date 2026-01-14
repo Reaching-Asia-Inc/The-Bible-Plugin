@@ -220,8 +220,8 @@ class RestApiTest extends TestCase {
      * @test
      */
     public function it_handles_exceptions_in_route_callback() {
-        // Define a custom exception for wp_die
-        // Mock wp_die to throw our custom exception
+        // Define a paratext exception for wp_die
+        // Mock wp_die to throw our paratext exception
         \Patchwork\redefine('wp_die', function ( $message ) {
             throw new \Exception( esc_attr( $message ) );
         });
@@ -283,7 +283,7 @@ class RestApiTest extends TestCase {
             return $text;
         } );
 
-        // Expect our custom exception
+        // Expect our paratext exception
         $this->expectException( \Exception::class );
         $this->expectExceptionMessage( 'Test exception' );
 

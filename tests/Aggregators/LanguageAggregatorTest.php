@@ -3,10 +3,8 @@
 namespace Tests\Aggregators;
 
 use CodeZone\Bible\Sources\Aggregators\LanguageAggregator;
-use CodeZone\Bible\Sources\USX\USXBibles;
 use Tests\TestCase;
 use function CodeZone\Bible\container;
-use function CodeZone\Bible\namespace_string;
 
 /**
  * @group aggregators
@@ -15,7 +13,7 @@ use function CodeZone\Bible\namespace_string;
 class LanguageAggregatorTest extends TestCase {
     protected function setUp(): void {
         parent::setUp();
-        $this->load_usx_fixture( 'KJV' );
+        $this->load_paratext_fixture( 'KJV' );
     }
 
 
@@ -38,7 +36,7 @@ class LanguageAggregatorTest extends TestCase {
         $this->assertArrayHasKey( 'source', $language );
 
         // Verify source field is set
-        $this->assertContains( $language['source'], [ 'bible-brains', 'usx' ] );
+        $this->assertContains( $language['source'], [ 'bible-brains', 'paratext' ] );
     }
 
     /**
@@ -56,7 +54,7 @@ class LanguageAggregatorTest extends TestCase {
 
         // Verify it's the correct language
         $this->assertEquals( 6414, $result['id'] );
-        $this->assertContains( $result['source'], [ 'bible-brains', 'usx' ] );
+        $this->assertContains( $result['source'], [ 'bible-brains', 'paratext' ] );
     }
 
     /**
@@ -88,7 +86,7 @@ class LanguageAggregatorTest extends TestCase {
             $this->assertArrayHasKey( 'source', $language );
 
             // Verify source field is set
-            $this->assertContains( $language['source'], [ 'bible-brains', 'usx' ] );
+            $this->assertContains( $language['source'], [ 'bible-brains', 'paratext' ] );
         }
     }
 
@@ -111,7 +109,7 @@ class LanguageAggregatorTest extends TestCase {
             $this->assertArrayHasKey( 'source', $language );
 
             // Verify source field is set
-            $this->assertContains( $language['source'], [ 'bible-brains', 'usx' ] );
+            $this->assertContains( $language['source'], [ 'bible-brains', 'paratext' ] );
         }
     }
 
@@ -127,20 +125,20 @@ class LanguageAggregatorTest extends TestCase {
         // Verify we get an array of languages
         $this->assertIsArray( $result );
 
-        // Find languages with 'usx' source
+        // Find languages with 'paratext' source
         $usx_languages = array_filter($result, function ( $language ) {
-            return $language['source'] === 'usx';
+            return $language['source'] === 'paratext';
         });
 
-        // Verify we found at least one language with 'usx' source
-        $this->assertNotEmpty( $usx_languages, "No languages with 'usx' source found" );
+        // Verify we found at least one language with 'paratext' source
+        $this->assertNotEmpty( $usx_languages, "No languages with 'paratext' source found" );
 
-        // Check the structure of a usx language
+        // Check the structure of a paratext language
         $language = reset( $usx_languages );
         $this->assertIsArray( $language );
         $this->assertArrayHasKey( 'id', $language );
         $this->assertArrayHasKey( 'name', $language );
-        $this->assertEquals( 'usx', $language['source'] );
+        $this->assertEquals( 'paratext', $language['source'] );
     }
 
     /**

@@ -30,7 +30,7 @@ class BookTest extends TestCase {
         $this->assertArrayHasKey('source', $book);
 
         // Verify source field is set
-        $this->assertContains($book['source'], ['bible-brains', 'usx']);
+        $this->assertContains($book['source'], ['bible-brains', 'paratext']);
     }
 
     /**
@@ -48,7 +48,7 @@ class BookTest extends TestCase {
 
         // Verify it's the correct book
         $this->assertEquals('JHN', $result['id']);
-        $this->assertContains($result['source'], ['bible-brains', 'usx']);
+        $this->assertContains($result['source'], ['bible-brains', 'paratext']);
     }
 
     /**
@@ -80,6 +80,6 @@ class BookTest extends TestCase {
         $this->assertArrayHasKey('source', $book);
 
         // Verify source field is set
-        $this->assertContains($book['source'], ['bible-brains', 'usx']);
+        $this->assertContains($book['source'], ['bible-brains', 'paratext']);
     }
 }

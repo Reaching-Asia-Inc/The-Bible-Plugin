@@ -3,10 +3,8 @@
 namespace Tests\Aggregators;
 
 use CodeZone\Bible\Sources\Aggregators\BookAggregator;
-use CodeZone\Bible\Sources\USX\USXBibles;
 use Tests\TestCase;
 use function CodeZone\Bible\container;
-use function CodeZone\Bible\namespace_string;
 
 /**
  * @group aggregators
@@ -15,7 +13,7 @@ use function CodeZone\Bible\namespace_string;
 class BookAggregatorTest extends TestCase {
     protected function setUp(): void {
         parent::setUp();
-        $this->load_usx_fixture( 'KJV' );
+        $this->load_paratext_fixture( 'KJV' );
     }
 
     /**
@@ -37,7 +35,7 @@ class BookAggregatorTest extends TestCase {
         $this->assertArrayHasKey( 'source', $book );
 
         // Verify source field is set
-        $this->assertContains( $book['source'], [ 'bible-brains', 'usx' ] );
+        $this->assertContains( $book['source'], [ 'bible-brains', 'paratext' ] );
     }
 
     /**
@@ -55,7 +53,7 @@ class BookAggregatorTest extends TestCase {
 
         // Verify it's the correct book
         $this->assertEquals( 'JHN', $result['id'] );
-        $this->assertContains( $result['source'], [ 'bible-brains', 'usx' ] );
+        $this->assertContains( $result['source'], [ 'bible-brains', 'paratext' ] );
     }
 
     /**
@@ -87,37 +85,37 @@ class BookAggregatorTest extends TestCase {
         $this->assertArrayHasKey( 'source', $book );
 
         // Verify source field is set
-        $this->assertContains( $book['source'], [ 'bible-brains', 'usx' ] );
+        $this->assertContains( $book['source'], [ 'bible-brains', 'paratext' ] );
     }
 
     /**
      * @test
      * @group debug
      */
-    public function it_can_return_data_with_usx_source() {
+    public function it_can_return_data_with_paratext_source() {
         $aggregator = container()->get( BookAggregator::class );
 
-        // Get books from a USX Bible (using a Bible ID that exists in the USX fixtures)
-        // Note: This test assumes that the USX fixtures contain a Bible with books
+        // Get books from a Paratext Bible (using a Bible ID that exists in the Paratext fixtures)
+        // Note: This test assumes that the Paratext fixtures contain a Bible with books
         $result = $aggregator->all( 'KJV' );
 
         // Verify we get an array of books
         $this->assertIsArray( $result );
 
-        // Find books with 'usx' source
-        $usx_books = array_filter($result, function ( $book ) {
-            return $book['source'] === 'usx';
+        // Find books with 'paratext' source
+        $paratext_books = array_filter($result, function ( $book ) {
+            return $book['source'] === 'paratext';
         });
 
-        // Verify we found at least one book with 'usx' source
-        $this->assertNotEmpty( $usx_books, "No books with 'usx' source found" );
+        // Verify we found at least one book with 'paratext' source
+        $this->assertNotEmpty( $paratext_books, "No books with 'paratext' source found" );
 
-        // Check the structure of a usx book
-        $book = reset( $usx_books );
+        // Check the structure of a paratext book
+        $book = reset( $paratext_books );
         $this->assertIsArray( $book );
         $this->assertArrayHasKey( 'id', $book );
         $this->assertArrayHasKey( 'name', $book );
-        $this->assertEquals( 'usx', $book['source'] );
+        $this->assertEquals( 'paratext', $book['source'] );
     }
 
     /**

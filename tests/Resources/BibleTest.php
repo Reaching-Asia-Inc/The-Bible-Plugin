@@ -25,7 +25,7 @@ class BibleTest extends TestCase {
         $this->assertArrayHasKey('source', $result);
 
         // Verify source field is set
-        $this->assertContains($result['source'], ['bible-brains', 'usx']);
+        $this->assertContains($result['source'], ['bible-brains', 'paratext']);
     }
 
     /**
@@ -52,7 +52,7 @@ class BibleTest extends TestCase {
         $this->assertArrayHasKey('source', $result);
 
         // Verify source field is set
-        $this->assertContains($result['source'], ['bible-brains', 'usx']);
+        $this->assertContains($result['source'], ['bible-brains', 'paratext']);
     }
 
     /**
@@ -69,7 +69,7 @@ class BibleTest extends TestCase {
         $this->assertArrayHasKey('source', $result);
 
         // Verify source field is set
-        $this->assertContains($result['source'], ['bible-brains', 'usx']);
+        $this->assertContains($result['source'], ['bible-brains', 'paratext']);
     }
 
     /**
@@ -91,7 +91,7 @@ class BibleTest extends TestCase {
         $this->assertArrayHasKey('source', $bible);
 
         // Verify source field is set
-        $this->assertContains($bible['source'], ['bible-brains', 'usx']);
+        $this->assertContains($bible['source'], ['bible-brains', 'paratext']);
     }
 
     /**
@@ -113,7 +113,7 @@ class BibleTest extends TestCase {
             $this->assertArrayHasKey('source', $bible);
 
             // Verify source field is set
-            $this->assertContains($bible['source'], ['bible-brains', 'usx']);
+            $this->assertContains($bible['source'], ['bible-brains', 'paratext']);
         }
     }
 
@@ -136,7 +136,7 @@ class BibleTest extends TestCase {
         $this->assertArrayHasKey('source', $bible);
 
         // Verify source field is set
-        $this->assertContains($bible['source'], ['bible-brains', 'usx']);
+        $this->assertContains($bible['source'], ['bible-brains', 'paratext']);
     }
 
     /**
@@ -158,7 +158,7 @@ class BibleTest extends TestCase {
             $this->assertArrayHasKey('source', $bible);
 
             // Verify source field is set
-            $this->assertContains($bible['source'], ['bible-brains', 'usx']);
+            $this->assertContains($bible['source'], ['bible-brains', 'paratext']);
         }
     }
 

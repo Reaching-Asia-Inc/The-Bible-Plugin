@@ -36,10 +36,12 @@
     <exclude-pattern>resources/img/*</exclude-pattern>
     <exclude-pattern>resources/js/*</exclude-pattern>
     <exclude-pattern>ddev/*</exclude-pattern>
+    <exclude-pattern>develop.svn.wordpress.org/*</exclude-pattern>
 
     <arg name="extensions" value="php,inc,lib"/>
     <arg value="n"/>
-
+    <!-- Increase memory limit to avoid OOM when scanning large trees -->
+    <ini name="memory_limit" value="-1"/>
     <!-- To get a list of all currently enabled sniffs, run: phpcs -e -->
 
     <!-- To get a list of all available standards, run phpcs -i. To get a list of

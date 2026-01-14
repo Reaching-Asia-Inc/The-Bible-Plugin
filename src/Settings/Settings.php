@@ -66,6 +66,10 @@ class Settings {
                 'tab'   => 'customization'
             ];
             $menu[] = [
+                'label' => __( 'Custom Bibles', 'bible-plugin' ),
+                'tab'   => 'local_bibles'
+            ];
+            $menu[] = [
                 'label' => __( 'Advanced', 'bible-plugin' ),
                 'tab'   => 'advanced',
             ];

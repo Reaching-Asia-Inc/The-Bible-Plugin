@@ -2403,7 +2403,7 @@ return [
                                 ],
                             2 =>
                                 [
-                                    'id' => 'ENGKJVN_ET-usx',
+                                    'id' => 'ENGKJVN_ET-paratext',
                                     'type' => 'text_usx',
                                     'size' => 'NT',
                                     'stock_no' => null,
@@ -2511,7 +2511,7 @@ return [
                                 ],
                             13 =>
                                 [
-                                    'id' => 'ENGKJVO_ET-usx',
+                                    'id' => 'ENGKJVO_ET-paratext',
                                     'type' => 'text_usx',
                                     'size' => 'OT',
                                     'stock_no' => null,

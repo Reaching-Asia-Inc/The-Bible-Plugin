@@ -65,7 +65,7 @@ class BibleTest extends TestCase
         // Create the Bible shortcode
         $bible = new Bible( $assets, $request );
 
-        // Call the render method with custom attributes
+        // Call the render method with paratext attributes
         $result = $bible->render([
             'reference' => 'Romans 8:28'
         ]);
@@ -86,7 +86,7 @@ class BibleTest extends TestCase
         // Create mock dependencies
         $assets = $this->createMock( Assets::class );
 
-        // Create a custom Request mock that actually works
+        // Create a paratext Request mock that actually works
         $request = new class() extends Request {
             public function has( string $key ): bool {
                 if ( $key === 'reference' ) {
