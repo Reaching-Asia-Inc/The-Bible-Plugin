@@ -29,7 +29,7 @@ class AdvancedControllerTest extends TestCase
             ->method( 'get' )
             ->willReturnMap([
                 [ 'bible_brains_key', null, '' ],
-                [ 'google_tag_id', null, null ],
+                [ 'google_tag_id', null, '' ],
             ]);
 
 
@@ -66,7 +66,7 @@ class AdvancedControllerTest extends TestCase
             ->method( 'get' )
             ->willReturnMap([
                 [ 'bible_brains_key', null, $valid_key ],
-                [ 'google_tag_id', null, null ],
+                [ 'google_tag_id', null, '' ],
             ]);
 
         // Create the controller
