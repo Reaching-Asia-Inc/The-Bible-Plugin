@@ -35,6 +35,7 @@ abstract class TestCase extends WP_UnitTestCase {
         $this->mock_api_response( 'keys', new Response( 200, [], json_encode( $this->fixture( 'keys' ) ) ) );
         $this->mock_api_response( 'bibles', new Response( 200, [], json_encode( $this->fixture( 'bibles' ) ) ) );
         $this->mock_api_response( 'bibles/ENGESV', new Response( 200, [], json_encode( $this->fixture( 'bibles/ENGESV' ) ) ) );
+        $this->mock_api_response( 'bibles/filesets/ENGESV/JHN/3', new Response( 200, [], json_encode( $this->fixture( 'bibles/filesets/ENGESV/JHN/3' ) ) ) );
         $this->mock_api_response( 'bibles/ENGKJV', new Response( 200, [], json_encode( $this->fixture( 'bibles/ENGKJV' ) ) ) );
         $this->mock_api_response( 'bibles/filesets/ENGKJVN1DA-opus16/JHN/3', new Response( 200, [], json_encode( $this->fixture( 'bibles/filesets/ENGKJVN1DA-opus16/JHN/3' ) ) ) );
         $this->mock_api_response( 'bibles/filesets/ENGKJVP2DV/JHN/3', new Response( 200, [], json_encode( $this->fixture( 'bibles/filesets/ENGKJVP2DV/JHN/3' ) ) ) );

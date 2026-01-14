@@ -20,8 +20,8 @@ class USXContentNormalizer implements Normalizer
             'path'         => null,
             'thumbnail'    => null,
             'filesize'     => null,
-            'chater_start' => null,
-            'chater_end'   => null,
+            'chapter_start' => null,
+            'chapter_end'   => null,
         ];
     }
 }
