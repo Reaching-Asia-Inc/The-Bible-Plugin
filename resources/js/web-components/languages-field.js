@@ -1,4 +1,4 @@
-import {customElement, property, query} from "lit/decorators.js";
+import {customElement, property, query, state} from "lit/decorators.js";
 import {css, html, nothing, SpectrumElement} from "@spectrum-web-components/base";
 import {TBPElement} from "./base.js";
 import {__, apiUrl} from "../helpers.js";
@@ -7,6 +7,8 @@ import {__, apiUrl} from "../helpers.js";
 export class LanguagesField extends TBPElement {
     @property({type: Array, reflect: true}) value = [];
     @property({type: Array, attribute: 'media-type-options'}) mediaTypeOptions = [];
+    @state() copiedShortcode = null;
+    @state() copiedPopover = null;
 
     get hasUnselectedLanguage() {
         return this.value.some(({value}) => !value);
@@ -44,10 +46,36 @@ export class LanguagesField extends TBPElement {
                     width: 100%;
                 }
 
-              #shortcodes {
+              .example-code {
                 font-size: 10px;
                 background-color: var(--spectrum-global-color-gray-200);
                 padding: 10px;
+                flex: 1;
+                margin: 0;
+                position: relative;
+                overflow: hidden;
+              }
+
+              .example-code.copied::after {
+                content: 'Copied';
+                position: absolute;
+                top: 0;
+                left: 0;
+                right: 0;
+                bottom: 0;
+                background: var(--spectrum-global-color-gray-200);
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                font-size: 12px;
+                font-weight: bold;
+                color: var(--spectrum-global-color-green-600);
+              }
+
+              .example-container {
+                display: flex;
+                align-items: center;
+                gap: var(--spectrum-global-dimension-size-100);
               }
             `]
     }
@@ -71,11 +99,12 @@ export class LanguagesField extends TBPElement {
         // Ensure bibles is an array for rendering
         const bibleValues = Array.isArray(bibles) ? bibles : (typeof bibles === 'string' && bibles ? bibles.split(',') : []);
         const exampleBible = default_bible || (bibleValues[0] || '');
+        const shortcode = `[tbp-scripture reference="John 3:16" language="${value}" bible="${exampleBible}"]`;
+        const popoverLink = `<a href="#tbp-John3-16" language="${value}" bible="${exampleBible}">John 3:16</a>`;
 
         return html`
             <sp-card heading="${itemText ? itemText : __('Language')}" class="language">
                 <div slot="footer">
-
                     ${(!value) ? html`
                         <sp-field-group>
                             <tbp-overlay-picker placeholder="${__('Search') + '...'}"
@@ -193,25 +222,43 @@ export class LanguagesField extends TBPElement {
                                 </sp-help-text>
                             </sp-field-group>
                         ` : nothing}
+
+                        <sp-field-group>
+                            <sp-field-label
+                                    for="shortcodes"
+                            >
+                                ${__('Example Shortcode')}
+                            </sp-field-label>
+                            <div class="example-container">
+                                <pre class="example-code ${this.copiedShortcode === idx ? 'copied' : ''}">${shortcode}</pre>
+                                <sp-action-button
+                                        quiet
+                                        label="${__('Copy Shortcode')}"
+                                        @click="${() => this.copyToClipboard(shortcode, 'shortcode', idx)}"
+                                >
+                                    <sp-icon-copy slot="icon"></sp-icon-copy>
+                                </sp-action-button>
+                            </div>
+                        </sp-field-group>
+
+                        <sp-field-group>
+                            <sp-field-label
+                                    for="popover-link"
+                            >
+                                ${__('Example Popover Link')}
+                            </sp-field-label>
+                            <div class="example-container">
+                                <pre class="example-code ${this.copiedPopover === idx ? 'copied' : ''}">${popoverLink}</pre>
+                                <sp-action-button
+                                        quiet
+                                        label="${__('Copy Popover Link')}"
+                                        @click="${() => this.copyToClipboard(popoverLink, 'popover', idx)}"
+                                >
+                                    <sp-icon-copy slot="icon"></sp-icon-copy>
+                                </sp-action-button>
+                            </div>
+                        </sp-field-group>
                     ` : nothing}
-                  </sp-field-group>
-
-                  <sp-field-group>
-                    <sp-field-label
-                      for="shortcodes"
-                    >
-                      ${__('Example Shortcode')}
-                    </sp-field-label>
-                    <pre id="shortcodes">[tbp-scripture reference="John 3:16" language="${value}" bible="${exampleBible}"]</pre>
-                  </sp-field-group>
-
-                  <sp-field-group>
-                    <sp-field-label
-                      for="popover-link"
-                    >
-                      ${__('Example Popover Link')}
-                    </sp-field-label>
-                    <pre id="shortcodes">&lt;a href="#tbp-John3-16" language="${value}" bible="${exampleBible}"&gt;John 3:16&lt;/a&gt;</pre>
                   </sp-field-group>
                 </div>
 
@@ -271,6 +318,21 @@ export class LanguagesField extends TBPElement {
     onRemove(idx) {
         this.value.splice(idx, 1);
         this.requestUpdate()
+    }
+
+    copyToClipboard(text, type, idx) {
+        navigator.clipboard.writeText(text);
+        if (type === 'shortcode') {
+            this.copiedShortcode = idx;
+            setTimeout(() => {
+                this.copiedShortcode = null;
+            }, 2000);
+        } else if (type === 'popover') {
+            this.copiedPopover = idx;
+            setTimeout(() => {
+                this.copiedPopover = null;
+            }, 2000);
+        }
     }
 
     onMediaTypeChange(e, idx) {
