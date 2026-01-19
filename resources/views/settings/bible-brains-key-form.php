@@ -76,7 +76,7 @@ $this->layout( 'layouts/settings', compact( 'tab' ) );
 
                 <sp-help-text size="s">
                     <span x-show="fields.bible_brains_key_instructions" x-text="fields.bible_brains_key_instructions"></span>
-                    <span x-show="!fields.bible_brains_key_instructions"><?php esc_html_e( "You are not required to a key unless you want to use your own.", 'bible-plugin' ); ?></span>
+                    <span x-show="!fields.bible_brains_key_instructions"><?php esc_html_e( "You are not required to provide a key unless you want to use your own.", 'bible-plugin' ); ?></span>
                     <sp-link href="https://4.dbt.io/api_key/request" target="_blank">
                         <?php esc_html_e( "Request a key.", 'bible-plugin' ); ?>
                     </sp-link>
