@@ -32,16 +32,9 @@ export const $shareText = computed([$selection, $selectables], (selection, selec
   }).join("\n")
 })
 
-export const $canShare = computed([$shareUrl, $shareText], userId => task(async () => {
-  if (!navigator.share) {
-    return false;
-  }
-  return navigator.canShare({
-    title: $referenceLabel.get(),
-    url: $shareUrl.get(),
-    text: $shareText.get()
-  })
-}))
+export const $canShare = computed([$shareUrl, $shareText], () => {
+  return true;
+})
 
 export const $share = async () => {
   const canShare = await $canShare.get();
