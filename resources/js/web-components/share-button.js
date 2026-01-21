@@ -29,13 +29,39 @@ export class ShareButton extends withStores(TBPElement, [$canShare, $selectionCo
       .selection__copy {
         display: flex;
         gap: 1rem;
-        align-items: flex-start;
-        margin-bottom: .5rem;
+        align-items: center;
+        margin-bottom: 1rem;
+
+        sp-label {
+          width: 50px;
+          flex-shrink: 0;
+        }
 
         sp-textfield {
           flex: 1;
-          width: 100%;
           display: block;
+        }
+
+        sp-button {
+          flex-shrink: 0;
+          background-color: var(--spectrum-accent-color-default);
+          color: white;
+          border: none;
+          cursor: pointer;
+          --mod-button-background-color-default: var(--spectrum-accent-color-default);
+          --mod-button-background-color-hover: var(--spectrum-accent-color-700);
+          --mod-button-background-color-active: var(--spectrum-accent-color-800);
+          --mod-button-content-color-default: white;
+          --mod-button-content-color-hover: white;
+          --mod-button-content-color-active: white;
+        }
+      }
+
+      .selection__copy.text-row {
+        align-items: flex-start;
+
+        sp-label {
+          margin-top: 8px;
         }
       }
     `
@@ -104,7 +130,7 @@ export class ShareButton extends withStores(TBPElement, [$canShare, $selectionCo
             </sp-button>
           </div>
 
-          <div class="selection__copy">
+          <div class="selection__copy text-row">
             <sp-label>${__('Text')}</sp-label>
             <sp-textfield disabled multiline value="${$shareText.get()}"></sp-textfield>
             <sp-button @click="${() => this.copyText($shareText.get(), 'text')}">
