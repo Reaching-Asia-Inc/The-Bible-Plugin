@@ -24,12 +24,11 @@ class AdvancedControllerTest extends TestCase
         $request = $this->getMockBuilder( RequestInterface::class )
             ->getMock();
 
-        // Configure the mock to return values for bible_brains_key and google_tag_id
+        // Configure the mock to return values for bible_brains_key
         $request->expects( $this->any() )
             ->method( 'get' )
             ->willReturnMap([
                 [ 'bible_brains_key', null, 12345 ],
-                [ 'google_tag_id', null, '' ],
             ]);
 
 
@@ -61,12 +60,11 @@ class AdvancedControllerTest extends TestCase
         // Create a mock Request object
         $request = $this->createMock( RequestInterface::class );
 
-        // Configure the mock to return values for bible_brains_key and google_tag_id
+        // Configure the mock to return values for bible_brains_key
         $request->expects( $this->any() )
             ->method( 'get' )
             ->willReturnMap([
                 [ 'bible_brains_key', null, $valid_key ],
-                [ 'google_tag_id', null, '' ],
             ]);
 
         // Create the controller
@@ -87,39 +85,4 @@ class AdvancedControllerTest extends TestCase
         }
     }
 
-    /**
-     * @test
-     */
-    public function it_saves_google_tag_id()
-    {
-        // Get a valid key from the BibleBrainsApiKeys service
-        $keys_service = container()->get( BibleBrainsKeys::class );
-        $valid_key = $keys_service->random();
-        $google_tag_id = 'G-TEST12345';
-
-        // Create a mock Request object
-        $request = $this->createMock( RequestInterface::class );
-
-        // Configure the mock to return the valid key and google_tag_id
-        $request->expects( $this->any() )
-            ->method( 'get' )
-            ->willReturnMap([
-                [ 'bible_brains_key', null, $valid_key ],
-                [ 'google_tag_id', null, $google_tag_id ],
-            ]);
-
-        // Create the controller
-        $controller = new AdvancedController();
-
-        // Call the submit method
-        $response = $controller->submit( $request );
-
-        // Assert success
-        $this->assertIsArray( $response );
-        $this->assertTrue( $response['success'] );
-
-        // Assert that the google_tag_id was saved
-        $saved_tag_id = \CodeZone\Bible\get_plugin_option( 'google_tag_id' );
-        $this->assertEquals( $google_tag_id, $saved_tag_id );
-    }
 }

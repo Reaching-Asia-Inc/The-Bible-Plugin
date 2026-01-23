@@ -19,7 +19,6 @@ $config->merge( [
         'prefix' => 'bible_plugin',
         'defaults' => [
             'bible_brains_key' => '',
-            'google_tag_id' => 'G-S94BBD29BQ',
             'media_types' => 'audio,video,text',
             'languages'        => [
                 $default_language

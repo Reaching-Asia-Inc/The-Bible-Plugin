@@ -88,36 +88,6 @@ $this->layout( 'layouts/settings', compact( 'tab' ) );
             </sp-field-group>
         </div>
 
-        <div class="tbp-form-group">
-            <sp-field-group>
-                <sp-field-label
-                        for="google_tag_id"><?php esc_html_e( 'Google Tag ID', 'bible-plugin' ); ?></sp-field-label>
-
-                <div>
-                    <sp-textfield id="google_tag_id"
-                                  name="google_tag_id"
-                                  :value="dirty_google_tag_id"
-                                  @change="dirty_google_tag_id = $event.target.value"
-                                  placeholder="<?php esc_attr_e( 'Enter Google Tag ID...', 'bible-plugin' ); ?>"
-                    ></sp-textfield>
-
-                    <sp-button
-                            x-show="dirty_google_tag_id !== fields.google_tag_id"
-                            key="google_tag_button"
-                            label="<?php esc_attr_e( 'Save', 'bible-plugin' ); ?>"
-                            variant="secondary"
-                            @click="submit"
-                            size="m">
-                        <?php esc_html_e( 'Save', 'bible-plugin' ); ?>
-                        <sp-icon-save slot="icon"></sp-icon-save>
-                    </sp-button>
-                </div>
-
-                <sp-help-text size="s">
-                    <?php esc_html_e( 'Enter your Google Tag ID (e.g., G-XXXXXXXXXX).', 'bible-plugin' ); ?>
-                </sp-help-text>
-            </sp-field-group>
-        </div>
     </fieldset>
 </form>
 
