@@ -17,7 +17,6 @@ use CodeZone\Bible\Providers\ShortcodeProvider;
 use CodeZone\Bible\Providers\TranslationsProvider;
 use CodeZone\Bible\Providers\ViewProvider;
 use CodeZone\Bible\Providers\AssetProvider;
-use CodeZone\Bible\Providers\AnalyticsProvider;
 
 
 $config->merge( [
@@ -35,7 +34,6 @@ $config->merge( [
             RestApiProvider::class,
             RequestServiceProvider::class,
             SettingsProvider::class,
-            AnalyticsProvider::class
         ],
         'paratext' => [
             'uploads_path' => 'bible-plugin/bibles/paratext',
