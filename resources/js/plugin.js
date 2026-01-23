@@ -61,11 +61,16 @@ import "./web-components/header.js"
 import {loaded} from "./helpers.js";
 
 window.tbp = () => {
-    document.querySelectorAll('a[href^="#tbp"]').forEach((link) => {
+    console.log('TBP: Initializing popovers...');
+    const links = document.querySelectorAll('a[href^="#tbp"]');
+    console.log(`TBP: Found ${links.length} potential links`);
+
+    links.forEach((link) => {
         if (link.closest('tbp-verse-popover')) return; // Avoid double processing
 
         const href = link.getAttribute('href');
         const reference = decodeURIComponent(href.replace(/^#tbp-?/, ''));
+        console.log(`TBP: Creating popover for ${reference}`);
         const popover = document.createElement('tbp-verse-popover');
 
         // Transfer all attributes (bible, language, etc.)
@@ -87,6 +92,7 @@ window.tbp = () => {
 };
 
 loaded(() => {
+    console.log('TBP: Page loaded, checking for cloak and running tbp()');
     document.querySelectorAll('.tbp-cloak').forEach((el) => el.classList.remove('tbp-cloak'));
     window.tbp();
 });
