@@ -1,5 +1,6 @@
 import {customElement, property, state} from "lit/decorators.js";
 import {html, nothing} from "lit";
+import {unsafeHTML} from "lit/directives/unsafe-html.js";
 import {TBPElement} from "./base.js";
 import {apiUrl, reference_from_content} from "../helpers.js";
 import {$selectedLanguage, $selectedBible, $availableLanguages} from "../stores/settings.js";
@@ -403,6 +404,11 @@ export class VersePopover extends TBPElement {
         tbp-verse-popover .verse-text {
           font-size: 14px;
           line-height: 1.5;
+          font-weight: normal;
+        }
+        tbp-verse-popover .verse-text strong,
+        tbp-verse-popover .verse-text b {
+          font-weight: bold;
         }
         tbp-verse-popover .verse-reference {
           font-weight: bold;
@@ -505,7 +511,7 @@ export class VersePopover extends TBPElement {
         </div>
         <div class="verse-text">
           ${verses.map(item => html`
-            <span class="verse-item">${item.verse_text || item.text}</span>
+            <span class="verse-item">${unsafeHTML(item.verse_text || item.text)}</span>
           `)}
         </div>
         ${this.fallbackUsed ? html`
