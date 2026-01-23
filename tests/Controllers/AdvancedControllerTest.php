@@ -84,5 +84,4 @@ class AdvancedControllerTest extends TestCase
             $this->assertEquals( $valid_key, $saved_key );
         }
     }
-
 }
