@@ -35,12 +35,12 @@ export class BibleMenu extends withStores(TBPElement, [$otBooks, $ntBooks, $hasA
                 sp-action-group {
                     margin-inline-start: auto;
                     flex-wrap: nowrap;
-                    padding-inline-start: var(--spectrum-global-dimension-size-200);
+                    padding-inline-start: 1rem;
                     padding-right: 2px;
                 }
 
                 sp-divider {
-                    background-color: var(--spectrum-global-color-gray-300);
+                    background-color: #d1d1d1;
                 }
 
                 .book-menu--mobile {
@@ -119,11 +119,7 @@ export class BibleMenu extends withStores(TBPElement, [$otBooks, $ntBooks, $hasA
 
 <!--                <tbp-language-menu></tbp-language-menu>-->
 
-                ${$canShare.get() ? html`
-                    <tbp-share-button></tbp-share-button>
-                ` : html`
-                    <tbp-selection-button></tbp-selection-button>
-                ` }
+                <tbp-share-button></tbp-share-button>
             </sp-action-group>
         `;
     }

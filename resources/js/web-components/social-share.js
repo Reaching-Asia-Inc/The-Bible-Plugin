@@ -21,13 +21,44 @@ export class SocialShare extends withStores(TBPElement, [$shareUrl, $shareText])
 
         .row {
           display: flex;
-          gap: var(--spectrum-global-dimension-size-200);
+          gap: 1rem;
           align-items: center;
           flex-wrap: wrap;
         }
 
         .label {
-          margin-inline-end: var(--spectrum-global-dimension-size-200);
+          margin-inline-end: 1rem;
+        }
+
+        iconify-icon {
+          display: flex;
+        }
+
+        sp-button {
+          background-color: var(--spectrum-accent-color-default);
+          border-radius: 50%;
+          color: white;
+          --mod-button-padding-inline-start: 0;
+          --mod-button-padding-inline-end: 0;
+          --mod-button-background-color-default: var(--spectrum-accent-color-default);
+          --mod-button-background-color-hover: var(--spectrum-accent-color-700);
+          --mod-button-background-color-active: var(--spectrum-accent-color-800);
+          --mod-button-content-color-default: white;
+          --mod-button-content-color-hover: white;
+          --mod-button-content-color-active: white;
+          width: 36px;
+          height: 36px;
+          min-width: 36px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          border: none;
+          cursor: pointer;
+        }
+
+        sp-button:hover {
+            background-color: var(--spectrum-accent-color-700);
+            color: white;
         }
       `
     ];
@@ -65,8 +96,6 @@ export class SocialShare extends withStores(TBPElement, [$shareUrl, $shareText])
           <sp-button
             label="Facebook"
             icon-only
-            quiet
-            static="black"
             @click=${() => this.openShare(this.facebookUrl, 'facebook')}
           >
             <iconify-icon
@@ -74,15 +103,13 @@ export class SocialShare extends withStores(TBPElement, [$shareUrl, $shareText])
               slot="icon"
               width="18"
               height="18"
-              style="color: black"
+              style="color: currentColor"
             ></iconify-icon>
           </sp-button>
 
           <sp-button
             label="X"
             icon-only
-            quiet
-            static="black"
             @click=${() => this.openShare(this.xUrl, 'x')}
           >
             <iconify-icon
@@ -90,7 +117,7 @@ export class SocialShare extends withStores(TBPElement, [$shareUrl, $shareText])
               slot="icon"
               width="16"
               height="16"
-              style="color: black"
+              style="color: currentColor"
             ></iconify-icon>
           </sp-button>
         </div>
@@ -101,6 +128,7 @@ export class SocialShare extends withStores(TBPElement, [$shareUrl, $shareText])
       <div class="row">
         <sp-button
           label="Facebook"
+          icon-only
           @click=${() => this.openShare(this.facebookUrl, 'facebook')}
         >
           <iconify-icon
@@ -108,13 +136,13 @@ export class SocialShare extends withStores(TBPElement, [$shareUrl, $shareText])
             slot="icon"
             width="18"
             height="18"
-            style="color: black"
+            style="color: currentColor"
           ></iconify-icon>
-          Facebook
         </sp-button>
 
         <sp-button
           label="X"
+          icon-only
           @click=${() => this.openShare(this.xUrl, 'x')}
         >
           <iconify-icon
@@ -122,9 +150,8 @@ export class SocialShare extends withStores(TBPElement, [$shareUrl, $shareText])
             slot="icon"
             width="16"
             height="16"
-            style="color: black"
+            style="color: currentColor"
           ></iconify-icon>
-          Twitter
         </sp-button>
       </div>
     `;
