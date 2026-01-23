@@ -95,49 +95,61 @@ $this->layout( 'layouts/settings', compact( 'tab' ) );
     <hr />
 
     <h2><?php echo esc_html__( 'Custom Bibles', 'bible-plugin' ); ?></h2>
-    <table class="widefat fixed striped">
-        <thead>
-        <tr>
-            <th><?php echo esc_html__( 'ID', 'bible-plugin' ); ?></th>
-            <th><?php echo esc_html__( 'Name', 'bible-plugin' ); ?></th>
-            <th><?php echo esc_html__( 'ISO', 'bible-plugin' ); ?></th>
-            <th><?php echo esc_html__( 'Language', 'bible-plugin' ); ?></th>
-            <th><?php echo esc_html__( 'Language ID', 'bible-plugin' ); ?></th>
-            <th><?php echo esc_html__( 'Path', 'bible-plugin' ); ?></th>
-            <th><?php echo esc_html__( 'Actions', 'bible-plugin' ); ?></th>
-        </tr>
-        </thead>
-        <tbody id="local-bibles-table-body">
-        <template x-if="!bibles || Object.keys(bibles).length === 0">
-            <tr><td colspan="7"><?php echo esc_html__( 'No custom bibles yet.', 'bible-plugin' ); ?></td></tr>
-        </template>
-        <template x-for="([id, b], idx) in Object.entries(bibles)" :key="id">
-            <tr :data-id="id">
-                <td><code x-text="b?.id"></code></td>
-                <td x-text="b?.name || ''"></td>
-                <td x-text="b?.iso || ''"></td>
-                <td x-text="b?.language || ''"></td>
-                <td>
-                    <sp-textfield
-                        class="language-id-input"
-                        :value="b?.language_id || ''"
-                        placeholder="<?php echo esc_attr__( 'e.g., eng', 'bible-plugin' ); ?>"
-                        @input="b.language_id = $event.target.value"
-                    ></sp-textfield>
-                </td>
-                <td style="max-width: 300px; word-break: break-all;">
-                    <sp-textfield
-                        :value="b?.path || ''"
-                        readonly
-                    ></sp-textfield>
-                </td>
-                <td>
-                    <sp-button variant="secondary" class="local-bible-save" @click="saveBible(b?.id)"><?php echo esc_html__( 'Save', 'bible-plugin' ); ?></sp-button>
-                    <sp-button variant="negative" class="local-bible-delete" @click="deleteBible(b?.id)"><?php echo esc_html__( 'Delete', 'bible-plugin' ); ?></sp-button>
-                </td>
+    <style>
+        .br-table-container {
+            width: 100%;
+            overflow-x: auto;
+            margin-bottom: 20px;
+        }
+        .language-id-input {
+            width: 100px !important;
+        }
+    </style>
+    <div class="br-table-container">
+        <table class="widefat striped">
+            <thead>
+            <tr>
+                <th><?php echo esc_html__( 'ID', 'bible-plugin' ); ?></th>
+                <th><?php echo esc_html__( 'Name', 'bible-plugin' ); ?></th>
+                <th><?php echo esc_html__( 'ISO', 'bible-plugin' ); ?></th>
+                <th><?php echo esc_html__( 'Language', 'bible-plugin' ); ?></th>
+                <th><?php echo esc_html__( 'Language ID', 'bible-plugin' ); ?></th>
+                <th><?php echo esc_html__( 'Path', 'bible-plugin' ); ?></th>
+                <th><?php echo esc_html__( 'Actions', 'bible-plugin' ); ?></th>
             </tr>
-        </template>
-        </tbody>
-    </table>
+            </thead>
+            <tbody id="local-bibles-table-body">
+            <template x-if="!bibles || Object.keys(bibles).length === 0">
+                <tr><td colspan="7"><?php echo esc_html__( 'No custom bibles yet.', 'bible-plugin' ); ?></td></tr>
+            </template>
+            <template x-for="([id, b], idx) in Object.entries(bibles)" :key="id">
+                <tr :data-id="id">
+                    <td><code x-text="b?.id"></code></td>
+                    <td x-text="b?.name || ''"></td>
+                    <td x-text="b?.iso || ''"></td>
+                    <td x-text="b?.language || ''"></td>
+                    <td>
+                        <sp-textfield
+                            class="language-id-input"
+                            :value="b?.language_id || ''"
+                            placeholder="<?php echo esc_attr__( 'e.g., eng', 'bible-plugin' ); ?>"
+                            @input="b.language_id = $event.target.value"
+                        ></sp-textfield>
+                    </td>
+                    <td style="max-width: 300px; word-break: break-all;">
+                        <sp-textfield
+                            :value="b?.path || ''"
+                            readonly
+                        ></sp-textfield>
+                    </td>
+                    <td>
+                        <sp-button variant="secondary" class="local-bible-save" @click="saveBible(b?.id)"><?php echo esc_html__( 'Save', 'bible-plugin' ); ?></sp-button>
+                        <sp-button variant="negative" class="local-bible-delete" @click="deleteBible(b?.id)"><?php echo esc_html__( 'Delete', 'bible-plugin' ); ?></sp-button>
+                    </td>
+                </tr>
+            </template>
+            </tbody>
+        </table>
+    </div>
     <!-- Custom Bibles settings Alpine component is now loaded from the admin bundle -->
 </div>
