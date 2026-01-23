@@ -18,6 +18,7 @@ import '@spectrum-web-components/theme/src/themes.js';
 
 import '@spectrum-web-components/icons-workflow/icons/sp-icon-add.js';
 import '@spectrum-web-components/icons-workflow/icons/sp-icon-delete.js';
+import '@spectrum-web-components/icons-workflow/icons/sp-icon-copy.js';
 import '@spectrum-web-components/icons-workflow/icons/sp-icon-key.js';
 import '@spectrum-web-components/icons-workflow/icons/sp-icon-link-out-light.js';
 import '@spectrum-web-components/badge/sp-badge.js';
