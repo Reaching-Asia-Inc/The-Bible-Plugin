@@ -7,7 +7,6 @@ use CodeZone\Bible\Services\BibleBrainsKeys;
 use CodeZone\Bible\Services\MediaTypes;
 use CodeZone\Bible\Settings\LanguagesSetting;
 use Exception;
-use function CodeZone\Bible\admin_path;
 use function CodeZone\Bible\container;
 use function CodeZone\Bible\transaction;
 use function CodeZone\Bible\validate;
@@ -35,7 +34,7 @@ class BibleFormController {
 
         // Key validation
         if ( !$keys->random() ) {
-            wp_redirect( admin_path( "admin.php?page=bible-plugin&tab=advanced" ) );
+            wp_redirect( admin_url( "admin.php?page=bible-plugin&tab=advanced" ) );
             exit;
         }
 

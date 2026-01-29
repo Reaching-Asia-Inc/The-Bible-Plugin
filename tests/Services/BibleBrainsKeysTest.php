@@ -97,7 +97,17 @@ class BibleBrainsKeysTest extends TestCase {
         $body->method( 'getContents' )->willReturn( json_encode( [ 'key1', 'key2' ] ) );
         $response->method( 'getBody' )->willReturn( $body );
 
-        $this->client->method( 'get' )->willReturn( $response );
+        // Expect the client to be called with correct User-Agent
+        $this->client->expects( $this->once() )
+            ->method( 'get' )
+            ->with(
+                $this->equalTo( 'https://thebibleplugin.com/wp-json/bible-plugin/v1/keys' ),
+                $this->callback( function ( $options ) {
+                    return isset( $options['headers']['User-Agent'] ) &&
+                           strpos( $options['headers']['User-Agent'], 'Mozilla/5.0' ) === 0;
+                } )
+            )
+            ->willReturn( $response );
 
         // Expect the cache to be set with the result
         $this->cache->expects( $this->once() )
