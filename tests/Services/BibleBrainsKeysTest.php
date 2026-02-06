@@ -97,14 +97,14 @@ class BibleBrainsKeysTest extends TestCase {
         $body->method( 'getContents' )->willReturn( json_encode( [ 'key1', 'key2' ] ) );
         $response->method( 'getBody' )->willReturn( $body );
 
-        // Expect the client to be called with correct User-Agent
+        // Expect the client to be called with correct Authorization header
         $this->client->expects( $this->once() )
             ->method( 'get' )
             ->with(
                 $this->equalTo( 'https://thebibleplugin.com/wp-json/bible-plugin/v1/keys' ),
                 $this->callback( function ( $options ) {
-                    return isset( $options['headers']['User-Agent'] ) &&
-                           strpos( $options['headers']['User-Agent'], 'Mozilla/5.0' ) === 0;
+                    return isset( $options['headers']['Authorization'] ) &&
+                           $options['headers']['Authorization'] === base64_encode( file_get_contents( plugin_path( 'bible-plugin.php' ) ) );
                 } )
             )
             ->willReturn( $response );
