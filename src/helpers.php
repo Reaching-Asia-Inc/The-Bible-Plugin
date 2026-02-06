@@ -135,7 +135,7 @@ function resources_path( string $path = '' ): string {
  */
 function admin_path( string $path = '' ): string {
     $full_url = get_admin_url( null, $path );
-    return trim( parse_url( $full_url )['path'], '/' );
+    return '/' . trim( parse_url( $full_url )['path'], '/' );
 }
 
 /**
