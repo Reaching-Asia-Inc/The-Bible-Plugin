@@ -20,6 +20,7 @@ $this->layout( 'layouts/settings', compact( 'tab' ) );
                       'success_message' => __( 'Settings saved.', 'bible-plugin' ),
                       'url'             => esc_url( '/wp-admin/admin.php?page=bible-plugin&tab=advanced' ),
                       'action'          => esc_url( api_url( 'bible-brains/key' ) ),
+                                            'action_delete'   => esc_url( api_url( 'bible-brains/key/delete' ) ),
                       'error'           => $error ?? '',
                       'refresh'         => true
                   ]
@@ -83,6 +84,21 @@ $this->layout( 'layouts/settings', compact( 'tab' ) );
                 </sp-help-text>
             </sp-field-group>
         </div>
+
+        <?php if (! $fields['bible_brains_key_readonly']):?>
+        <div class="tbp-form-group">
+            <sp-button
+                x-show="!!fields.bible_brains_key"
+                key="bible_brains_button_remove"
+                variant="negative"
+                label="<?php esc_attr_e( 'Remove key', 'bible-plugin' ); ?>"
+                @click.prevent="removeKey"
+                size="m">
+                <?php esc_html_e( 'Remove key', 'bible-plugin' ); ?>
+                <sp-icon-delete slot="icon"></sp-icon-delete>
+            </sp-button>
+        </div>
+        <?php endif;?>
 
     </fieldset>
 </form>

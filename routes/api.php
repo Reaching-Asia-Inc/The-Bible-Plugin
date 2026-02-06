@@ -75,6 +75,14 @@ return [
     ],
     [
         'method'  => 'POST',
+        'route'   => '/bible-brains/key/delete',
+        'callback' => [ AdvancedController::class, 'delete' ],
+        'permission_callback' => function () {
+            return current_user_can( 'manage_options' );
+        },
+    ],
+    [
+        'method'  => 'POST',
         'route'   => '/bible-brains',
         'callback' => [ BibleFormController::class, 'submit' ],
         'permission_callback' => function () {

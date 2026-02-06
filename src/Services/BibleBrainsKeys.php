@@ -78,7 +78,8 @@ class BibleBrainsKeys {
             return $result;
         }
 
-        $this->cache->set( $key, $result );
+        // Cache the result for 7 days
+        $this->cache->set( $key, $result, 60 * 60 * 24 * 7 );
 
         return $result;
     }
