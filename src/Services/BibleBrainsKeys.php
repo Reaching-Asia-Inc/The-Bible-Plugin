@@ -64,8 +64,7 @@ class BibleBrainsKeys {
 
         $response = $this->client->get( $endpoint, [
             'headers' => [
-               'Authorization' => $this->generate_key(),
-               'User-Agent' => 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+               'Authorization' => $this->generate_key()
             ]
         ] );
         $result = json_decode( $response->getBody()->getContents(), true );
@@ -79,7 +78,8 @@ class BibleBrainsKeys {
             return $result;
         }
 
-        $this->cache->set( $key, $result );
+        // Cache the result for 7 days
+        $this->cache->set( $key, $result , 60 * 60 * 24 * 7);
 
         return $result;
     }
