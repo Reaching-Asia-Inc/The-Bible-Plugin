@@ -134,7 +134,8 @@ function resources_path( string $path = '' ): string {
  * Returns the path relative to the wordpress admin directory.
  */
 function admin_path( string $path = '' ): string {
-    return '/' . trim( 'wp-admin/' . $path, '/' );
+    $full_url = get_admin_url( null, $path );
+    return trim( parse_url( $full_url )['path'], '/' );
 }
 
 /**
