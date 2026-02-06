@@ -98,4 +98,36 @@ class AdvancedController
             'success' => true
         ];
     }
+
+    /**
+     * Remove the stored Bible Brains API key (deletes the option).
+     *
+     * @param Request $request
+     * @return array|\WP_Error
+     */
+    public function delete( Request $request ) {
+        $keys = container()->get( BibleBrainsKeys::class );
+
+        // If key is provided via override, treat as read-only and block deletion
+        if ( $keys->has_override() ) {
+            return new \WP_Error(
+                'read_only',
+                __( 'Key is managed by an override and cannot be removed here.', 'bible-plugin' )
+            );
+        }
+
+        $result = transaction(function () {
+            $setting = container()->get( BibleBrainsKeySetting::class );
+            return $setting->delete();
+        });
+
+        if ( $result !== true ) {
+            return new \WP_Error(
+                500,
+                __( 'Unable to remove key.', 'bible-plugin' )
+            );
+        }
+
+        return [ 'success' => true ];
+    }
 }
