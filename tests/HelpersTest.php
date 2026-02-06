@@ -375,7 +375,7 @@ class HelpersTest extends TestCase
         $result = \CodeZone\Bible\admin_path( 'test/path' );
 
         // Check that the result is the expected path
-        $this->assertEquals( 'wp-admin/test/path', $result );
+        $this->assertEquals( '/wp-admin/test/path', $result );
     }
 
     /**
