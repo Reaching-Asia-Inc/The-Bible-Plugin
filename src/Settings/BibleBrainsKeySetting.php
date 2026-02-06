@@ -33,8 +33,8 @@ class BibleBrainsKeySetting
      * @return bool True on success, false on failure.
      */
     public function delete(): bool {
-        $prefix = config()->get('options.prefix');
+        $prefix = config()->get( 'options.prefix' );
         $option_name = $prefix . '_' . self::OPTION_KEY;
-        return delete_option($option_name);
+        return delete_option( $option_name );
     }
 }
