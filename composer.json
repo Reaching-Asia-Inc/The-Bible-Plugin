@@ -21,7 +21,10 @@
   "scripts": {
     "pre-install-cmd": [
       "./bin/setup-scoper.sh"
-    ]
+    ],
+    "lint": "phpcs",
+    "lint:fix": "phpcbf",
+    "version": "bin/version.sh"
   },
   "require": {
     "php": "^7.4",
