@@ -19,7 +19,7 @@ PLUGIN_FILE="bible-plugin.php"
 README_FILE="readme.txt"
 
 # Get current version from the plugin header
-CURRENT_VERSION=$(grep -m 1 "Version:" "$PLUGIN_FILE" | awk '{print $2}')
+CURRENT_VERSION=$(grep -m 1 "Version:" "$PLUGIN_FILE" | sed -E 's/^.*Version:[[:space:]]*//')
 
 if [ -z "$CURRENT_VERSION" ]; then
     echo "Error: Could not find version in $PLUGIN_FILE"
