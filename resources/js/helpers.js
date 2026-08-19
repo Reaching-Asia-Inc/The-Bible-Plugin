@@ -236,3 +236,7 @@ export const is_chrome = () => {
   const regex = /Chrome/i;
   return regex.test(navigator.userAgent);
 }
+
+export const has_touch = () => {
+  return ('ontouchstart' in window) || navigator.maxTouchPoints > 0;
+}

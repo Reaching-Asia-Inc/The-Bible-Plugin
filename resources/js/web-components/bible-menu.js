@@ -11,7 +11,7 @@ import {$availableLanguages, $selectedLanguage, $availableBibles, $selectedBible
 import {$fullScreen} from "../stores/full-screen.js";
 import {trackEvent} from "../analytics.js";
 
-import {__} from "../helpers.js"
+import {__, has_touch} from "../helpers.js"
 import {css} from "@spectrum-web-components/base";
 import "./language-menu.js";
 import "./social-share.js";
@@ -119,7 +119,7 @@ export class BibleMenu extends withStores(TBPElement, [$otBooks, $ntBooks, $hasA
 
 <!--                <tbp-language-menu></tbp-language-menu>-->
 
-                <tbp-share-button></tbp-share-button>
+                ${has_touch() ? nothing : html`<tbp-share-button></tbp-share-button>`}
             </sp-action-group>
         `;
     }

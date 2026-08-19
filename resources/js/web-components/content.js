@@ -26,6 +26,10 @@ export class Content extends withStores(TBPElement, [$selection, $selectionOpen]
         return [
             super.styles,
             css`
+              :host {
+                display: block;
+              }
+
               .verse__reference {
                 color: var(--tpb-verse-reference-color, var(--spectrum-neutral-visual-color, gray));
                 font-weight: var(--tbp-verse-reference-font-weight, normal);
@@ -47,17 +51,27 @@ export class Content extends withStores(TBPElement, [$selection, $selectionOpen]
                 text-align: left;
               }
 
-              tbp-verse[selectable] .verse:hover:not(.verse--selected) {
-                background-color: var(--tbp-verse-hover-background-color, var(--spectrum-transparent-black-200));
+              tbp-selection-manager[touch-mode] tbp-verse[selectable] .verse {
+                touch-action: manipulation;
+                -webkit-touch-callout: none;
+                -webkit-user-select: none;
+                user-select: none;
+              }
+
+              .verse--selection-mode {
+                display: flex;
+                align-items: flex-start;
+                gap: .75em;
+              }
+
+              .verse__checkbox {
+                flex-shrink: 0;
+                margin-top: -.15em;
+                margin-left: .5em;
               }
 
               .verse--selected {
-                background-color: var(--tbp-verse-selected-background-color, var(--spectrum-accent-color-600));
-                color: var(--tbp-verse-selected-color, var(--spectrum-alias-text-color-overbackground));
-              }
-
-              .verse--selected .verse__reference {
-                color: var(--tbp-verse-selected-reference-color, var(--spectrum-alias-text-color-overbackground));
+                background-color: var(--tbp-verse-selected-background-color, var(--spectrum-transparent-black-200));
               }
             `];
     }
@@ -280,7 +294,8 @@ export class Content extends withStores(TBPElement, [$selection, $selectionOpen]
      * @return {void} Does not return a value.
      */
     handleContextMenu(e) {
-        $selectionOpen.set(true)
+        // Long-press on a touch device enters checkbox selection mode;
+        // the mobile selection bar (not the share dialog) drives the UI from here.
     }
 
     /**
