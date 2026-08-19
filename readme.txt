@@ -4,7 +4,7 @@ Tags: bible, scripture, reading, digital bible, API
 Requires at least: 4.7
 Tested up to: 5.6
 Requires PHP: 7.4
-Stable tag: 2.0.1
+Stable tag: 2.0.2
 License: GNU General Public License v2.0 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
