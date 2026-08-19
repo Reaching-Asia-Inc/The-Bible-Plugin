@@ -11,3 +11,4 @@ phpunit.xml
 .secrets
 develop.svn.wordpress.org
 .manifest
+**/.DS_Store
