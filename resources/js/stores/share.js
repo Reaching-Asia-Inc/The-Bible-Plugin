@@ -12,12 +12,12 @@ export const $shareUrl = computed($selection, (selection) => {
   const first = selection[0];
   const last = selection[selection.length - 1];
 
-  const newReference = encodeURIComponent(reference_from_object({
+  const newReference = reference_from_object({
     book: first.book,
     chapter: first.chapter,
     verse_start: first.verse_start,
     verse_end: last.verse_end
-  }));
+  });
 
   pageUrl.searchParams.set('reference', newReference);
 
