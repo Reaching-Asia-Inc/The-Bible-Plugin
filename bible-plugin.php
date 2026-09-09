@@ -5,7 +5,7 @@
  * Description: A bible plugin for WordPress.
  * Text Domain: bible-plugin
  * Domain Path: /languages
- * Version: 2.0.2
+ * Version: 2.0.3
  * Author: Reaching Asia
  * Author URI: https://reachingasia.com
  * GitHub Plugin URI: https://github.com/Reaching-Asia-Inc/The-Bible-Plugin
